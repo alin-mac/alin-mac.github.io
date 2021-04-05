@@ -79,16 +79,19 @@
 
 
 
-<meta name="description" content="web扫描工具（nikto）一、web漏洞扫描原理 web漏洞扫描是在web信息搜集的基础上，进行更进一步的安全评估、漏洞挖掘、渗透测试。 web漏洞扫描能够让我们进一步挖掘sql注入、xss跨站脚本攻击、csrf跨站请求伪造等漏洞。 web漏洞扫描虽然能够帮助我们快速的实现自动化扫描，但并不是全能的，也会出现误报，需要手工结合。 未授权对目标服务器&#x2F;应用进行渗透测试，本质上就是一种攻击行为，若对">
+<meta name="description" content="常见的应急响应事件分类： web入侵：网页挂马、主页篡改、Webshell 系统入侵：病毒木马、勒索软件、远控后门 网络攻击：DDOS攻击、DNS劫持、ARP欺骗 入侵排查思路web入侵：对中间价日志进行分析 系统入侵：计划任务，系统爆破痕迹（系统日志），进程进行分析 网络攻击：流量分析 1、 检查系统账号安全 查看服务器是否有弱口令，远程管理端口是否对公网开放 检查方法：查看网络连接对应的进程">
 <meta property="og:type" content="article">
-<meta property="og:title" content="nikto工具参数">
-<meta property="og:url" content="http://alin.run/2020/05/15/nikto/index.html">
+<meta property="og:title" content="Windows应急响应">
+<meta property="og:url" content="http://alin.run/2021/04/03/Windows%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94/index.html">
 <meta property="og:site_name" content="alin&#39;Blog">
-<meta property="og:description" content="web扫描工具（nikto）一、web漏洞扫描原理 web漏洞扫描是在web信息搜集的基础上，进行更进一步的安全评估、漏洞挖掘、渗透测试。 web漏洞扫描能够让我们进一步挖掘sql注入、xss跨站脚本攻击、csrf跨站请求伪造等漏洞。 web漏洞扫描虽然能够帮助我们快速的实现自动化扫描，但并不是全能的，也会出现误报，需要手工结合。 未授权对目标服务器&#x2F;应用进行渗透测试，本质上就是一种攻击行为，若对">
-<meta property="article:published_time" content="2020-05-15T02:16:05.277Z">
-<meta property="article:modified_time" content="2020-05-15T10:06:48.304Z">
+<meta property="og:description" content="常见的应急响应事件分类： web入侵：网页挂马、主页篡改、Webshell 系统入侵：病毒木马、勒索软件、远控后门 网络攻击：DDOS攻击、DNS劫持、ARP欺骗 入侵排查思路web入侵：对中间价日志进行分析 系统入侵：计划任务，系统爆破痕迹（系统日志），进程进行分析 网络攻击：流量分析 1、 检查系统账号安全 查看服务器是否有弱口令，远程管理端口是否对公网开放 检查方法：查看网络连接对应的进程">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008eGmZEly1gp6rxonmj1j30u00getjo.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008eGmZEly1gp6s5l9kwqj30u0062qam.jpg">
+<meta property="article:published_time" content="2021-04-03T08:47:45.000Z">
+<meta property="article:modified_time" content="2021-04-05T12:44:35.147Z">
 <meta property="article:author" content="alin">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/008eGmZEly1gp6rxonmj1j30u00getjo.jpg">
 
 
 
@@ -118,13 +121,13 @@
 
 
 
-  <link rel="canonical" href="http://alin.run/2020/05/15/nikto/"/>
+  <link rel="canonical" href="http://alin.run/2021/04/03/Windows应急响应/"/>
 
 
 
 
 
-  <title>nikto工具参数 | alin'Blog</title>
+  <title>Windows应急响应 | alin'Blog</title>
   
 
 
@@ -275,7 +278,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://alin.run/2020/05/15/nikto/">
+    <link itemprop="mainEntityOfPage" href="http://alin.run/2021/04/03/Windows%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="alin">
@@ -292,7 +295,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">nikto工具参数</h1>
+          <h1 class="post-title" itemprop="name headline">Windows应急响应</h1>
         
 
         <div class="post-meta">
@@ -304,8 +307,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-15T10:16:05+08:00">
-                2020-05-15
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-03T16:47:45+08:00">
+                2021-04-03
               </time>
             
 
@@ -327,8 +330,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index">
-                    <span itemprop="name">工具</span>
+                  <a href="/categories/HW/" itemprop="url" rel="index">
+                    <span itemprop="name">HW</span>
                   </a>
                 </span>
 
@@ -364,72 +367,110 @@
       
 
       
-        <h2 id="web扫描工具（nikto）"><a href="#web扫描工具（nikto）" class="headerlink" title="web扫描工具（nikto）"></a>web扫描工具（nikto）</h2><h3 id="一、web漏洞扫描原理"><a href="#一、web漏洞扫描原理" class="headerlink" title="一、web漏洞扫描原理"></a>一、web漏洞扫描原理</h3><ol>
-<li>web漏洞扫描是在web信息搜集的基础上，进行更进一步的安全评估、漏洞挖掘、渗透测试。</li>
-<li>web漏洞扫描能够让我们进一步挖掘sql注入、xss跨站脚本攻击、csrf跨站请求伪造等漏洞。</li>
-<li>web漏洞扫描虽然能够帮助我们快速的实现自动化扫描，但并不是全能的，也会出现误报，需要手工结合。</li>
-<li>未授权对目标服务器/应用进行渗透测试，本质上就是一种攻击行为，若对业务造成影响，可能会有法律责任。</li>
-</ol>
-<h3 id="二、nikto的功能与用途"><a href="#二、nikto的功能与用途" class="headerlink" title="二、nikto的功能与用途"></a>二、nikto的功能与用途</h3><h4 id="1、nikto简介"><a href="#1、nikto简介" class="headerlink" title="1、nikto简介"></a>1、nikto简介</h4><ol>
-<li>Nikto是一款开源的（GPL）网页服务器扫描器，它可以对网页服务器进行全面的多种扫描，包含超过3300种有潜在危险的文件/CGIs；超过625种服务器版本；超过230种特定服务器。它可以扫描指定主机的WEB类型、主机名、特定目录、COOKIE、特定CGI漏洞、返回主机允许的http模式等等。扫描项和插件可以自动更新（如果需要）。基于Whisker/libwhisker完成其底层功能。这是一款非常棒的工具，Nikto是网管安全人员必备的WEB审计工具之一。</li>
-<li>Nikto是基于PERL开发的程序，所以需要PERL环境。Nikto支持Windows（使用ActiveState Perl环境）、Mac OSX、多种Linux 或Unix系统。Nikto使用SSL需要Net::SSLeay PERL模式，则必须在Unix平台上安装OpenSSL。</li>
-</ol>
-<h4 id="2、功能"><a href="#2、功能" class="headerlink" title="2、功能"></a>2、功能</h4><ol>
-<li>Nikto 爬取目标站点并生成大量预先准备的请求，尝试识别应用中存在的危险脚本和文件。</li>
-<li>Nikto是一个用来发现默认网页文件、检查网页服务器和CGI安全问题的工具。它对远程主机使用大量请求，这些过量的请求可能会导致远程主机宕机。Nikto可能会损害主机、远程主机和网络。某些选项可能对目标产生超过 70,000个HTTP请求。 同样从网站更新的插件也不能保证绝对系统无害，选择权在用户手中。</li>
-</ol>
-<h4 id="3、用途"><a href="#3、用途" class="headerlink" title="3、用途"></a>3、用途</h4><ol>
-<li>Nikto 是 Kali 中的命令行工具，用于评估 Web 应用的已知安全问题。</li>
-<li>Nikto工具可以帮助我们对Web的安全进行审计，及时发现网站存在的安全漏洞，对网站的安全做进一步的扫描评估。</li>
-</ol>
-<h3 id="三、nikto使用方法与参数"><a href="#三、nikto使用方法与参数" class="headerlink" title="三、nikto使用方法与参数"></a>三、nikto使用方法与参数</h3><h4 id="1、nikto-h-目标主机-参数-（-h是必不可少参数，没有-h其他参数不会有对应的扫描结果）"><a href="#1、nikto-h-目标主机-参数-（-h是必不可少参数，没有-h其他参数不会有对应的扫描结果）" class="headerlink" title="1、nikto -h 目标主机  +参数  （-h是必不可少参数，没有-h其他参数不会有对应的扫描结果）"></a>1、nikto -h 目标主机  +参数  （-h是必不可少参数，没有-h其他参数不会有对应的扫描结果）</h4><h4 id="2、nikto的参数"><a href="#2、nikto的参数" class="headerlink" title="2、nikto的参数"></a>2、nikto的参数</h4><ol>
-<li>-H     查看帮助</li>
-<li>-host &lt;目标主机&gt;    等同于-h</li>
-<li>-list-plugin    显示可用插件</li>
-<li>-port  &lt;端口号&gt;    指定端口</li>
-<li>-ssl     目标采用https连接时，加上这个参数</li>
-<li>-useproxy <a href="http://127.0.0.1:9999" target="_blank" rel="noopener">http://127.0.0.1:9999</a>     防止被Ban，使用匿名代理服务器</li>
-<li>-evasion &lt;数字&gt;      防止被IDS检测异常请求（选项有多种混淆方式，输入数字选择）</li>
-<li>-C     扫描CGI目录</li>
-<li>-D &lt;数字&gt;    控制输出（打开或关闭默认输出）<ol>
-<li>1 显示重定向</li>
-<li>2 显示获取的cookies信息</li>
-<li>3 显示所有200/OK的回应</li>
-<li>4 显示请求认证的URLs</li>
-<li>D Debug输出</li>
-<li>V 冗余输出</li>
-</ol>
-</li>
-<li>-V     显示插件和数据库的版本信息</li>
-<li>-dbcheck     检查数据库和其他重要文件的句法错误</li>
-<li>-e &lt;数字&gt;    使用LibWhisker中对IDS的躲避技术<ol>
-<li>1 随机URL编码（非UTF-8方式）</li>
-<li>2 自选择路径（/./）</li>
-<li>3 过早结束的URL</li>
-<li>4 优先考虑长随机字符串</li>
-<li>5 参数欺骗</li>
-<li>6 使用TAB作为命令的分隔符</li>
-<li>7 使用变化的URL</li>
-<li>8 使用Windows路径分隔符“\”</li>
-</ol>
-</li>
-<li>-f     只寻找HTTP或HTTPS端口，不进行完全扫描</li>
-<li>-i  &lt;id：密码&gt;   主机鉴定</li>
-<li>-m &lt;数字&gt;    猜解更多的文件名<ol>
-<li>1 检测根目录下的所有文件</li>
-<li>2 猜测密码文件名</li>
-<li>3 通过Apache（/~User请求类型）枚举用户名</li>
-<li>4 通过cgiwrap（/cgi-bin/cgiwrap/~User请求类型）枚举用户名</li>
-</ol>
-</li>
-<li>-T &lt;参数&gt;     控制Nikto使用不同的方式对目标进行扫描<ol>
-<li>0 文件上传<br>1 日志方式<br> 　　2 默认文件<br> 　　3 信息泄露<br> 　　4 注入（XSS/Script/HTML）<br> 　　5 远程文件检索（Web目录中）<br> 　　6 拒绝服务<br> 　　7 远程文件检索（服务器）<br> 　　8 代码执行—远程shell<br> 　　9 SQL注入<br> 　　a 认证绕过<br> 　　b 软件关联<br> 　　c 远程资源包含<br> 　　x 反向连接选项</li>
-</ol>
-</li>
-<li>-u     使用在nikto.conf中定义的代理</li>
-<li>-o     输出到指定文件</li>
-<li>-F     指定检测报告输出文件的格式，默认是txt文件格式（可以是htm、csv、txt或xml格式）</li>
-</ol>
+        <p><strong>常见的应急响应事件分类：</strong></p>
+<p>web入侵：网页挂马、主页篡改、Webshell</p>
+<p>系统入侵：病毒木马、勒索软件、远控后门</p>
+<p>网络攻击：DDOS攻击、DNS劫持、ARP欺骗</p>
+<h2 id="入侵排查思路"><a href="#入侵排查思路" class="headerlink" title="入侵排查思路"></a>入侵排查思路</h2><p>web入侵：对中间价日志进行分析</p>
+<p>系统入侵：计划任务，系统爆破痕迹（系统日志），进程进行分析</p>
+<p>网络攻击：流量分析</p>
+<p><strong>1、 检查系统账号安全</strong></p>
+<p>查看服务器是否有弱口令，远程管理端口是否对公网开放</p>
+<p>检查方法：查看网络连接对应的进程</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Netstat -anb | findstr 进程</span><br></pre></td></tr></table></figure>
+
+
+
+<p>查看日志：</p>
+<p>打开控制面板——系统和安全——查看事件日志，就进入了事件查看器</p>
+<p>打开左侧事件查看器（本地）——Windows日志——安全</p>
+<p>筛查4776事件（远程登陆日志）查看是否有登陆频率过高事件</p>
+<p>重要的事件 ID（安全日志，Security.evtx）</p>
+<ul>
+<li>4624：账户成功登录</li>
+<li>4648：使用明文凭证尝试登录</li>
+<li>4778：重新连接到一台 Windows 主机的会话</li>
+<li>4779：断开到一台 Windows 主机的会话</li>
+</ul>
+<hr>
+<p><img src="https://tva1.sinaimg.cn/large/008eGmZEly1gp6rxonmj1j30u00getjo.jpg" alt="image-20210403192044753"></p>
+<p><strong>2、查看服务器是否存在可疑账号、新增账号。</strong></p>
+<p>检查方法：打开 cmd 窗口，输入lusrmgr.msc命令，查看是否有新增/可疑的账号，如有管理员群组的（Administrators）里的新增账户，如有，请立即禁用或删除掉。</p>
+<p><strong>3、查看服务器是否存在隐藏账号、克隆账号。</strong></p>
+<p>检查方法：</p>
+<p>a、打开注册表 ，查看管理员对应键值。</p>
+<p>b、使用D盾_web查杀工具，集成了对克隆账号检测的功能</p>
+<p>c、windows账号信息，隐藏账号</p>
+<p>【开始】➜【运行】➜【compmgmt.msc】➜【本地用户和组】➜【用户】 (用户名以$结尾的为隐藏用户，如：admin$)</p>
+<p><strong>4、结合日志，查看管理员登录时间、用户名是否存在异常。</strong></p>
+<p>检查方法：</p>
+<p>a、Win+R打开运行，输入“eventvwr.msc”，回车运行，打开“事件查看器”。</p>
+<p>b、导出Windows日志–安全，利用Log Parser进行分析。</p>
+<p>LogParser.exe -i:EVT -o:DATAGRID “SELECT TimeGenerated as LoginTime,EXTRACT_TOKEN(Strings,5,’|’) as username,EXTRACT_TOKEN(Strings, 8, ‘|’) as LogonType,EXTRACT_TOKEN(Strings, 17, ‘|’) AS ProcessName,EXTRACT_TOKEN(Strings, 18, ‘|’) AS SourceIP FROM 日志位置 where EventID=4624”</p>
+<p><strong>5、检查异常端口、进程</strong></p>
+<p>检查端口连接情况，是否有远程连接、可疑连接。</p>
+<p>检查方法：</p>
+<p>a、netstat -ano 查看目前的网络连接，定位可疑的ESTABLISHED</p>
+<p>b、根据netstat 定位出的pid，再通过tasklist命令进行进程定位</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tasklist | findstr “PID”</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>6、进程</strong></p>
+<p>检查方法：</p>
+<p>a、开始–运行–输入msinfo32，依次点击“软件环境→正在运行任务”就可以查看到进程的详细信息，比如进程路径、进程ID、文件创建日期、启动时间等。</p>
+<p>b、打开D盾_web查杀工具，进程查看，关注没有签名信息的进程。</p>
+<p>c、通过微软官方提供的 Process Explorer 等工具进行排查 。</p>
+<p>d、查看可疑的进程及其子进程。可以通过观察以下内容：</p>
+<p>没有签名验证信息的进程</p>
+<p>没有描述信息的进程</p>
+<p>进程的属主</p>
+<p>进程的路径是否合法</p>
+<p>CPU或内存资源占用长时间过高的进程</p>
+<p><strong>7、计划任务</strong></p>
+<p>控制面板 — 管理工具 — 任务计划程序</p>
+<p>或运行 — taskschd.msc</p>
+<p>通过命令查看计划任务schtasks</p>
+<p>存放计划任务的文件</p>
+<ul>
+<li>C:\Windows\System32\Tasks\</li>
+<li>C:\Windows\SysWOW64\Tasks\</li>
+<li>C:\Windows\tasks\</li>
+<li>*.job（指文件）</li>
+</ul>
+<p><strong>8、查看可疑目录及文件</strong></p>
+<p>查看 host ：</p>
+<p>type %systemroot%\System32\drivers\etc\hosts</p>
+<p>Window 2003 C:\Documents and Settings</p>
+<p>Window 2008R2 C:\Users\</p>
+<p>Recent是系统文件夹，里面存放着你最近使用的文档的快捷方式，查看用户recent相关文件，通过分析最近打开分析可疑文件：</p>
+<p>单击【开始】&gt;【运行】，输入%UserProfile%\Recent，分析最近打开分析可疑文件。</p>
+<p>temp(tmp)相关目录下查看有无异常文件 ：Windows产生的临时文件</p>
+<p><strong>9、中间件日志分析（分析是否上传webshell，sql注入等操作）</strong></p>
+<p>tomcat：安装目录下logs文件夹localhost_access_log.日期.txt  (我们分析一般针对这个进行分析)</p>
+<p>这个是存放访问tomcat的请求的所有地址以及请求的路径、时间，请求协议以及返回码等信息(重要)</p>
+<p>例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1 - - [29&#x2F;May&#x2F;2020:12:03:06 +0800] &quot;GET &#x2F;tomcat.css HTTP&#x2F;1.1&quot; 200 5581</span><br></pre></td></tr></table></figure>
+
+
+
+<p>请求IP – 请求时间 —请求方式—请求路径—请求协议—状态码—字节包</p>
+<p>对请求路径进行分析，定位攻击者</p>
+<p>apache：安装目录下logs文件夹 access.log（格式与tomcat一致）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1 - - [13&#x2F;May&#x2F;2020:20:26:48 +0800] &quot;GET &#x2F;index.php HTTP&#x2F;1.1&quot; 404 196</span><br></pre></td></tr></table></figure>
+
+
+
+<p>请求IP – 请求时间 —请求方式—请求路径—请求协议—状态码—字节包</p>
+<p>对请求路径进行分析，定位攻击者</p>
+<p>工具推荐：<strong>火绒剑</strong></p>
+<p>可对程序连接网络信息进行查看</p>
+<p>![image-20210403192731662](../../../Library/Application Support/typora-user-images/image-20210403192731662.png)</p>
+<p>![image-20210403192752295](../../../Library/Application Support/typora-user-images/image-20210403192752295.png)</p>
+<p>可以对某一时段发包信息进行监控（进程迁移操作时，可监控程序行为判断）</p>
+<p><img src="https://tva1.sinaimg.cn/large/008eGmZEly1gp6s5l9kwqj30u0062qam.jpg" alt="image-20210403192826827"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">from https:&#x2F;&#x2F;mp.weixin.qq.com&#x2F;s&#x2F;w3c7tKfj1Plcbv57Gz8M0g   Timeline Sec</span><br></pre></td></tr></table></figure>
+
 
       
     </div>
@@ -483,14 +524,18 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2021/03/29/kali%E5%B7%A5%E5%85%B7%E7%AC%94%E8%AE%B0/" rel="next" title="kali工具笔记">
+                <i class="fa fa-chevron-left"></i> kali工具笔记
+              </a>
+            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/05/15/%E7%BB%83%E4%B9%A01/" rel="prev" title="记录第一次课堂练习web题目">
-                记录第一次课堂练习web题目 <i class="fa fa-chevron-right"></i>
+              <a href="/2021/04/04/phpinfo%E4%BF%A1%E6%81%AF%E5%88%A9%E7%94%A8/" rel="prev" title="phpinfo信息利用">
+                phpinfo信息利用 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -618,7 +663,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#web扫描工具（nikto）"><span class="nav-number">1.</span> <span class="nav-text">web扫描工具（nikto）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、web漏洞扫描原理"><span class="nav-number">1.1.</span> <span class="nav-text">一、web漏洞扫描原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、nikto的功能与用途"><span class="nav-number">1.2.</span> <span class="nav-text">二、nikto的功能与用途</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、nikto简介"><span class="nav-number">1.2.1.</span> <span class="nav-text">1、nikto简介</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、功能"><span class="nav-number">1.2.2.</span> <span class="nav-text">2、功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3、用途"><span class="nav-number">1.2.3.</span> <span class="nav-text">3、用途</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、nikto使用方法与参数"><span class="nav-number">1.3.</span> <span class="nav-text">三、nikto使用方法与参数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、nikto-h-目标主机-参数-（-h是必不可少参数，没有-h其他参数不会有对应的扫描结果）"><span class="nav-number">1.3.1.</span> <span class="nav-text">1、nikto -h 目标主机  +参数  （-h是必不可少参数，没有-h其他参数不会有对应的扫描结果）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、nikto的参数"><span class="nav-number">1.3.2.</span> <span class="nav-text">2、nikto的参数</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#入侵排查思路"><span class="nav-number">1.</span> <span class="nav-text">入侵排查思路</span></a></li></ol></div>
             
 
           </div>
